@@ -23,7 +23,7 @@ from neuroml_ai_utils.llm import (
     get_last_n_conversations,
     parse_output_with_thought,
     setup_llm,
-    split_thought_and_output,
+    split_output_by_section,
 )
 from neuroml_ai_utils.logging import (
     LoggerInfoFilter,
@@ -140,7 +140,7 @@ class RAG(object):
             prompt, config={"configurable": {"temperature": 0.3}}
         )
         self.logger.debug(f"Current history summary is:\n{output.content}")
-        thought, answer = split_thought_and_output(output)
+        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
 
         # Do not update messages here, since we don't want this to be noted as
         # an AI response to a user query
@@ -298,7 +298,7 @@ class RAG(object):
         )
         # self.logger.debug(f"{output =}")
         self.logger.debug(output)
-        thought, answer = split_thought_and_output(output)
+        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
 
         messages = state.messages
         output.content = answer
@@ -363,7 +363,7 @@ class RAG(object):
         )
 
         self.logger.debug(f"{output =}")
-        thought, answer = split_thought_and_output(output)
+        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
 
         messages = state.messages
         output.content = answer
@@ -393,15 +393,12 @@ class RAG(object):
           access to the context.
         - Do not mention "context", "reference material", "documents" or
           "retrieval".
-        - Do not refer to documents indirectly (e.g., "as described above",
-          "follow the tutorial"). Instead, restate the necessary information
-          directly to the user in clear natural language.
-        - Do not include your thinking in your response.
-        - Include a "References" section at the end of your answer.
-            - In this section, quote the Reference URLs of the documents
+        - Do not include inline links.
+        - Always include a section called "References" at the end of your answer.
+            - In this section, list the reference URLs of the documents
               from the provided context that you used to generate the
               current answer.
-            - Do *not* repeat references/URLs in the list.
+            - Only include each reference URL ONCE in the list
 
         # Context (reference material not visible to the user, ordered from most relevant to least relevant):
 
@@ -449,8 +446,6 @@ class RAG(object):
         self.logger.debug(f"{reference_material =}")
 
         reference_material_text = self._serialize_reference(reference_material)
-        reference_list = ""
-        # reference_list = self._get_reference_list(reference_material)
         prompt = generate_answer_template.invoke(
             {"question": question, "reference_material": reference_material_text}
         )
@@ -458,9 +453,23 @@ class RAG(object):
         output = self.model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
-        thought, answer = split_thought_and_output(output)
+        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
 
-        output.content = answer + reference_list
+        # remove redundant references and format
+        references = ""
+        answer_text = ""
+        ref_list = []
+        # could use re. but using split function already, so keeping it simple
+        for rf in ["\nreference", "\nReference", "\nReferences", "\nreferences"]:
+            if rf in answer:
+                answer_text, references = split_output_by_section(answer, rf)
+                ref_list = set(references.split())
+                break
+
+        if ref_list:
+            answer_text += "\nReferences:" + "\n- ".join(ref_list)
+
+        output.content = answer
         self.logger.debug(output.pretty_repr())
 
         messages = state.messages

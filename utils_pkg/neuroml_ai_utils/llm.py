@@ -10,17 +10,19 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 import os
+import re
 import sys
 import time
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Type
+from typing import Optional, Type, Union
 
 import ollama
 from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages.base import BaseMessage
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import (
@@ -29,6 +31,13 @@ from langchain_huggingface import (
     HuggingFaceEndpointEmbeddings,
 )
 from pydantic import BaseModel
+
+logging.basicConfig(
+    format="%(name)s (%(levelname)s) >>> %(message)s\n", level=logging.WARNING
+)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def check_ollama_model(logger, model, exit=False):
@@ -75,20 +84,69 @@ def parse_output_with_thought[TSchema: BaseModel](
     return result
 
 
-def split_thought_and_output(message: AIMessage):
+def split_output_by_section(
+    text: str, section_start_marker: str, section_end_marker: Optional[str] = None
+):
     """Split out thoughts and actual responses from AI responses"""
-    if "</think>" in message.content:
-        splits = message.content.split("</think>")
-        answer = splits[1].strip()
-        thoughts = splits[1].strip()
-    else:
-        answer = message.content.strip()
-        thoughts = ""
+    if not text:
+        logger.warning("Empty message.content. Nothing to do.")
+        return "", ""
 
-    if "<think>" in message.content and "</think>" not in message.content:
-        answer += "NOTE: INCOMPLETE OUTPUT"
+    if not section_start_marker:
+        logger.warning("No starting marker. Nothing to do.")
+        return "", ""
 
-    return thoughts, answer
+    if not section_end_marker:
+        section_end_marker = None
+
+    delimited, other = [], []
+
+    # prepare pattern
+    markers = [re.escape(section_start_marker)]
+    if section_end_marker:
+        markers.append(re.escape(section_end_marker))
+    pattern = f"({'|'.join(markers)})"
+
+    # split
+    splits = re.split(pattern, text)
+
+    # process splits
+    # by default, we're outside the delimiters to begin with
+    is_in = False
+
+    # do we have both markers?
+    found_start_marker = section_start_marker in text
+    found_end_marker = section_end_marker in text if section_end_marker else False
+
+    if not found_start_marker and not found_end_marker:
+        logger.debug("No markers found. Nothing to do.")
+        return "", text
+
+    # end marker, but no start: we start inside the delimted region
+    if found_end_marker and not found_start_marker:
+        is_in = True
+
+    for part in splits:
+        if part == section_start_marker:
+            is_in = True
+        elif part == section_end_marker:
+            is_in = False
+        else:
+            if is_in:
+                delimited.append(part)
+            else:
+                other.append(part)
+
+    delimited_text = "".join(delimited).strip()
+    other_text = "".join(other).strip()
+
+    # Add notes
+    if found_start_marker and (section_end_marker and not found_end_marker):
+        other_text += "\nNOTE: NO END MARKER FOUND"
+    elif found_end_marker and not found_start_marker:
+        other_text += "\nNOTE: NO START MARKER FOUND"
+
+    return delimited_text, other_text
 
 
 def check_model_works(model, timeout=30, retries=5):

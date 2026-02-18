@@ -42,6 +42,8 @@ class PerDomainConfig(BaseModel):
 
 
 class VectorStoresConfig(BaseModel):
+    default_k: int = 5
+    k_max: int = 10
     embedding_model: str  #  = "ollama:bge-m3"
     domains: Dict[str, PerDomainConfig]
 
@@ -107,6 +109,8 @@ class Vector_Stores(object):
             domain_info = json.load(f)
             self.vs_config = VectorStoresConfig(**domain_info)
         self.embedding_model = self.vs_config.embedding_model
+        self.default_k = self.vs_config.default_k
+        self.k_max = self.vs_config.k_max
         self.logger.debug(f"{self.vs_config =}")
 
     def inc_k(self, inc: int = 1):

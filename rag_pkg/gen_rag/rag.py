@@ -96,6 +96,7 @@ class RAG(object):
     def _load_config(self):
         """Load configuration from file"""
         self.config = AppConfig(_env_file=self.config_file)
+        self.logger.debug(f"Config file:\n{self.config_file}")
         self.logger.debug(f"Config:\n{self.config}")
 
     async def setup(self):

@@ -8,6 +8,7 @@ Copyright 2025 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -21,7 +22,13 @@ from gen_rag.rag import RAG
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
 
-    rag = RAG(config_file="rag.env", memory=True)
+    rag_config_file = os.getenv("RAG_ENV_FILE", None)
+
+    if rag_config_file:
+        rag = RAG(config_file=rag_config_file, memory=True)
+    else:
+        rag = RAG(memory=True)
+
     await rag.setup()
 
     app.state.rag = rag

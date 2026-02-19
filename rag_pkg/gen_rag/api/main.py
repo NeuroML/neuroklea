@@ -8,7 +8,6 @@ Copyright 2025 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -22,13 +21,7 @@ from gen_rag.rag import RAG
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
 
-    chat_model = os.environ.get("GEN_RAG_CHAT_MODEL", "ollama:qwen3:1.7b")
-    vs_config_file = os.environ.get(
-        "GEN_RAG_VS_CONFIG",
-        "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/vector-stores.json",
-    )
-
-    rag = RAG(chat_model=chat_model, vs_config_file=vs_config_file, memory=True)
+    rag = RAG(config_file="rag.env", memory=True)
     await rag.setup()
 
     app.state.rag = rag

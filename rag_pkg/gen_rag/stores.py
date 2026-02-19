@@ -46,6 +46,8 @@ class VectorStoresConfig(BaseModel):
     k_max: int = 10
     embedding_model: str  #  = "ollama:bge-m3"
     domains: Dict[str, PerDomainConfig]
+    answer_other_queries: bool = False
+    refusal_message: str = "I am unable to answer the question based on the information provided to me. Please try another query."
 
 
 class Vector_Stores(object):

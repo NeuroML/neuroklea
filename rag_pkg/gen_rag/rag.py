@@ -4,7 +4,7 @@ General RAG implementation
 
 File: rag.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 from textwrap import dedent
+from typing import Dict, List, Literal, Optional, Tuple
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -32,8 +33,8 @@ from neuroml_ai_utils.logging import (
     logger_formatter_other,
 )
 from pydantic import create_model
-from typing_extensions import Dict, List, Literal, Tuple
 
+from .config import AppConfig
 from .schemas import EvaluateAnswerSchema, RAGState
 from .stores import Vector_Stores
 
@@ -46,15 +47,15 @@ class RAG(object):
 
     def __init__(
         self,
-        vs_config_file: str,
-        chat_model: str,
+        config_file: str = "rag.env",
         logging_level: int = logging.DEBUG,
         memory: bool = True,
     ):
         """Initialise"""
-        self.chat_model = chat_model
-        self.model = None
-        self.stores = Vector_Stores(vs_config_file=vs_config_file)
+        self.c_model = None
+        self.g_model = None
+        self.config_file = config_file
+        self.config: AppConfig = AppConfig()
 
         # total number of reference documents
         self.num_refs_max = 10
@@ -64,7 +65,7 @@ class RAG(object):
         # graph/app
         self.memory = memory
         if self.memory:
-            self.checkpointer = InMemorySaver()
+            self.checkpointer: Optional[InMemorySaver] = InMemorySaver()
         else:
             self.checkpointer = None
 
@@ -92,15 +93,22 @@ class RAG(object):
         stderr_handler.setFormatter(logger_formatter_other)
         self.logger.addHandler(stderr_handler)
 
+    def _load_config(self):
+        """Load configuration from file"""
+        self.config = AppConfig(_env_file=self.config_file)
+        self.logger.debug(f"Config:\n{self.config}")
+
     async def setup(self):
         """Set up basics."""
 
+        self._load_config()
+        self.stores = Vector_Stores(vs_config_file=self.config.vs_config_file)
+        self._setup_guard_model()
         self._setup_chat_model()
         self.stores.setup()
 
         # dynamically generate schema for domains
         all_domains = self.stores.domains.copy()
-        all_domains.append("undefined")
 
         self.QueryDomainSchema = create_model(
             "QueryDomainSchema", query_domain=(Literal[tuple(all_domains)], "undefined")
@@ -115,11 +123,15 @@ class RAG(object):
 
     def _setup_chat_model(self):
         """Set up the LLM chat model"""
-        self.model = setup_llm(self.chat_model, self.logger)
+        self.c_model = setup_llm(self.config.chat_model, self.logger)
+
+    def _setup_guard_model(self):
+        """Set up the LLM chat model"""
+        self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     def _summarise_history_node(self, state: RAGState) -> dict:
         """Clean ups after every round of conversation"""
-        assert self.model
+        assert self.c_model
         conversation, human_messages, ai_messages = get_last_n_conversations(
             state.messages, state.summarised_till, None
         )
@@ -136,7 +148,7 @@ class RAG(object):
             logger=self.logger,
             current_summary=state.context_summary,
         )
-        output = self.model.invoke(
+        output = self.c_model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
         self.logger.debug(f"Current history summary is:\n{output.content}")
@@ -160,7 +172,7 @@ class RAG(object):
 
     def _classify_question_domain(self, state: RAGState) -> dict:
         """Ask LLM to figure out the domain of the query"""
-        assert self.model
+        assert self.c_model
         self.logger.debug(f"{state =}")
 
         messages = state.messages
@@ -184,7 +196,6 @@ class RAG(object):
             categories:
 
             """)
-        system_prompt += domain_str + "\n- undefined: otherwise\n"
         system_prompt += dedent("""
             Rules:
 
@@ -215,7 +226,7 @@ class RAG(object):
         )
 
         # can use | to merge these lines
-        query_node_llm = self.model.with_structured_output(
+        query_node_llm = self.c_model.with_structured_output(
             self.QueryDomainSchema, method="json_schema", include_raw=True
         )
         prompt = prompt_template.invoke({"query": state.query})
@@ -255,9 +266,12 @@ class RAG(object):
             "messages": messages,
         }
 
+    def _refuse_to_answer_node(self, state: RAGState) -> dict:
+        return {"message_for_user": self.stores.vs_config.refusal_message}
+
     def _answer_general_question_node(self, state: RAGState) -> dict:
         """Answer a general question"""
-        assert self.model
+        assert self.c_model
         self.logger.debug(f"{state =}")
 
         system_prompt = dedent("""
@@ -293,7 +307,7 @@ class RAG(object):
         self.logger.debug(f"{question_prompt_template =}")
         prompt = question_prompt_template.invoke({"query": state.query})
 
-        output = self.model.invoke(
+        output = self.c_model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
         # self.logger.debug(f"{output =}")
@@ -308,7 +322,7 @@ class RAG(object):
 
     def _generate_retrieval_query_node(self, state: RAGState) -> dict:
         """Generate a retrieval query"""
-        assert self.model
+        assert self.c_model
         self.logger.debug(f"{state =}")
 
         system_prompt = dedent("""
@@ -358,7 +372,7 @@ class RAG(object):
         )
         self.logger.debug(f"{prompt =}")
 
-        output = self.model.invoke(
+        output = self.c_model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
 
@@ -373,7 +387,7 @@ class RAG(object):
 
     def _generate_answer_from_context_node(self, state: RAGState) -> dict:
         """Generate the answer"""
-        assert self.model
+        assert self.c_model
         self.logger.debug(f"{state =}")
 
         system_prompt = dedent("""
@@ -450,7 +464,7 @@ class RAG(object):
             {"question": question, "reference_material": reference_material_text}
         )
         self.logger.debug(f"{prompt =}")
-        output = self.model.invoke(
+        output = self.c_model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
         thought, answer = split_output_by_section(output.content, "<think>", "</think>")
@@ -537,7 +551,7 @@ class RAG(object):
 
     def _evaluate_answer_node(self, state: RAGState) -> dict:
         """Evaluate the answer"""
-        assert self.model
+        assert self.c_model
 
         evaluator_prompt = dedent("""
             You are a critical grader evaluating an answer produced by a retrieval-augmented generation (RAG) system.
@@ -643,7 +657,7 @@ class RAG(object):
         )
 
         # can use | to merge these lines
-        query_node_llm = self.model.with_structured_output(
+        query_node_llm = self.c_model.with_structured_output(
             EvaluateAnswerSchema, method="json_schema", include_raw=True
         )
         prompt = prompt_template.invoke(
@@ -719,8 +733,11 @@ class RAG(object):
 
         if query_domain in self.stores.domains:
             return "generate_retrieval_query"
-
-        return "answer_general_question"
+        else:
+            if self.stores.vs_config.answer_other_queries:
+                return "answer_general_question"
+            else:
+                return "refuse_to_answer"
 
     def _give_domain_answer_to_user_node(self, state: RAGState) -> dict:
         """Return the answer message to the user"""
@@ -759,6 +776,7 @@ class RAG(object):
         self.workflow.add_node(
             "answer_general_question", self._answer_general_question_node
         )
+        self.workflow.add_node("refuse_to_answer", self._refuse_to_answer_node)
         self.workflow.add_node(
             "generate_answer_from_context", self._generate_answer_from_context_node
         )
@@ -781,6 +799,7 @@ class RAG(object):
             {
                 "generate_retrieval_query": "generate_retrieval_query",
                 "answer_general_question": "answer_general_question",
+                "refuse_to_answer": "refuse_to_answer",
             },
         )
         self.workflow.add_conditional_edges(

@@ -11,6 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 import os
 import sys
+from pathlib import Path
 from textwrap import dedent
 from typing import Dict, List, Literal, Optional, Tuple
 
@@ -47,15 +48,14 @@ class RAG(object):
 
     def __init__(
         self,
-        config_file: str = "rag.env",
         logging_level: int = logging.DEBUG,
         memory: bool = True,
     ):
         """Initialise"""
         self.c_model = None
         self.g_model = None
-        self.config_file = config_file
-        self.config: AppConfig = AppConfig()
+        self.config_file = os.getenv("GEN_RAG_CONFIG_FILE", "rag.env")
+        self.config: AppConfig
 
         # total number of reference documents
         self.num_refs_max = 10
@@ -95,6 +95,10 @@ class RAG(object):
 
     def _load_config(self):
         """Load configuration from file"""
+        cfg_path = Path(self.config_file)
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
+
         self.config = AppConfig(_env_file=self.config_file)
         self.logger.debug(f"Config file:\n{self.config_file}")
         self.logger.debug(f"Config:\n{self.config}")

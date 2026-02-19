@@ -9,6 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import asyncio
+import uuid
 
 import httpx
 import streamlit as st
@@ -33,6 +34,8 @@ def runner():
     # get history and re-write it
     if "history" not in st.session_state:
         st.session_state.history = []
+    if "session_id" not in set.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
 
     for i, message in enumerate(st.session_state.history):
         with st.chat_message(message["role"]):
@@ -49,7 +52,13 @@ def runner():
             with st.spinner("Working..."):
                 with httpx.Client(timeout=None) as client:
                     try:
-                        response = client.post(f"{url}/query", params={"query": query})
+                        response = client.post(
+                            f"{url}/query",
+                            data={
+                                "query": query,
+                                "session_id": st.session_state.session_id,
+                            },
+                        )
                         response_result = response.json().get("result")
                         st.markdown(response_result)
                     except httpx.RequestError as e:

@@ -114,6 +114,7 @@ class RAG(object):
 
         # dynamically generate schema for domains
         all_domains = self.stores.domains.copy()
+        all_domains.append("undefined")
 
         self.QueryDomainSchema = create_model(
             "QueryDomainSchema", query_domain=(Literal[tuple(all_domains)], "undefined")
@@ -201,6 +202,7 @@ class RAG(object):
             categories:
 
             """)
+        system_prompt += domain_str + "\n- undefined: otherwise\n\n"
         system_prompt += dedent("""
             Rules:
 
@@ -272,7 +274,9 @@ class RAG(object):
         }
 
     def _refuse_to_answer_node(self, state: RAGState) -> dict:
-        return {"message_for_user": self.stores.vs_config.refusal_message}
+        return {
+            "message_for_user": "I cannot answer this query as it does not fall into my allowed domains. Please try another query."
+        }
 
     def _answer_general_question_node(self, state: RAGState) -> dict:
         """Answer a general question"""
@@ -739,7 +743,7 @@ class RAG(object):
         if query_domain in self.stores.domains:
             return "generate_retrieval_query"
         else:
-            if self.stores.vs_config.answer_other_queries:
+            if self.config.answer_non_domain == "yes":
                 return "answer_general_question"
             else:
                 return "refuse_to_answer"

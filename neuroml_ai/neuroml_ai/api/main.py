@@ -23,10 +23,13 @@ from neuroml_ai.assistant import NML_Assistant
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
 
-    chat_model = os.environ.get("GEN_RAG_CHAT_MODEL", "ollama:qwen3:0.6b")
+    chat_model = os.environ.get(
+        "GEN_RAG_CHAT_MODEL",
+        "vllm:Qwen/Qwen3-14B-GGUF:Q4_K_M",
+    )
     vs_config_file = os.environ.get(
         "GEN_RAG_VS_CONFIG",
-        "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/vector-stores.json",
+        "/home/hengyezhu/neuroml-ai/rag_pkg/vector-stores.json",
     )
 
     assistant = NML_Assistant(vs_config_file=vs_config_file, chat_model=chat_model)
@@ -47,10 +50,13 @@ async def lifespan1(app: FastAPI):
     client_url = "http://127.0.0.1:8542/mcp"
     mcp_client = Client(client_url)
 
-    chat_model = os.environ.get("GEN_RAG_CHAT_MODEL", "ollama:qwen3:1.7b")
+    chat_model = os.environ.get(
+        "GEN_RAG_CHAT_MODEL",
+        "vllm:Qwen/Qwen3-14B-GGUF:Q4_K_M",
+    )
     vs_config_file = os.environ.get(
         "GEN_RAG_VS_CONFIG",
-        "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/vector-stores.json",
+        "/home/hengyezhu/neuroml-ai/rag_pkg/vector-stores.json",
     )
 
     # check that client is up

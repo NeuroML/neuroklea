@@ -34,3 +34,9 @@ The following environment variables need to be set:
 
 - `GEN_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
 - `GEN_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
+
+### Supported models
+
+- local Ollama models: include the `ollama:` prefix.
+- local vLLM OpenAI-compatible server: include the `vllm:` prefix. Set `VLLM_BASE_URL` if your server is not at `http://127.0.0.1:8000/v1`.
+- HuggingFace inference providers: include a `huggingface:` prefix. You must obtain a HuggingFace token and set it in the `HF_TOKEN` environment variable.

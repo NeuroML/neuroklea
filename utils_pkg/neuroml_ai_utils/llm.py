@@ -12,10 +12,11 @@ import logging
 import os
 import sys
 import time
+from importlib.util import find_spec
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Type
+from typing import Optional, Type, TypeVar
 
 import ollama
 from langchain.chat_models import init_chat_model
@@ -29,6 +30,47 @@ from langchain_huggingface import (
     HuggingFaceEndpointEmbeddings,
 )
 from pydantic import BaseModel
+
+TSchema = TypeVar("TSchema", bound=BaseModel)
+
+
+def _split_provider_model_name(model_name_full: str, provider: str) -> str:
+    """Return the model name after the provider prefix."""
+    prefix = f"{provider}:"
+    if not model_name_full.lower().startswith(prefix):
+        raise ValueError(
+            f"Model '{model_name_full}' does not use the expected prefix '{prefix}'"
+        )
+
+    model_name = model_name_full.split(":", 1)[1].strip()
+    if not model_name:
+        raise ValueError(
+            f"Model '{model_name_full}' is missing a model name after '{prefix}'"
+        )
+
+    return model_name
+
+
+def _require_langchain_openai() -> None:
+    """Ensure the OpenAI integration package is available."""
+    if find_spec("langchain_openai") is None:
+        raise ImportError(
+            "vLLM support requires the 'langchain-openai' package. "
+            "Please install the updated project dependencies."
+        )
+
+
+def _get_vllm_client_kwargs() -> dict[str, str]:
+    """Return connection settings for a local vLLM OpenAI-compatible server."""
+    base_url = os.environ.get(
+        "VLLM_BASE_URL",
+        os.environ.get("OPENAI_BASE_URL", "http://127.0.0.1:8000/v1"),
+    )
+    api_key = os.environ.get(
+        "VLLM_API_KEY",
+        os.environ.get("OPENAI_API_KEY", "EMPTY"),
+    )
+    return {"base_url": base_url, "api_key": api_key}
 
 
 def check_ollama_model(logger, model, exit=False):
@@ -59,7 +101,7 @@ def check_ollama_model(logger, model, exit=False):
             sys.exit(-1)
 
 
-def parse_output_with_thought[TSchema: BaseModel](
+def parse_output_with_thought(
     message: AIMessage, schema: Type[TSchema]
 ) -> TSchema:
     """Parse AI message with thought to a dict based on given schema"""
@@ -181,13 +223,13 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
 
         """
 
-        model_var = init_chat_model(
-            model_name,
-            model_provider="huggingface",
-            llm=llm,
-            configurable_fields=("temperature"),
-            backend="endpoint",
-        )
+            model_var = init_chat_model(
+                model_name,
+                model_provider="huggingface",
+                llm=llm,
+                configurable_fields=("temperature",),
+                backend="endpoint",
+            )
         """
         assert model_var
 
@@ -197,12 +239,25 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
         else:
             logger.debug(f"Model does not work: {state}, {msg}")
         assert state
+    elif model_name_full.lower().startswith("vllm:"):
+        _require_langchain_openai()
+        model_name = _split_provider_model_name(model_name_full, "vllm")
+        model_var = init_chat_model(
+            model_name,
+            model_provider="openai",
+            configurable_fields=("temperature",),
+            **_get_vllm_client_kwargs(),
+        )
+        assert model_var
+
+        state, msg = check_model_works(model_var, timeout=60)
+        assert state
     else:
         if model_name_full.lower().startswith("ollama:"):
             check_ollama_model(logger, model_name_full.lower().replace("ollama:", ""))
 
         model_var = init_chat_model(
-            model_name_full, configurable_fields=("temperature")
+            model_name_full, configurable_fields=("temperature",)
         )
         assert model_var
 

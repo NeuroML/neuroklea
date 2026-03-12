@@ -13,8 +13,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     nml_mcp_server_url: str = "http://127.0.0.1:8542"
-    nml_ai_code_model: str = "ollama:qwen2.5-coder:3b"
-    nml_ai_reasoning_model: str = "ollama:qwen3:0.6b"
+    nml_ai_code_model: str = "ollama:qwen3.5:35b"
+    nml_ai_reasoning_model: str = "ollama:qwen3.5:35b"
 
 
 nml_code_ai_settings = Settings()

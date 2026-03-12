@@ -6,15 +6,15 @@
             "vector_stores": [
                 {
                     "name": "nml-docs",
-                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-docs_bge-m3.db"
+                    "path": "/home/hengyezhu/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-docs_bge-m3.db"
                 },
                 {
                     "name": "nml-elife",
-                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-elife_bge-m3.db"
+                    "path": "/home/hengyezhu/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-elife_bge-m3.db"
                 },
                 {
                     "name": "nml-schema-docs",
-                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
+                    "path": "/home/hengyezhu/neuroml-ai/rag_pkg/gen_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
                 }
             ]
         }

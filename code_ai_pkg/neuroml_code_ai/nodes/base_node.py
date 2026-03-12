@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from pathlib import Path
-from typing import Any, Type
+from typing import Any, Generic, Type, TypeVar
 
 from langchain_core.prompts import ChatPromptTemplate
 from neuroml_ai_utils.llm import load_prompt
@@ -19,8 +19,9 @@ from pydantic import BaseModel
 
 from neuroml_code_ai import prompts
 
+TSchema = TypeVar("TSchema", bound=BaseModel)
 
-class BaseCodeAINode[TSchema: BaseModel](BaseLLMNode[TSchema]):
+class BaseCodeAINode(BaseLLMNode[TSchema], Generic[TSchema]):
     """Base class for nodes that include memory"""
 
     def __init__(

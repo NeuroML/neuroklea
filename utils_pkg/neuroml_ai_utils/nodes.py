@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
 
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
@@ -19,8 +19,9 @@ from pydantic import BaseModel
 
 from .llm import parse_output_with_thought
 
+TSchema = TypeVar("TSchema", bound=BaseModel)
 
-class BaseLLMNode[TSchema: BaseModel](ABC):
+class BaseLLMNode(ABC, Generic[TSchema]):
     """Abstract base class for LangGraph nodes that use LLMs"""
 
     def __init__(

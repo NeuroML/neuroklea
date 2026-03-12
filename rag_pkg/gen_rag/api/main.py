@@ -22,10 +22,13 @@ from gen_rag.rag import RAG
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
 
-    chat_model = os.environ.get("GEN_RAG_CHAT_MODEL", "ollama:qwen3:1.7b")
+    chat_model = os.environ.get(
+        "GEN_RAG_CHAT_MODEL",
+        "vllm:Qwen/Qwen3-14B-GGUF:Q4_K_M",
+    )
     vs_config_file = os.environ.get(
         "GEN_RAG_VS_CONFIG",
-        "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/vector-stores.json",
+        "/home/hengyezhu/neuroml-ai/rag_pkg/vector-stores.json",
     )
 
     rag = RAG(chat_model=chat_model, vs_config_file=vs_config_file, memory=True)

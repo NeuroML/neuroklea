@@ -55,10 +55,10 @@ class CodeAI(object):
     ):
         """Initialise"""
         self.code_model = (
-            "ollama:qwen2.5-coder:3b" if code_model is None else code_model
+            "ollama:qwen3.5:35b" if code_model is None else code_model
         )
         self.reasoning_model = (
-            "ollama:qwen3:1.7b" if reasoning_model is None else reasoning_model
+            "ollama:qwen3.5:35b" if reasoning_model is None else reasoning_model
         )
         self.code_model_inst = None
         self.reasoning_model_inst = None

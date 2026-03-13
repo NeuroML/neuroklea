@@ -44,7 +44,8 @@ class PerDomainConfig(BaseModel):
 class VectorStoresConfig(BaseModel):
     default_k: int = 5
     k_max: int = 10
-    embedding_model: str  #  = "ollama:bge-m3"
+    pre_prompt: str = ""
+    embedding_model: str  # = "ollama:bge-m3"
     domains: Dict[str, PerDomainConfig]
 
 

@@ -1,5 +1,6 @@
 {
     "embedding_model": "ollama:bge-m3:latest",
+    "pre_prompt": "",
     "domains": {
         "NeuroML": {
             "description": "The NeuroML standard for computational modelling in neuroscience and the associated software ecosystem",

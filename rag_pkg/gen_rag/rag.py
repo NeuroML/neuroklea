@@ -187,6 +187,8 @@ class RAG(object):
         domain_info = self.stores.vs_config.domains
 
         domain_str = ""
+        domain_str += self.stores.vs_config.pre_prompt
+        domain_str += "\n\nCategories:\n\n"
 
         for d, info in domain_info.items():
             desc = info.description
@@ -199,7 +201,7 @@ class RAG(object):
         system_prompt = dedent("""
             You are an expert query classifier.
             Reason about the user's query to classify it into one of the given
-            categories:
+            categories.
 
             """)
         system_prompt += domain_str + "\n- undefined: otherwise\n\n"
@@ -319,8 +321,7 @@ class RAG(object):
         output = self.c_model.invoke(
             prompt, config={"configurable": {"temperature": 0.3}}
         )
-        # self.logger.debug(f"{output =}")
-        self.logger.debug(output)
+        self.logger.debug(f"{output =}")
         thought, answer = split_output_by_section(output.content, "<think>", "</think>")
 
         messages = state.messages

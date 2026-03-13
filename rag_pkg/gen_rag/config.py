@@ -15,4 +15,3 @@ class AppConfig(BaseSettings):
     guard_model: str = "ollama:llama-guard3:1b"
     chat_model: str = "ollama:qwen2.5-coder:3b"
     vs_config_file: str = "vector_stores.json"
-    answer_non_domain: str = "yes"

@@ -322,7 +322,15 @@ class RAG(object):
             prompt, config={"configurable": {"temperature": 0.3}}
         )
         self.logger.debug(f"{output =}")
-        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
+
+        answer = ""
+        if self.stores.answer_non_domain.enabled:
+            answer += "\n\n" + self.stores.answer_non_domain.warning + "\n\n"
+
+        thought, answer_text = split_output_by_section(
+            output.content, "<think>", "</think>"
+        )
+        answer += answer_text
 
         messages = state.messages
         output.content = answer
@@ -741,10 +749,10 @@ class RAG(object):
         self.logger.debug(f"{state =}")
         query_domain = state.query_domain
 
-        if query_domain in self.stores.domains:
+        if query_domain in self.stores.domains and query_domain != "undefined":
             return "generate_retrieval_query"
         else:
-            if self.config.answer_non_domain == "yes":
+            if self.stores.answer_non_domain.enabled:
                 return "answer_general_question"
             else:
                 return "refuse_to_answer"

@@ -77,6 +77,38 @@ class NML_Assistant(object):
             "reference_material": {},
         }
 
+    def _guard_node(self, state: AssistantState) -> str:
+        """LLM decides what type the user query is"""
+        assert self.g_model
+        self.logger.debug(f"{state =}")
+
+        messages = state.messages
+        messages.append(HumanMessage(content=state.query))
+
+        system_prompt = ""
+
+        prompt_template = ChatPromptTemplate(
+            [("system", system_prompt), ("human", "User query: {query}")]
+        )
+
+        prompt = prompt_template.invoke({"query": state.query})
+        self.logger.debug(f"{prompt = }")
+
+        output = self.g_model.invoke(
+            prompt, config={"configurable": {"temperature": 0.3}}
+        )
+
+        if "unsafe" in output.content:
+            return "unsafe"
+        else:
+            return "safe"
+
+    # Note: does not prevent DDoS attacks. Do we want to exit if the user query is unsafe?
+    def _decline_to_respond_node(self, state: AssistantState) -> dict:
+        return {
+            "message_for_user": "I cannot respond to this query. Please try another.",
+        }
+
     def _classify_query_node(self, state: AssistantState) -> dict:
         """LLM decides what type the user query is"""
         assert self.c_model
@@ -201,7 +233,9 @@ class NML_Assistant(object):
         """Create the LangGraph"""
         self.workflow = StateGraph(AssistantState)
         self.workflow.add_node("init_state", self._init_rag_state_node)
+        self.workflow.add_node("guard", self._guard_node)
         self.workflow.add_node("classify_query", self._classify_query_node)
+        self.workflow.add_node("decline_to_respond", self._decline_to_respond_node)
 
         self._rag_node = RAG(memory=False)
         self._rag_node_graph = await self._rag_node.get_graph()
@@ -209,8 +243,16 @@ class NML_Assistant(object):
         self.workflow.add_node("code_graph", self._code_node)
 
         self.workflow.add_edge(START, "init_state")
-        self.workflow.add_edge("init_state", "classify_query")
+        self.workflow.add_edge("init_state", "guard")
 
+        self.workflow.add_conditional_edges(
+            "guard",
+            {
+                "unsafe": "decline_to_respond",
+                "safe": "classify_query",
+                "task": "classify_query",
+            },
+        )
         self.workflow.add_conditional_edges(
             "classify_query",
             self._route_query_node,
@@ -221,6 +263,7 @@ class NML_Assistant(object):
             },
         )
         self.workflow.add_edge("code_graph", END)
+        self.workflow.add_edge("decline_to_respond", END)
 
         self.graph = self.workflow.compile(checkpointer=self.checkpointer)
         if not os.environ.get("RUNNING_IN_DOCKER", 0):

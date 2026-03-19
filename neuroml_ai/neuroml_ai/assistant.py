@@ -123,7 +123,7 @@ class NML_Assistant(object):
 
             Valid categories (in order of priority):
 
-            - question: The query is a request for information about NeuroML.
+            - question: The query is a request for information.
             - task: The user is asking you to perform an action. The action will be performed in a later step.
 
             Rules:
@@ -137,23 +137,13 @@ class NML_Assistant(object):
 
             Examples:
 
-            - "How do I get learn NeuroML?": {{"query_type": "question"}}
-            - "How do I get started with NeuroML?": {{"query_type": "question"}}
-            - "How do I define ion channels in NeuroML?": {{"query_type": "question"}}
-            - "Generate NeuroML code for a neuron": {{"query_type": "task"}}
+            - "What is a neuron?": {{"query_type": "question"}}
+            - "What is the capital of France?": {{"query_type": "question"}}
+            - "What are we talking about?": {{"query_type": "question"}}
             - "Run this code": {{"query_type": "task"}}
             - "Run this command": {{"query_type": "task"}}
             - "Run this simulation": {{"query_type": "task"}}
-            - "What is the capital of France?": {{"query_type": "question"}}
-            - "What are we talking about?": {{"query_type": "question"}}
             """)
-
-        # only if neuroml is not mentioned, do we even bother with non neuroml
-        # classifications
-        # if "neuroml" not in state.query.lower():
-        #     system_prompt += dedent("""
-        #         - If the query is unrelated to NeuroML, only then respond "general_question".
-        #         """)
 
         system_prompt += add_memory_to_prompt(
             messages=state.messages,

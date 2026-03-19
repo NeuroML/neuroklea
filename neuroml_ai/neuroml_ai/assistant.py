@@ -11,6 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 import os
 import sys
+from pathlib import Path
 from textwrap import dedent
 
 from gen_rag.rag import RAG
@@ -68,6 +69,16 @@ class NML_Assistant(object):
         stderr_handler.addFilter(LoggerNotInfoFilter())
         stderr_handler.setFormatter(logger_formatter_other)
         self.logger.addHandler(stderr_handler)
+
+    def _load_config(self):
+        """Load configuration from file"""
+        cfg_path = Path(self.config_file)
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
+
+        self.config = AppConfig(_env_file=self.config_file)
+        self.logger.debug(f"Config file:\n{self.config_file}")
+        self.logger.debug(f"Config:\n{self.config}")
 
     def _init_rag_state_node(self, state: AssistantState) -> dict:
         """Initialise, reset state before next iteration"""
@@ -215,6 +226,7 @@ class NML_Assistant(object):
 
     async def setup(self):
         """Set up basics."""
+        self._load_config()
         self._setup_guard_model()
         self._setup_chat_model()
         await self._create_graph()

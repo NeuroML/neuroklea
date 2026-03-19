@@ -26,8 +26,8 @@ class LoggerInfoFilter(logging.Filter):
 
 
 logger_formatter_info = logging.Formatter(
-    "%(asctime) %(name)s (%(levelname)s) >>> %(message)s\n\n"
+    "%(asctime)s %(name)s (%(levelname)s) >>> %(message)s\n\n"
 )
 logger_formatter_other = logging.Formatter(
-    "%(asctime) %(name)s (%(levelname)s) in '%(funcName)s' >>> %(message)s\n\n"
+    "%(asctime)s %(name)s (%(levelname)s) in '%(funcName)s' >>> %(message)s\n\n"
 )

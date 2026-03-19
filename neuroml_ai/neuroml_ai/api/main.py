@@ -23,13 +23,7 @@ from neuroml_ai.assistant import NML_Assistant
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
 
-    chat_model = os.environ.get("GEN_RAG_CHAT_MODEL", "ollama:qwen3:0.6b")
-    vs_config_file = os.environ.get(
-        "GEN_RAG_VS_CONFIG",
-        "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/neuroml-ai/rag_pkg/vector-stores.json",
-    )
-
-    assistant = NML_Assistant(vs_config_file=vs_config_file, chat_model=chat_model)
+    assistant = NML_Assistant()
     await assistant.setup()
 
     app.state.assistant = assistant

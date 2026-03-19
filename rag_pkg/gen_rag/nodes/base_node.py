@@ -32,7 +32,6 @@ class BaseRAGNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         human_prompt_file: str,
         memory: bool = False,
     ):
-        """Initialize with memory support"""
         super().__init__(logger, model, temperature, output_schema=output_schema)
 
         self.system_prompt_file = system_prompt_file

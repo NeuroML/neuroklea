@@ -4,7 +4,7 @@ MCP server for NeuroML code generation
 
 File: neuroml_mcp/server/main.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
@@ -14,10 +14,11 @@ from textwrap import dedent
 import typer
 from fastmcp import FastMCP
 from fastmcp_docs import FastMCPDocs
-from neuroml_mcp.tools import code_tools
-from neuroml_mcp.utils import register_tools
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse
+
+from neuroml_mcp.tools import code_tools
+from neuroml_mcp.utils import register_tools
 
 mcp_app = typer.Typer()
 

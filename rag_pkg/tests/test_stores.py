@@ -4,7 +4,7 @@ Test vector store related code.
 
 File: tests/test_stores.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 

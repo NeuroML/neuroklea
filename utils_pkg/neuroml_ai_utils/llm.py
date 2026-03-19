@@ -4,7 +4,7 @@ LLM related utils
 
 File: gen_rag/llm.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 

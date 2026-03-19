@@ -4,7 +4,7 @@ Streamlit chat app interface for RAG
 
 File: gen_rag/ui/streamlit_ui.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 

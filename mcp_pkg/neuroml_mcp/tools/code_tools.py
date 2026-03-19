@@ -6,7 +6,7 @@ Note that docstrings here should be written for the LLM to read.
 
 File: neuroml_mcp/tools/code_tools.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 

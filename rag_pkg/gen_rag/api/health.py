@@ -4,7 +4,7 @@ Health check end points
 
 File: rag_pkg/gen_rag/api/health.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
@@ -12,9 +12,11 @@ from fastapi import APIRouter, Request, Response, status
 
 health_router = APIRouter()
 
+
 @health_router.get("/health/live")
 async def liveness():
     return {"status": "alive"}
+
 
 @health_router.get("/health/ready")
 async def readiness(request: Request):
@@ -24,6 +26,5 @@ async def readiness(request: Request):
         return {"status": "ready"}
 
     return Response(
-        content="Service not ready",
-        status_code=status.HTTP_503_SERVICE_UNAVAILABLE
+        content="Service not ready", status_code=status.HTTP_503_SERVICE_UNAVAILABLE
     )

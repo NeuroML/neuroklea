@@ -4,7 +4,7 @@ NeuroML CodeAI implementation
 
 File: code_ai.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 

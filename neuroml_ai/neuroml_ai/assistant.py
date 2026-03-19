@@ -30,6 +30,7 @@ from neuroml_ai_utils.logging import (
     logger_formatter_other,
 )
 
+from .config import AppConfig
 from .schemas import AssistantState, QueryTypeSchema
 
 
@@ -38,14 +39,12 @@ class NML_Assistant(object):
 
     def __init__(
         self,
-        vs_config_file: str,
-        chat_model: str,
         logging_level: int = logging.DEBUG,
     ):
-        self.chat_model = chat_model
-        self.model = None
-
-        self.vs_config_file = vs_config_file
+        self.g_model = None
+        self.c_model = None
+        self.config_file = os.getenv("NML_AI_CONFIG_FILE", "assistant.env")
+        self.config: AppConfig
 
         self.checkpointer = InMemorySaver()
 
@@ -80,7 +79,7 @@ class NML_Assistant(object):
 
     def _classify_query_node(self, state: AssistantState) -> dict:
         """LLM decides what type the user query is"""
-        assert self.model
+        assert self.c_model
         self.logger.debug(f"{state =}")
 
         messages = state.messages
@@ -135,7 +134,7 @@ class NML_Assistant(object):
         )
 
         # can use | to merge these lines
-        query_node_llm = self.model.with_structured_output(
+        query_node_llm = self.c_model.with_structured_output(
             QueryTypeSchema, method="json_schema", include_raw=True
         )
         prompt = prompt_template.invoke({"query": state.query})
@@ -186,10 +185,15 @@ class NML_Assistant(object):
 
     def _setup_chat_model(self):
         """Set up the LLM chat model"""
-        self.model = setup_llm(self.chat_model, self.logger)
+        self.c_model = setup_llm(self.config.chat_model, self.logger)
+
+    def _setup_guard_model(self):
+        """Set up the LLM guard model"""
+        self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     async def setup(self):
         """Set up basics."""
+        self._setup_guard_model()
         self._setup_chat_model()
         await self._create_graph()
 
@@ -199,9 +203,7 @@ class NML_Assistant(object):
         self.workflow.add_node("init_state", self._init_rag_state_node)
         self.workflow.add_node("classify_query", self._classify_query_node)
 
-        self._rag_node = RAG(
-            vs_config_file=self.vs_config_file, chat_model=self.chat_model, memory=False
-        )
+        self._rag_node = RAG(memory=False)
         self._rag_node_graph = await self._rag_node.get_graph()
         self.workflow.add_node("rag_graph", self._rag_node_graph)
         self.workflow.add_node("code_graph", self._code_node)

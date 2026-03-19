@@ -53,7 +53,6 @@ class RAG(object):
     ):
         """Initialise"""
         self.c_model = None
-        self.g_model = None
         self.config_file = os.getenv("GEN_RAG_CONFIG_FILE", "rag.env")
         self.config: AppConfig
 
@@ -108,7 +107,6 @@ class RAG(object):
 
         self._load_config()
         self.stores = Vector_Stores(vs_config_file=self.config.vs_config_file)
-        self._setup_guard_model()
         self._setup_chat_model()
         self.stores.setup()
 
@@ -130,10 +128,6 @@ class RAG(object):
     def _setup_chat_model(self):
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)
-
-    def _setup_guard_model(self):
-        """Set up the LLM chat model"""
-        self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     def _summarise_history_node(self, state: RAGState) -> dict:
         """Clean ups after every round of conversation"""

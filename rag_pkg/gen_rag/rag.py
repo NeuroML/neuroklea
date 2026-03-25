@@ -322,8 +322,15 @@ class RAG(object):
 
         answer = ""
         # add warning if we're falling back to training data for a domain query
-        if self.config.non_domain_chat and state.query_domain != "undefined":
-            answer += "\n\n" + self.stores.vs_config.non_domain_answer.warning + "\n\n"
+        if (
+            self.stores.vs_config.fallback_to_training_data
+            and state.query_domain != "undefined"
+        ):
+            answer += (
+                "\n\n"
+                + self.stores.vs_config.fallback_to_training_data.warning
+                + "\n\n"
+            )
 
         thought, answer_text = split_output_by_section(
             output.content, "<think>", "</think>"

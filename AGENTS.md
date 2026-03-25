@@ -179,6 +179,10 @@ from neuroml_mcp.utils import register_all_tools
 
 ## Development Workflow
 
+### Session Logging
+
+At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Use the template in `.agents/README.md`.
+
 ### Pre-commit Requirements
 - All code must pass ruff linting and formatting
 - Import sorting is mandatory

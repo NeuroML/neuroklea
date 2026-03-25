@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 from fastmcp.client.client import CallToolResult
 from langchain_core.messages import AnyMessage
 from pydantic import BaseModel, Field
-from typing_extensions import Any, Dict, List, Literal, Optional, Tuple
+from typing_extensions import Any, Dict, List, Literal, Optional
 
 
 class ToolCallSchema(BaseModel):

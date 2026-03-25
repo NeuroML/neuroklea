@@ -16,13 +16,12 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Type, Union
+from typing import Optional, Type
 
 import ollama
 from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
 from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.messages.base import BaseMessage
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import (

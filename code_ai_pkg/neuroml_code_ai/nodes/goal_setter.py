@@ -10,7 +10,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from typing import Any, Dict
 
-from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
 
 from neuroml_code_ai.nodes.base_node import BaseCodeAINode

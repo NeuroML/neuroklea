@@ -318,8 +318,8 @@ class RAG(object):
         self.logger.debug(f"{output =}")
 
         answer = ""
-        if self.stores.answer_non_domain.enabled:
-            answer += "\n\n" + self.stores.answer_non_domain.warning + "\n\n"
+        if self.stores.config.vs_non_domain_answer.enabled:
+            answer += "\n\n" + self.stores.vs_config.non_domain_answer.warning + "\n\n"
 
         thought, answer_text = split_output_by_section(
             output.content, "<think>", "</think>"
@@ -746,7 +746,7 @@ class RAG(object):
         if query_domain in self.stores.domains and query_domain != "undefined":
             return "generate_retrieval_query"
         else:
-            if self.stores.answer_non_domain.enabled:
+            if self.stores.vs_config.non_domain_answer.enabled:
                 return "answer_general_question"
             else:
                 return "refuse_to_answer"

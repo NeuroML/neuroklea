@@ -1,9 +1,9 @@
 {
     "embedding_model": "ollama:bge-m3:latest",
     "pre_prompt": "",
-    "non_domain_answer": {
-        "enabled": false,
-        "warning": ""
+    "fallback_to_training_data": {
+        "enabled": true,
+        "warning": "Note: information on the query could not be found in the vector stores; this answer is generated from the LLM's training data and should be verified."
     },
     "domains": {
         "NeuroML": {

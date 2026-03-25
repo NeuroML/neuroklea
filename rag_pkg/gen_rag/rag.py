@@ -163,6 +163,7 @@ class RAG(object):
 
     def _init_rag_state_node(self, state: RAGState) -> dict:
         """Initialise, reset state before next iteration"""
+        self.modify_query = False
         return {
             "query_domain": "undefined",
             "text_response_eval": EvaluateAnswerSchema(),
@@ -270,9 +271,11 @@ class RAG(object):
         }
 
     def _refuse_to_answer_node(self, state: RAGState) -> dict:
-        return {
-            "message_for_user": "I cannot answer this query as it does not fall into my allowed domains. Please try another query."
-        }
+        msg = "Sorry. I cannot answer this query as it does not fall into my permitted domains. Available domains are:\n"
+        msg += "\n- ".join([""] + self.stores.domains)
+        msg += "\n\n\nPlease try another query."
+
+        return {"message_for_user": msg}
 
     def _answer_general_question_node(self, state: RAGState) -> dict:
         """Answer a general question"""
@@ -318,7 +321,8 @@ class RAG(object):
         self.logger.debug(f"{output =}")
 
         answer = ""
-        if self.stores.config.vs_non_domain_answer.enabled:
+        # add warning if we're falling back to training data for a domain query
+        if self.config.non_domain_chat and state.query_domain != "undefined":
             answer += "\n\n" + self.stores.vs_config.non_domain_answer.warning + "\n\n"
 
         thought, answer_text = split_output_by_section(
@@ -708,9 +712,13 @@ class RAG(object):
             and resp.conciseness >= 0.5
         ):
             self.stores.reset_k()
+            self.logger.debug("returning: continue")
             return "continue"
-        elif next_step == "modify_query" or resp.coverage < 0.3:
+        elif not self.modify_query and (
+            next_step == "modify_query" or resp.coverage < 0.3
+        ):
             self.modify_query = True
+            self.logger.debug("returning: modify_query")
             return "modify_query"
         elif next_step == "retrieve_more_info" or (
             resp.coverage >= 0.5 and resp.confidence < 0.5
@@ -718,12 +726,24 @@ class RAG(object):
             # limit what max k we can have, otherwise, we end up pulling the
             # whole store..
             if self.stores.inc_k():
+                self.logger.debug("returning: retrieve_more_info")
                 return "retrieve_more_info"
             else:
                 # we are already at max context, so we need to modify the query
-                # to get a better result
-                self.modify_query = True
-                return "modify_query"
+                # to get a better result if possible
+                if not self.modify_query:
+                    self.modify_query = True
+                    self.logger.debug("returning: modify_query")
+                    return "modify_query"
+                # if we've already modified query, fallback to training data if
+                # possible, otherwise ask for clarification
+                else:
+                    if self.stores.vs_config.fallback_to_training_data:
+                        self.logger.debug("returning: fallback")
+                        return "fallback"
+                    else:
+                        self.logger.debug("returning: undefined")
+                        return "undefined"
         elif next_step == "rewrite_answer" or (
             resp.coverage >= 0.5
             and resp.confidence >= 0.5
@@ -734,9 +754,16 @@ class RAG(object):
                 and resp.conciseness < 0.5
             )
         ):
+            self.logger.debug("returning: rewrite_answer")
             return "rewrite_answer"
+        # all other cases: fallback to training data if enabled, otherwise ask for clarification
         else:
-            return "undefined"
+            if self.stores.vs_config.fallback_to_training_data:
+                self.logger.debug("returning: fallback")
+                return "fallback"
+            else:
+                self.logger.debug("returning: undefined")
+                return "undefined"
 
     def _route_query_domain_node(self, state: RAGState) -> str:
         """Route the query depending on LLM's result"""
@@ -744,12 +771,12 @@ class RAG(object):
         query_domain = state.query_domain
 
         if query_domain in self.stores.domains and query_domain != "undefined":
-            return "generate_retrieval_query"
+            return "domain_query"
         else:
-            if self.stores.vs_config.non_domain_answer.enabled:
-                return "answer_general_question"
+            if self.config.non_domain_chat:
+                return "non_domain_query"
             else:
-                return "refuse_to_answer"
+                return "non_domain_refuse"
 
     def _give_domain_answer_to_user_node(self, state: RAGState) -> dict:
         """Return the answer message to the user"""
@@ -809,11 +836,16 @@ class RAG(object):
             "classify_question_domain",
             self._route_query_domain_node,
             {
-                "generate_retrieval_query": "generate_retrieval_query",
-                "answer_general_question": "answer_general_question",
-                "refuse_to_answer": "refuse_to_answer",
+                "domain_query": "generate_retrieval_query",
+                "non_domain_query": "answer_general_question",
+                "non_domain_refuse": "refuse_to_answer",
             },
         )
+        self.workflow.add_edge(
+            "generate_retrieval_query", "generate_answer_from_context"
+        )
+        self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")
+
         self.workflow.add_conditional_edges(
             "evaluate_answer",
             self._route_answer_evaluator_node,
@@ -822,14 +854,10 @@ class RAG(object):
                 "retrieve_more_info": "generate_answer_from_context",
                 "rewrite_answer": "generate_answer_from_context",
                 "modify_query": "generate_retrieval_query",
+                "fallback": "answer_general_question",
                 "undefined": "ask_user_for_clarification",
             },
         )
-
-        self.workflow.add_edge(
-            "generate_retrieval_query", "generate_answer_from_context"
-        )
-        self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")
 
         if self.memory:
             self.workflow.add_edge("give_domain_answer_to_user", "summarise_history")

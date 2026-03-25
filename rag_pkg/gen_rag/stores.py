@@ -30,7 +30,7 @@ logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
-class NonDomainAnswer(BaseModel):
+class FallbackConfig(BaseModel):
     enabled: bool = False
     warning: str = ""
 
@@ -52,7 +52,7 @@ class VectorStoresConfig(BaseModel):
     pre_prompt: str = ""
     embedding_model: str  # = "ollama:bge-m3"
     domains: Dict[str, PerDomainConfig]
-    non_domain_answer: NonDomainAnswer
+    fallback_to_training_data: FallbackConfig
 
 
 class Vector_Stores(object):

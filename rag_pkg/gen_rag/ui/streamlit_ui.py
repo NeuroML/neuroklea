@@ -47,14 +47,13 @@ def runner():
         st.session_state.history.append({"role": "user", "content": query})
 
         with st.chat_message("assistant"):
-            # stream = st.session_state.nml_ai.run_graph_stream(query)
-            # response = st.write_stream(stream)
             with st.spinner("Working..."):
+                response_result = ""
                 with httpx.Client(timeout=None) as client:
                     try:
                         response = client.post(
                             f"{url}/query",
-                            data={
+                            json={
                                 "query": query,
                                 "session_id": st.session_state.session_id,
                             },
@@ -64,9 +63,9 @@ def runner():
                     except httpx.RequestError as e:
                         st.error("An error occured. Please try again")
                         st.error(f"```\n{e}\n```")
-        st.session_state.history.append(
-            {"role": "assistant", "content": response_result}
-        )
+                st.session_state.history.append(
+                    {"role": "assistant", "content": response_result}
+                )
 
 
 if __name__ == "__main__":

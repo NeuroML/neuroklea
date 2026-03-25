@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import asyncio
 import subprocess
+import uuid
 from contextlib import chdir
 from pathlib import Path
 
@@ -41,7 +42,8 @@ def nml_ai_cli(
             """Cli main async"""
             from yaspin import yaspin
 
-            # wait for API to be ready
+            session_id = str(uuid.uuid4())
+
             with yaspin(text="Waiting for API..."):
                 response = await check_api_is_ready(f"{url}/health/ready")
 
@@ -54,7 +56,7 @@ def nml_ai_cli(
                         async with httpx.AsyncClient() as client:
                             response = await client.post(
                                 f"{url}/query",
-                                params={"query": single_query},
+                                json={"query": single_query, "session_id": session_id},
                                 timeout=None,
                             )
                             response_result = response.json().get("result")
@@ -67,7 +69,9 @@ def nml_ai_cli(
                     with yaspin(text="Working ..."):
                         async with httpx.AsyncClient() as client:
                             response = await client.post(
-                                f"{url}/query", params={"query": query}, timeout=None
+                                f"{url}/query",
+                                json={"query": query, "session_id": session_id},
+                                timeout=None,
                             )
                             response_result = response.json().get("result")
                             print(f"NeuroML-AI (AI) >>> {response_result}\n\n")

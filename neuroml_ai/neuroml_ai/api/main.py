@@ -11,6 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import os
 from contextlib import asynccontextmanager
 
+from cachetools import TTLCache
 from fastapi import FastAPI
 from fastmcp import Client
 
@@ -22,6 +23,7 @@ from neuroml_ai.assistant import NML_Assistant
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
+    app.state.sessions = TTLCache(maxsize=1000, ttl=7200)
 
     assistant = NML_Assistant()
     await assistant.setup()

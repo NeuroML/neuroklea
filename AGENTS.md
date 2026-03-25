@@ -190,6 +190,8 @@ At the start of each session, check the `.agents/` folder for previous session l
 - Line endings must be Unix format
 
 ### Git Conventions
+- Never commit without explicit user approval
+- Flag large changes and suggest breaking them into smaller, focused commits for provenance and clarity
 - Use conventional commit messages when possible
 - Include relevant issue numbers in commit messages
 - Keep commits focused and atomic

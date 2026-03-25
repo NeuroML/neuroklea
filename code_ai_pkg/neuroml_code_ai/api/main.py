@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from contextlib import asynccontextmanager
 
+from cachetools import TTLCache
 from fastapi import FastAPI
 from fastmcp import Client
 
@@ -22,6 +23,7 @@ from neuroml_code_ai.code_ai import CodeAI
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.is_ready = False
+    app.state.sessions = TTLCache(maxsize=1000, ttl=7200)
 
     client_url = f"{nml_code_ai_settings.nml_mcp_server_url}/mcp"
     mcp_client = Client(client_url)

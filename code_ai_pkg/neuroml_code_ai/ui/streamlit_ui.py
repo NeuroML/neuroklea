@@ -9,6 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import asyncio
+import uuid
 
 import httpx
 import streamlit as st
@@ -18,18 +19,23 @@ from neuroml_ai_utils.api import check_api_is_ready
 def runner():
     """Main runner for streamlit app"""
     url = "http://127.0.0.1:8005"
-    with st.spinner("Waiting for backend..."):
-        try:
+    try:
+        with st.spinner("Waiting for backend..."):
             asyncio.run(check_api_is_ready(f"{url}/health/ready"))
-        except Exception as e:
-            st.error(f"Could not connect to backend: {e}")
-            st.stop
+    except Exception as e:
+        st.error(f"Could not connect to backend: {e}")
+        st.stop()
 
     st.title("NeuroML AI coding assistant")
+    st.info(
+        "The answers are generated using an LLM. They may be inaccurate. Please check with the documentation at https://docs.neuroml.org."
+    )
 
     # get history and re-write it
     if "history" not in st.session_state:
         st.session_state.history = []
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
 
     for i, message in enumerate(st.session_state.history):
         with st.chat_message(message["role"]):
@@ -41,13 +47,22 @@ def runner():
         st.session_state.history.append({"role": "user", "content": query})
 
         with st.chat_message("assistant"):
-            # stream = st.session_state.nml_ai.run_graph_stream(query)
-            # response = st.write_stream(stream)
             with st.spinner("Working..."):
+                response_result = ""
                 with httpx.Client(timeout=None) as client:
-                    response = client.post(f"{url}/query", params={"query": query})
-                    response_result = response.json().get("result")
-                    st.markdown(response_result)
+                    try:
+                        response = client.post(
+                            f"{url}/query",
+                            json={
+                                "query": query,
+                                "session_id": st.session_state.session_id,
+                            },
+                        )
+                        response_result = response.json().get("result")
+                        st.markdown(response_result)
+                    except httpx.RequestError as e:
+                        st.error("An error occured. Please try again")
+                        st.error(str(e))
         st.session_state.history.append(
             {"role": "assistant", "content": response_result}
         )

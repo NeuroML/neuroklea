@@ -52,7 +52,7 @@ class VectorStoresConfig(BaseModel):
     pre_prompt: str = ""
     embedding_model: str  # = "ollama:bge-m3"
     domains: Dict[str, PerDomainConfig]
-    answer_non_domain: NonDomainAnswer
+    non_domain_answer: NonDomainAnswer
 
 
 class Vector_Stores(object):

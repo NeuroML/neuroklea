@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Streamlit chat app interface for RAG
+Streamlit chat app interface for code_ai
 
-File: gen_rag/ui/streamlit_ui.py
+File: neuroml_code_ai/ui/streamlit_ui.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

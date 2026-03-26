@@ -14,7 +14,7 @@ import sys
 from functools import cached_property
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Optional
+from typing import Any
 
 from fastmcp import Client
 
@@ -34,6 +34,7 @@ from neuroml_ai_utils.logging import (
 from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
 
+from .api.conf import AppConfig
 from .schemas import CodeAIState, GoalSchema, PlanSchema, ToolCallSchema
 
 logging.basicConfig()
@@ -47,29 +48,23 @@ class CodeAI(object):
 
     def __init__(
         self,
-        mcp_client: Client,
-        code_model: Optional[str] = None,
-        reasoning_model: Optional[str] = None,
         logging_level: int = logging.DEBUG,
         memory: bool = True,
     ):
         """Initialise"""
-        self.code_model = (
-            "ollama:qwen2.5-coder:3b" if code_model is None else code_model
-        )
-        self.reasoning_model = (
-            "ollama:qwen3:1.7b" if reasoning_model is None else reasoning_model
-        )
-        self.code_model_inst = None
-        self.reasoning_model_inst = None
+        self.c_model = None
+        self.r_model = None
+        self.mcp_client: Client
 
         # number of conversations after which to summarise
         # no need to summarise after each
         # 5 rounds: 10 messages
         self.num_recent_messages = 10
 
-        self.mcp_client: Client = mcp_client
         self.mcp_tools = None
+
+        self.config_file = os.getenv("CODE_AI_CONFIG_FILE", "code_ai.env")
+        self.config: AppConfig
 
         self.logger = logging.getLogger("NeuroML-AI-codegen")
         self.logger.setLevel(logging_level)
@@ -90,18 +85,13 @@ class CodeAI(object):
     async def setup(self):
         """Set up basics."""
 
+        self._load_config()
         self._setup_models()
+        self._create_mcp_client()
 
-        if self.mcp_client:
-            async with self.mcp_client:
-                self.mcp_tools = await self.mcp_client.list_tools()
-            # Persists because it's only holding the return value
-            # To make the call, though, we will need the context again
-            self.logger.debug(f"{self.mcp_tools =}")
-        else:
-            self.logger.warning(
-                "No MCP client available. Functions requiring MCP server will fail."
-            )
+        async with self.mcp_client:
+            self.mcp_tools = await self.mcp_client.list_tools()
+        self.logger.debug(f"{self.mcp_tools =}")
 
         self.logger.debug(f"{self.tool_description =}")
         await self._create_graph()
@@ -139,8 +129,25 @@ class CodeAI(object):
 
     def _setup_models(self):
         """Set up the LLM chat model"""
-        self.code_model_inst = setup_llm(self.code_model, self.logger)
-        self.reasoning_model_inst = setup_llm(self.reasoning_model, self.logger)
+        self.c_model = setup_llm(self.config.code_model, self.logger)
+        self.r_model = setup_llm(self.config.reasoning_model, self.logger)
+
+    def _load_config(self):
+        """Load configuration from file"""
+        cfg_path = Path(self.config_file)
+        if not cfg_path.exists():
+            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
+
+        self.config = AppConfig(_env_file=self.config_file)
+        assert self.config
+        self.logger.debug(f"Config file: {self.config_file}")
+        self.logger.debug(f"Config: {self.config}")
+
+    def _create_mcp_client(self):
+        """Create MCP client from config"""
+        client_url = f"{self.config.mcp_server_url}/mcp"
+        self.mcp_client = Client(client_url)
+        assert self.mcp_client
 
     def _init_graph_state_node(self, state: CodeAIState) -> dict:
         """Initialise, reset state before next iteration"""
@@ -153,7 +160,7 @@ class CodeAI(object):
         }
 
     async def _planner_node(self, state: CodeAIState) -> dict:
-        my_model = self.reasoning_model_inst
+        my_model = self.r_model
         assert my_model
         self.logger.debug(f"{state =}")
 
@@ -226,7 +233,7 @@ class CodeAI(object):
         return {"plan": plan, "message_for_user": plan_summary}
 
     async def _tool_picker_node(self, state: CodeAIState) -> dict:
-        assert self.code_model_inst
+        assert self.c_model
         self.logger.debug(f"{state =}")
         current_step_index = state.plan.current_step_index
         current_step = state.plan.step_list[current_step_index]
@@ -242,7 +249,7 @@ class CodeAI(object):
         prompt_template = ChatPromptTemplate([("system", system_prompt)])
 
         # can use | to merge these lines
-        planner_llm = self.code_model_inst.with_structured_output(
+        planner_llm = self.c_model.with_structured_output(
             OutputSchema, method="json_schema", include_raw=True
         )
         prompt = prompt_template.invoke(
@@ -349,7 +356,7 @@ class CodeAI(object):
 
         self._goal_setter_node = GoalSetterNode(
             logger=self.logger,
-            model=self.reasoning_model_inst,
+            model=self.r_model,
             temperature=0.01,
             output_schema=GoalSchema,
             system_prompt_file="goal",

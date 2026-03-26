@@ -99,6 +99,7 @@ class RAG(object):
             raise FileNotFoundError(f"Could not find config file: {self.config_file}")
 
         self.config = AppConfig(_env_file=self.config_file)
+        assert self.config
         self.logger.debug(f"Config file:\n{self.config_file}")
         self.logger.debug(f"Config:\n{self.config}")
 

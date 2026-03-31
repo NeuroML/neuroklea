@@ -41,6 +41,10 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
         """Template method defining standard execution flow"""
         self.logger.debug(f"{state =}")
 
+        if not self._pre_exec(state):
+            self.logger.debug("Pre-exec check failed, skipping execution")
+            return {}
+
         human_prompt = self._get_human_prompt(state)
         system_prompt = self._get_system_prompt(state)
         template = self._create_prompt_template(system_prompt, human_prompt)
@@ -55,6 +59,14 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
         self.logger.debug(f"{state_updates =}")
 
         return state_updates
+
+    def _pre_exec(self, state: BaseModel) -> bool:
+        """Pre-execution check. Override to conditionally skip node execution.
+
+        Return False to skip execution (returns empty dict).
+        Return True (default) to proceed with the standard flow.
+        """
+        return True
 
     # but can be overridden
     def _get_output_schema(self) -> Optional[Type[TSchema]]:

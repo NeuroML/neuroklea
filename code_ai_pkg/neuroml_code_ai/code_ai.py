@@ -24,9 +24,10 @@ from neuroml_ai_utils.stores import VectorStores
 from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
 from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
+from neuroml_code_ai.nodes.planner import PlannerNode
 
 from .api.conf import AppConfig
-from .schemas import CodeAIState, GoalSchema, PlanSchema, ToolCallSchema
+from .schemas import CodeAIState, GoalSchema, ToolCallSchema
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
@@ -111,79 +112,6 @@ class CodeAI(BaseLangGraph):
                 )
 
         return description
-
-    async def _planner_node(self, state: CodeAIState) -> dict:
-        my_model = self.r_model
-        assert my_model
-        self.logger.debug(f"{state =}")
-
-        system_prompt = load_prompt(
-            prompt_name="planner",
-            prompt_registry_location=Path(prompts.__file__).parent,
-        )
-        self.logger.debug(f"{system_prompt = }")
-
-        OutputSchema = PlanSchema
-        self.logger.debug(f"{convert_to_json_schema(OutputSchema) =}")
-
-        prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", "User query: {query}")]
-        )
-
-        # can use | to merge these lines
-        planner_llm = my_model.with_structured_output(
-            OutputSchema, method="json_schema", include_raw=True
-        )
-        prompt = prompt_template.invoke(
-            {
-                "query": state.query,
-                "goal": state.goal,
-                "step_list": state.plan.step_list,
-                "current_step_index": state.plan.current_step_index,
-                "artefacts": state.artefacts,
-                "observations": state.tool_responses,
-                "tools_description": self.tool_description,
-                "output_schema": convert_to_json_schema(OutputSchema),
-            }
-        )
-
-        self.logger.debug(f"{prompt = }")
-
-        output = planner_llm.invoke(
-            prompt, config={"configurable": {"temperature": 0.01}}
-        )
-
-        self.logger.debug(f"{output = }")
-
-        if output["parsing_error"]:
-            plan_result = parse_output_with_thought(output["raw"], OutputSchema)
-            self.logger.debug(f"parse error {plan_result =}")
-        else:
-            plan_result = output["parsed"]
-            self.logger.debug(f"parsed {plan_result =}")
-            # error: it gives a slightly different output
-            # {'step_list': [{'step_id': 1, 'summary': 'Recursively list all .md and .py files in the current directory', 'tool_call': True, 'inputs': "Directory: '.', pattern: '*.md *.py', recursive: True", 'output': 'List of full paths to .md and .py files'}], 'status': 'ready', 'current_step': 1}
-            # TODO:debug and fix: need to include example output in prompt? why doesn't structured output work
-            if isinstance(plan_result, dict):
-                plan_result = OutputSchema(**plan_result)
-            else:
-                if not isinstance(plan_result, OutputSchema):
-                    self.logger.critical(
-                        f"Received unexpected query classification: {plan_result =}"
-                    )
-                    plan_result = OutputSchema(status="failed")
-
-        self.logger.debug(f"{plan_result =}")
-
-        # Generate a plan summary and send to user
-        plan_summary = "## Plan summary:\n\n"
-        for step in plan_result.step_list:
-            plan_summary += f"- {step.step_number}: {step.description}"
-
-        plan = state.plan
-        plan.step_list = plan_result.step_list
-
-        return {"plan": plan, "message_for_user": plan_summary}
 
     async def _tool_picker_node(self, state: CodeAIState) -> dict:
         assert self.c_model
@@ -319,7 +247,11 @@ class CodeAI(BaseLangGraph):
         )
         self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
 
-        self.workflow.add_node("planner", self._planner_node)
+        self._planner_node = PlannerNode(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self._planner_node.set_tools_description(self.tool_description)
+        self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node)
         self.workflow.add_node("tool_caller", self._tool_caller_node)
         self.workflow.add_node("evaluator", self._evaluator_node)

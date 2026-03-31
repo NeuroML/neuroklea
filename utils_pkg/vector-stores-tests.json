@@ -11,15 +11,15 @@
             "vector_stores": [
                 {
                     "name": "nml-docs",
-                    "path": "gen_rag/data/vector-stores/nml-docs_bge-m3.db"
+                    "path": "/home/runner/work/neuroml-ai/neuroml-ai/gen_rag/data/vector-stores/nml-docs_bge-m3.db"
                 },
                 {
                     "name": "nml-elife",
-                    "path": "gen_rag/data/vector-stores/nml-elife_bge-m3.db"
+                    "path": "/home/runner/work/neuroml-ai/neuroml-ai/gen_rag/data/vector-stores/nml-elife_bge-m3.db"
                 },
                 {
                     "name": "nml-schema-docs",
-                    "path": "gen_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
+                    "path": "/home/runner/work/neuroml-ai/neuroml-ai/gen_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
                 }
             ]
         }

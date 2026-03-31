@@ -23,6 +23,7 @@ from neuroml_ai_utils.stores import VectorStores
 
 from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
+from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
 
 from .api.conf import AppConfig
 from .schemas import CodeAIState, GoalSchema, PlanSchema, ToolCallSchema
@@ -110,16 +111,6 @@ class CodeAI(BaseLangGraph):
                 )
 
         return description
-
-    def _init_graph_state_node(self, state: CodeAIState) -> dict:
-        """Initialise, reset state before next iteration"""
-        return {
-            "message_for_user": "",
-            "plan": PlanSchema(),
-            "goal": GoalSchema(),
-            "tool_call": None,
-            "tool_responses": [],
-        }
 
     async def _planner_node(self, state: CodeAIState) -> dict:
         my_model = self.r_model
@@ -313,7 +304,8 @@ class CodeAI(BaseLangGraph):
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(CodeAIState)
-        self.workflow.add_node("init_graph_state", self._init_graph_state_node)
+        self._init_graph_state_node = InitGraphStateNode(logger=self.logger)
+        self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
         # self.workflow.add_node("summarise_history", self._summarise_history_node)
 
         self._goal_setter_node = GoalSetterNode(

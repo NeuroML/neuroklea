@@ -18,7 +18,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 from pydantic import BaseModel
 
-from .llm import load_prompt, parse_output_with_thought
+from .llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 
 
 class BaseLLMNode[TSchema: BaseModel](ABC):
@@ -41,8 +41,8 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
         """Template method defining standard execution flow"""
         self.logger.debug(f"{state =}")
 
-        human_prompt = self._get_human_prompt()
-        system_prompt = self._get_system_prompt()
+        human_prompt = self._get_human_prompt(state)
+        system_prompt = self._get_system_prompt(state)
         template = self._create_prompt_template(system_prompt, human_prompt)
         variables = self._get_prompt_variables(state)
         prompt = self._invoke_prompt(template, variables)
@@ -114,12 +114,12 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
 
     # Abstract methods to be implemented by subclasses
     @abstractmethod
-    def _get_human_prompt(self) -> str:
+    def _get_human_prompt(self, state: BaseModel) -> str:
         """Return human prompt for this node"""
         pass
 
     @abstractmethod
-    def _get_system_prompt(self) -> str:
+    def _get_system_prompt(self, state: BaseModel) -> str:
         """Return system prompt for this node"""
         pass
 
@@ -183,19 +183,20 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         self.human_prompt_file = human_prompt_file
         self.prompt_registry_location = prompt_registry_location
         self.memory = memory
+        self.num_recent_messages = 10
 
-    def _get_system_prompt(self) -> str:
+    def _get_system_prompt(self, state: BaseModel) -> str:
         """Load system prompt from file."""
         system_prompt = self._load_prompt_file(self.system_prompt_file)
         self.logger.debug(f"{system_prompt =}")
         return system_prompt
 
-    def _get_human_prompt(self) -> str:
+    def _get_human_prompt(self, state: BaseModel) -> str:
         """Load human prompt from file, optionally appending memory content."""
         human_prompt = self._load_prompt_file(self.human_prompt_file)
 
         if self.memory:
-            memory_addition = self._get_memory_addition()
+            memory_addition = self._get_memory_addition(state)
             return human_prompt + memory_addition
 
         self.logger.debug(f"{human_prompt =}")
@@ -222,10 +223,14 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         self.logger.debug(f"{prompt_template =}")
         return prompt_template
 
-    def _get_memory_addition(self) -> str:
+    def _get_memory_addition(self, state: BaseModel) -> str:
         """Hook for subclasses to inject memory content into the human prompt.
 
         Override this method to provide memory-specific content.
         The default implementation returns an empty string.
         """
-        return ""
+        return add_memory_to_prompt(
+            messages=state.messages,  # type: ignore
+            context_summary=state.context_summary,  # type: ignore
+            num_recent_messages=self.num_recent_messages,
+        )

@@ -8,6 +8,7 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import json
 import logging
 import os
 import sys
@@ -17,6 +18,7 @@ from textwrap import dedent
 from typing import Any
 
 from fastmcp import Client
+from fastmcp.mcp_config import MCPConfig
 
 # from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -130,7 +132,13 @@ class CodeAI(object):
     def _setup_models(self):
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.code_model, self.logger)
-        self.r_model = setup_llm(self.config.reasoning_model, self.logger)
+        if self.config.code_model == self.config.reasoning_model:
+            self.r_model = self.c_model
+            self.logger.info(
+                f"Same model used for both chat and reasoning: {self.config.code_model}"
+            )
+        else:
+            self.r_model = setup_llm(self.config.reasoning_model, self.logger)
 
     def _load_config(self):
         """Load configuration from file"""
@@ -145,8 +153,14 @@ class CodeAI(object):
 
     def _create_mcp_client(self):
         """Create MCP client from config"""
-        client_url = f"{self.config.mcp_server_url}/mcp"
-        self.mcp_client = Client(client_url)
+        mcp_config_text = ""
+        with open(self.config.mcp_config_file, "r") as f:
+            mcp_config_text = json.load(f)
+            self.logger.debug(f"{mcp_config_text = }")
+
+        self.mcp_config = MCPConfig(**mcp_config_text)
+        self.logger.debug(f"{self.mcp_config = }")
+        self.mcp_client = Client(self.mcp_config)
         assert self.mcp_client
 
     def _init_graph_state_node(self, state: CodeAIState) -> dict:

@@ -8,6 +8,7 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import json
 import logging
 import os
 import sys
@@ -16,6 +17,7 @@ from textwrap import dedent
 from typing import Dict, List, Literal, Optional, Tuple
 
 from fastmcp import Client
+from fastmcp.mcp_config import MCPConfig
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.checkpoint.memory import InMemorySaver
@@ -135,8 +137,15 @@ class RAG(object):
 
     def _create_mcp_client(self):
         """Create MCP client from config"""
-        client_url = f"{self.config.mcp_server_url}/mcp"
-        self.mcp_client = Client(client_url)
+        mcp_config_text = ""
+        with open(self.config.mcp_config_file, "r") as f:
+            mcp_config_text = json.load(f)
+            self.logger.debug(f"{mcp_config_text = }")
+
+        MCPConfig(**mcp_config_text)
+        self.mcp_config = MCPConfig(**mcp_config_text)
+        self.logger.debug(f"{self.mcp_config = }")
+        self.mcp_client = Client(self.mcp_config)
         assert self.mcp_client
 
     def _summarise_history_node(self, state: RAGState) -> dict:

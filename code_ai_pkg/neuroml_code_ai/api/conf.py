@@ -12,6 +12,6 @@ from pydantic_settings import BaseSettings
 
 
 class AppConfig(BaseSettings):
-    mcp_server_url: str = "http://127.0.0.1:8542"
+    mcp_config_file: str = "mcp.json"
     code_model: str = "ollama:qwen3.5:0.8b"
     reasoning_model: str = "ollama:qwen3.5:0.8b"

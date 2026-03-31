@@ -13,5 +13,6 @@ from pydantic_settings import BaseSettings
 
 class AppConfig(BaseSettings):
     chat_model: str = "ollama:qwen2.5-coder:3b"
+    mcp_config_file: str = "mcp.json"
     non_domain_chat: bool = True
     vs_config_file: str = "vector_stores.json"

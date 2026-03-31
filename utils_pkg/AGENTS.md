@@ -45,9 +45,12 @@ pytest -v
 ```
 neuroml_ai_utils/
 ├── api.py       # Shared API utilities
+├── errors.py    # Custom exception classes
+├── graph.py     # BaseLangGraph abstract class
 ├── llm.py       # LLM utilities
 ├── logging.py   # Logging configuration
-└── nodes.py     # Shared LangGraph nodes
+├── nodes.py     # Shared LangGraph nodes
+└── stores.py    # Vector stores management (ChromaDB)
 ```
 
 ### Key Technologies

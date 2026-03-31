@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cli for gen_rag.
+Cli for code_ai.
 
-File: gen_rag/ui/cli.py
+File: neuroml_code_ai/ui/cli.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

@@ -31,6 +31,8 @@ from langchain_huggingface import (
 )
 from pydantic import BaseModel
 
+from .errors import LLMInitializationError
+
 logging.basicConfig(
     format="%(name)s (%(levelname)s) >>> %(message)s\n", level=logging.WARNING
 )
@@ -216,7 +218,18 @@ def setup_embedding(model_name_full, logger):
 def setup_llm(model_name_full: str, logger: logging.Logger):
     """Set up a chat model"""
     if model_name_full.lower().startswith("huggingface:"):
-        _, model_name, provider = model_name_full.split(":")
+        model_components = model_name_full.split(":")
+        # source: model name: provider
+        if len(model_components) == 2:
+            _, model_name = model_components
+            provider = "auto"
+        elif len(model_components) == 3:
+            _, model_name, provider = model_components
+        else:
+            raise LLMInitializationError(
+                f"Model components could not be found: {model_components =}"
+            )
+
         logger.debug(f"Using huggingface model: {model_name}")
 
         hf_token = os.environ.get("HF_TOKEN", None)
@@ -226,7 +239,7 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
 
         llm = HuggingFaceEndpoint(
             repo_id=f"{model_name}",
-            provider="auto",
+            provider=provider,
             max_new_tokens=32768,
             do_sample=False,
             repetition_penalty=1.03,
@@ -252,7 +265,13 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
         if state:
             logger.debug(f"Model works: {state}, {msg}")
         else:
-            logger.debug(f"Model does not work: {state}, {msg}")
+            # handle special case where some models do not support "cheapest" on HF
+            if "Provider 'cheapest' not supported" in msg:
+                logger.error(f"Model does not work: {state}, {msg}")
+                logger.debug("Replacing 'cheapest' with 'auto' and retrying")
+                return setup_llm(model_name_full.replace(":cheapest", ":auto"), logger)
+
+            logger.error(f"Model does not work: {state}, {msg}")
         assert state
     else:
         if model_name_full.lower().startswith("ollama:"):

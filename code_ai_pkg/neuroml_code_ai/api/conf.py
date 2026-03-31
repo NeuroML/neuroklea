@@ -11,10 +11,8 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
-    nml_mcp_server_url: str = "http://127.0.0.1:8542"
-    nml_ai_code_model: str = "ollama:qwen2.5-coder:3b"
-    nml_ai_reasoning_model: str = "ollama:qwen3:0.6b"
-
-
-nml_code_ai_settings = Settings()
+class AppConfig(BaseSettings):
+    mcp_config_file: str = "mcp.json"
+    code_model: str = "ollama:qwen3.5:0.8b"
+    reasoning_model: str = "ollama:qwen3.5:0.8b"
+    vs_config_file: str = ""

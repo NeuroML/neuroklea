@@ -9,16 +9,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-import os
-import sys
-from pathlib import Path
 from textwrap import dedent
-from typing import Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Literal, Tuple
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
-from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
+from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import (
     add_memory_to_prompt,
     get_history_summary_prompt,
@@ -27,24 +24,23 @@ from neuroml_ai_utils.llm import (
     setup_llm,
     split_output_by_section,
 )
-from neuroml_ai_utils.logging import (
-    LoggerInfoFilter,
-    LoggerNotInfoFilter,
-    logger_formatter_info,
-    logger_formatter_other,
-)
+from neuroml_ai_utils.stores import VectorStores
 from pydantic import create_model
 
 from .config import AppConfig
 from .schemas import EvaluateAnswerSchema, RAGState
-from .stores import Vector_Stores
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
-class RAG(object):
+class RAG(BaseLangGraph):
     """General RAG implementation"""
+
+    config_class = AppConfig
+    config_env_var = "GEN_RAG_CONFIG_FILE"
+    config_file_default = "rag.env"
+    logger_name = "RAG"
 
     def __init__(
         self,
@@ -52,62 +48,31 @@ class RAG(object):
         memory: bool = True,
     ):
         """Initialise"""
-        self.c_model = None
-        self.config_file = os.getenv("GEN_RAG_CONFIG_FILE", "rag.env")
-        self.config: AppConfig
+        super().__init__(logging_level=logging_level, memory=memory)
 
         # total number of reference documents
         self.num_refs_max = 10
 
-        # Whether this graph should manage it's own memory/checkpoints
-        # Can be turned off when this RAG is being included in another
-        # graph/app
-        self.memory = memory
-        if self.memory:
-            self.checkpointer: Optional[InMemorySaver] = InMemorySaver()
-        else:
-            self.checkpointer = None
-
         # toggle for answer generator
         self.modify_query = False
 
-        # number of conversations after which to summarise
-        # no need to summarise after each
-        # 5 rounds: 10 messages
-        self.num_recent_messages = 10
-
-        self.logger = logging.getLogger("RAG")
-        self.logger.setLevel(logging_level)
-        self.logger.propagate = False
-
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.INFO)
-        stdout_handler.addFilter(LoggerInfoFilter())
-        stdout_handler.setFormatter(logger_formatter_info)
-        self.logger.addHandler(stdout_handler)
-
-        stderr_handler = logging.StreamHandler(sys.stderr)
-        stderr_handler.setLevel(logging_level)
-        stderr_handler.addFilter(LoggerNotInfoFilter())
-        stderr_handler.setFormatter(logger_formatter_other)
-        self.logger.addHandler(stderr_handler)
-
-    def _load_config(self):
-        """Load configuration from file"""
-        cfg_path = Path(self.config_file)
-        if not cfg_path.exists():
-            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
-
-        self.config = AppConfig(_env_file=self.config_file)
-        self.logger.debug(f"Config file:\n{self.config_file}")
-        self.logger.debug(f"Config:\n{self.config}")
-
-    async def setup(self):
-        """Set up basics."""
-
+    async def setup(self) -> None:
+        """Set up the RAG orchestrator."""
         self._load_config()
-        self.stores = Vector_Stores(vs_config_file=self.config.vs_config_file)
-        self._setup_chat_model()
+        self.stores = VectorStores(
+            vs_config_file=self.config.vs_config_file, logger=self.logger
+        )
+        self._setup_models()
+        self._create_mcp_client()
+        self._pre_graph()
+        await self._create_graph()
+
+    def _setup_models(self) -> None:
+        """Set up the LLM chat model"""
+        self.c_model = setup_llm(self.config.chat_model, self.logger)
+
+    def _pre_graph(self) -> None:
+        """Set up vector stores and dynamic domain schema before graph creation."""
         self.stores.setup()
 
         # dynamically generate schema for domains
@@ -118,16 +83,10 @@ class RAG(object):
             "QueryDomainSchema", query_domain=(Literal[tuple(all_domains)], "undefined")
         )
 
-        await self._create_graph()
-
     async def get_graph(self):
         """Setup and get compiled graph"""
         await self.setup()
         return self.graph
-
-    def _setup_chat_model(self):
-        """Set up the LLM chat model"""
-        self.c_model = setup_llm(self.config.chat_model, self.logger)
 
     def _summarise_history_node(self, state: RAGState) -> dict:
         """Clean ups after every round of conversation"""
@@ -638,6 +597,7 @@ class RAG(object):
             * 0.0 - 0.3: verbose
 
             Guidelines for 'next_step':
+
             1. high coverage, confident, relevant, grounded, with acceptable coherence and conciseness: return "continue".
             2. low coverage: return "modify_query".
             3. low confidence: return "retrieve_more_info".
@@ -881,60 +841,4 @@ class RAG(object):
         else:
             self.graph = self.workflow.compile()
 
-        if not os.environ.get("RUNNING_IN_DOCKER", 0):
-            try:
-                self.graph.get_graph().draw_mermaid_png(
-                    output_file_path="rag-lang-graph.png"
-                )
-            except BaseException as e:
-                self.logger.error("Something went wrong generating lang graph png")
-                self.logger.error(e)
-
-    async def run_graph_invoke_state(
-        self, state: dict, thread_id: str = "default_thread"
-    ):
-        """Run the graph but accept and return states"""
-
-        config = {"configurable": {"thread_id": thread_id}}
-
-        if "query" not in state:
-            self.logger.error(f"Provided state should include the key 'query': {state}")
-            sys.exit(-1)
-
-        final_state = await self.graph.ainvoke(state, config=config)
-        self.logger.debug(final_state)
-        return final_state
-
-    async def run_graph_invoke(self, query: str, thread_id: str = "default_thread"):
-        """Run the graph by using and returning string input"""
-
-        config = {"configurable": {"thread_id": thread_id}}
-
-        final_state = await self.graph.ainvoke({"query": query}, config=config)
-
-        self.logger.debug(f"{final_state =}")
-        if message := final_state.get("message_for_user", None):
-            return message
-        else:
-            return "I was unable to answer"
-
-    async def run_graph_stream(self, query: str, thread_id: str = "default_thread"):
-        """Run the graph but return the stream"""
-        config = {"configurable": {"thread_id": thread_id}}
-
-        for chunk in self.graph.astream({"query": query}, config=config):
-            for node, state in chunk.items():
-                self.logger.debug(f"{node}: {repr(state)}")
-                # all nodes must return dicts
-                if message := state.get("message_for_user", None):
-                    self.logger.info(f"User message: {message}")
-                    yield message
-                else:
-                    self.logger.debug(f"Working in node: {node}")
-
-    async def graph_stream(self, query: str, thread_id: str = "default_threaD"):
-        """Run the graph but return the stream"""
-        config = {"configurable": {"thread_id": thread_id}}
-
-        res = await self.graph.astream({"query": query}, config=config)
-        return res
+        self._export_graph_png("rag-lang-graph.png")

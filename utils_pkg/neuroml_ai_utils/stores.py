@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Vector stores
+Vector stores management for RAG systems
 
-File: gen_rag/stores.py
+File: neuroml_ai_utils/stores.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -10,107 +10,95 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import json
 import logging
-import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import chromadb
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from neuroml_ai_utils.llm import setup_embedding
-from neuroml_ai_utils.logging import (
-    LoggerInfoFilter,
-    LoggerNotInfoFilter,
-    logger_formatter_info,
-    logger_formatter_other,
-)
 from pydantic import BaseModel
 
-logging.basicConfig()
-logging.root.setLevel(logging.WARNING)
+from .llm import setup_embedding
 
 
 class FallbackConfig(BaseModel):
+    """Configuration for fallback to training data."""
+
     enabled: bool = False
     warning: str = ""
 
 
 class VectorStoreInfo(BaseModel):
+    """Information about a single vector store."""
+
     name: str
     path: str
     loaded_object: Optional[Any] = None
 
 
 class PerDomainConfig(BaseModel):
+    """Configuration for a single domain."""
+
     description: str
     vector_stores: list[VectorStoreInfo]
 
 
 class VectorStoresConfig(BaseModel):
+    """Top-level vector stores configuration."""
+
     default_k: int = 5
     k_max: int = 10
     pre_prompt: str = ""
-    embedding_model: str  # = "ollama:bge-m3"
+    embedding_model: str
     domains: Dict[str, PerDomainConfig]
     fallback_to_training_data: FallbackConfig
 
 
-class Vector_Stores(object):
-    """Vector stores"""
+class VectorStores:
+    """Manages domain-specific ChromaDB vector stores.
+
+    Loads vector stores on demand per domain and provides similarity search
+    retrieval across multiple stores within a domain.
+    """
 
     def __init__(
         self,
         vs_config_file: str,
-        logging_level: int = logging.DEBUG,
+        logger: logging.Logger,
     ):
-        """Init"""
-        # per store
+        """Initialise vector stores manager.
+
+        :param vs_config_file: Path to the JSON configuration file
+        :param logger: Logger instance (injected from orchestrator)
+        """
         self.default_k = 5
         self.k_max = 10
         self.k = self.default_k
         self.sim_thresh = 0.15
-        # set a default
         self.embeddings = None
         self.vs_config_file = vs_config_file
         self.vs_config: VectorStoresConfig
+        self.logger = logger
 
-        self.logger = logging.getLogger("NeuroML-AI")
-        self.logger.setLevel(logging_level)
-        self.logger.propagate = False
-
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.INFO)
-        stdout_handler.addFilter(LoggerInfoFilter())
-        stdout_handler.setFormatter(logger_formatter_info)
-        self.logger.addHandler(stdout_handler)
-
-        stderr_handler = logging.StreamHandler(sys.stderr)
-        stderr_handler.setLevel(logging_level)
-        stderr_handler.addFilter(LoggerNotInfoFilter())
-        stderr_handler.setFormatter(logger_formatter_other)
-        self.logger.addHandler(stderr_handler)
-
-    def setup(self):
-        """Setup embeddings"""
-        self.load_config()
+    def setup(self) -> None:
+        """Load configuration and initialise embedding model."""
+        self._load_config()
         self.embeddings = setup_embedding(self.embedding_model, self.logger)
-        # extract model name
+
+        # Extract model name for collection naming
         if self.embedding_model.lower().startswith("huggingface:"):
-            # strip suffix/prefix
             self.embedding_model = (
                 self.embedding_model.replace("huggingface:", "")
                 .replace(":cheapest", "")
                 .replace(":fastest", "")
             )
-            # strip collection name
             splits = self.embedding_model.split("/")
             self.embedding_model = "".join(splits[1:])
         elif self.embedding_model.lower().startswith("ollama:"):
-            # strip prefix
             self.embedding_model = self.embedding_model.replace("ollama:", "")
 
-    def load_config(self):
-        """Load domains this RAG is going to answer for from config file"""
+    def _load_config(self) -> None:
+        """Load domains from the configuration file."""
         self.logger.debug(f"{self.vs_config_file =}")
         with open(self.vs_config_file) as f:
             domain_info = json.load(f)
@@ -120,37 +108,38 @@ class Vector_Stores(object):
         self.k_max = self.vs_config.k_max
         self.logger.debug(f"{self.vs_config =}")
 
-    def inc_k(self, inc: int = 1):
-        """Increase k by inc
+    def inc_k(self, inc: int = 1) -> bool:
+        """Increase k by inc.
 
-        :param inc: int to increase k by
-        :returns: True if k was increased, False otherwise
-
+        :param inc: Amount to increase k by
+        :returns: True if k was increased, False if already at max
         """
         if (self.k + inc) <= self.k_max:
             self.k += inc
             self.logger.debug(f"k increased to {self.k =}")
             return True
-
         return False
 
-    def reset_k(self):
-        """Reset k to default value"""
+    def reset_k(self) -> None:
+        """Reset k to default value."""
         self.k = self.default_k
         self.logger.debug(f"k reset to {self.k =}")
 
-    def load_all_stores(self):
-        """Load all vector stores"""
+    def load_all_stores(self) -> None:
+        """Load all vector stores for all domains."""
         for domain_name in self.domains:
             self.load(domain_name)
 
     @property
-    def domains(self):
-        """Get a list of all domains"""
+    def domains(self) -> list[str]:
+        """Get a list of all configured domains."""
         return list(self.vs_config.domains.keys())
 
-    def load(self, domain_name: str):
-        """Create/load the vector store"""
+    def load(self, domain_name: str) -> None:
+        """Load vector stores for a domain (lazy loading).
+
+        :param domain_name: Name of the domain to load stores for
+        """
         assert self.embeddings
 
         domain = self.vs_config.domains.get(domain_name, None)
@@ -168,8 +157,7 @@ class Vector_Stores(object):
                 f"Got store for domain {domain_name}: {store_name} ({store_path})"
             )
 
-            # if not absolute, it must be in a data folder in the location of
-            # this file
+            # If not absolute, resolve relative to cwd
             if not store_path.is_absolute():
                 store_path = Path.cwd() / store_path
                 self.logger.debug(
@@ -180,7 +168,7 @@ class Vector_Stores(object):
                 self.logger.error(f"Could not find folder: {store_path}")
                 raise FileNotFoundError(f"Could not find folder: {store_path}")
 
-            # check that it is a pre-existing DB
+            # Check that it is a pre-existing DB
             store_db = store_path / Path("chroma.sqlite3")
             assert store_db.is_file()
 
@@ -188,19 +176,16 @@ class Vector_Stores(object):
                 f"Loading Chroma vector store '{store_name}' from path {store_path.absolute()}"
             )
 
-            chroma_client_settings_text = chromadb.config.Settings(
+            chroma_client_settings = chromadb.config.Settings(
                 is_persistent=True,
                 persist_directory=str(store_path.absolute()),
                 anonymized_telemetry=False,
             )
-            # NOTE:
-            # Must match the values set when the store was created
             loaded_store = Chroma(
                 collection_name=store_name,
                 embedding_function=self.embeddings,
-                client_settings=chroma_client_settings_text,
+                client_settings=chroma_client_settings,
             )
-            # save it as the loaded object
             store.loaded_object = loaded_store
 
             self.logger.debug(
@@ -208,14 +193,11 @@ class Vector_Stores(object):
             )
 
     def retrieve(self, domain_name: str, query: str) -> list[tuple[Document, float]]:
-        """Retrieve embeddings from documentation to answer a query
+        """Retrieve documents from vector stores for a query.
 
-        :param domain_name: name of domain
-        :type domain_name: str
-        :param query: user query
-        :type query: str
-        :returns: list of tuples (document, score)
-
+        :param domain_name: Name of the domain to search in
+        :param query: User query string
+        :returns: List of (document, relevance_score) tuples
         """
         self.load(domain_name)
 
@@ -234,7 +216,8 @@ class Vector_Stores(object):
             self.logger.debug(f"{data =}")
             if len(data) == 0:
                 self.logger.warning(
-                    f"No data retrieved. Check VS is correctly populated and that the collection name is correct ({store.name})"
+                    f"No data retrieved. Check VS is correctly populated and that "
+                    f"the collection name is correct ({store.name})"
                 )
             res.extend(data)
 

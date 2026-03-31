@@ -8,13 +8,14 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import logging
 import os
 import unittest
 
 import pytest
 from ollama import ResponseError
 
-from gen_rag.stores import Vector_Stores
+from neuroml_ai_utils.stores import VectorStores
 
 
 class TestStores(unittest.TestCase):
@@ -24,7 +25,8 @@ class TestStores(unittest.TestCase):
         """Test retrieval"""
         try:
             vs_config_file = os.environ.get("GEN_RAG_VS_CONFIG", None)
-            stores = Vector_Stores(vs_config_file=vs_config_file)
+            logger = logging.getLogger("test_stores")
+            stores = VectorStores(vs_config_file=vs_config_file, logger=logger)
             stores.setup()
             stores.retrieve("NeuroML", "NeuroML community")
         except ResponseError as e:

@@ -15,6 +15,7 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Dict, List, Literal, Optional, Tuple
 
+from fastmcp import Client
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.checkpoint.memory import InMemorySaver
@@ -53,6 +54,7 @@ class RAG(object):
     ):
         """Initialise"""
         self.c_model = None
+        self.mcp_client: Client
         self.config_file = os.getenv("GEN_RAG_CONFIG_FILE", "rag.env")
         self.config: AppConfig
 
@@ -109,6 +111,7 @@ class RAG(object):
         self._load_config()
         self.stores = Vector_Stores(vs_config_file=self.config.vs_config_file)
         self._setup_chat_model()
+        self._create_mcp_client()
         self.stores.setup()
 
         # dynamically generate schema for domains
@@ -129,6 +132,12 @@ class RAG(object):
     def _setup_chat_model(self):
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)
+
+    def _create_mcp_client(self):
+        """Create MCP client from config"""
+        client_url = f"{self.config.mcp_server_url}/mcp"
+        self.mcp_client = Client(client_url)
+        assert self.mcp_client
 
     def _summarise_history_node(self, state: RAGState) -> dict:
         """Clean ups after every round of conversation"""

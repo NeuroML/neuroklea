@@ -22,6 +22,8 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.state import CompiledStateGraph
 from pydantic import BaseModel
 
+from neuroml_ai_utils.stores import VectorStores
+
 
 class BaseLangGraph(ABC):
     """Abstract base class for LangGraph-based orchestrators.
@@ -80,6 +82,9 @@ class BaseLangGraph(ABC):
         self.logger.setLevel(logging_level)
         self.logger.propagate = False
 
+        self.mcp_tools = None
+        self.stores: VectorStores | None = None
+
         self._setup_logging(logging_level)
 
     def _setup_logging(self, level: int) -> None:
@@ -127,15 +132,37 @@ class BaseLangGraph(ABC):
         Reads the MCP server configuration from ``self.config.mcp_config_file``
         and creates a ``fastmcp.Client`` instance.
         """
-        mcp_config_text = ""
-        with open(self.config.mcp_config_file, "r") as f:
-            mcp_config_text = json.load(f)
-            self.logger.debug(f"{mcp_config_text = }")
+        if self.config.mcp_config_file:  # type: ignore
+            mcp_config_text = ""
+            with open(self.config.mcp_config_file, "r") as f:
+                mcp_config_text = json.load(f)
+                self.logger.debug(f"{mcp_config_text = }")
 
-        self.mcp_config = MCPConfig(**mcp_config_text)
-        self.logger.debug(f"{self.mcp_config = }")
-        self.mcp_client = Client(self.mcp_config)
-        assert self.mcp_client
+            self.mcp_config = MCPConfig(**mcp_config_text)
+            self.logger.debug(f"{self.mcp_config = }")
+            self.mcp_client = Client(self.mcp_config)
+            assert self.mcp_client
+        else:
+            self.logger.warning("No MCP server configured.")
+
+    async def _get_mcp_tools(self) -> None:
+        """List MCP tools and optionally set up vector stores."""
+        async with self.mcp_client:
+            self.mcp_tools = await self.mcp_client.list_tools()
+        self.logger.debug(f"{self.mcp_tools =}")
+
+    async def _get_vector_stores(self) -> None:
+        """Get vector stores"""
+        if self.config.vs_config_file:  # type: ignore
+            self.stores = VectorStores(
+                vs_config_file=self.config.vs_config_file, logger=self.logger
+            )
+            self.stores.setup()
+            self.logger.info(
+                f"Vector stores loaded from {self.config.vs_config_file}: {self.stores.domains}"
+            )
+        else:
+            self.logger.warning("No vector stores configured.")
 
     def _export_graph_png(self, filename: str) -> None:
         """Export the LangGraph as a Mermaid PNG diagram.
@@ -205,7 +232,8 @@ class BaseLangGraph(ABC):
         Override to perform subclass-specific initialisation that depends
         on config and MCP client but must happen before the LangGraph is built.
         """
-        pass
+        await self._get_mcp_tools()
+        await self._get_vector_stores()
 
     async def setup(self) -> None:
         """Set up the orchestrator.

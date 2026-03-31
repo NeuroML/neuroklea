@@ -24,7 +24,6 @@ from neuroml_ai_utils.llm import (
     setup_llm,
     split_output_by_section,
 )
-from neuroml_ai_utils.stores import VectorStores
 from pydantic import create_model
 
 from .config import AppConfig
@@ -59,9 +58,6 @@ class RAG(BaseLangGraph):
     async def setup(self) -> None:
         """Set up the RAG orchestrator."""
         self._load_config()
-        self.stores = VectorStores(
-            vs_config_file=self.config.vs_config_file, logger=self.logger
-        )
         self._setup_models()
         self._create_mcp_client()
         self._pre_graph()

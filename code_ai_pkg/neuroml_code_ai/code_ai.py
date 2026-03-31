@@ -19,7 +19,6 @@ from langchain_core.utils.function_calling import convert_to_json_schema
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import load_prompt, parse_output_with_thought, setup_llm
-from neuroml_ai_utils.stores import VectorStores
 
 from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
@@ -51,10 +50,6 @@ class CodeAI(BaseLangGraph):
 
         self.r_model = None
 
-        self.mcp_tools = None
-
-        self.stores: VectorStores | None = None
-
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.code_model, self.logger)
@@ -65,22 +60,6 @@ class CodeAI(BaseLangGraph):
             )
         else:
             self.r_model = setup_llm(self.config.reasoning_model, self.logger)
-
-    async def _pre_graph(self) -> None:
-        """List MCP tools and optionally set up vector stores."""
-        async with self.mcp_client:
-            self.mcp_tools = await self.mcp_client.list_tools()
-        self.logger.debug(f"{self.mcp_tools =}")
-        self.logger.debug(f"{self.tool_description =}")
-
-        if self.config.vs_config_file:
-            self.stores = VectorStores(
-                vs_config_file=self.config.vs_config_file, logger=self.logger
-            )
-            self.stores.setup()
-            self.logger.info(
-                f"Vector stores loaded from {self.config.vs_config_file}: {self.stores.domains}"
-            )
 
     @cached_property
     def tool_description(self):

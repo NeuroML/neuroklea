@@ -14,13 +14,13 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Optional, Type
+from typing import Any, Literal, Optional, Type
 
 from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.state import CompiledStateGraph
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 
 from neuroml_ai_utils.stores import VectorStores
 
@@ -84,6 +84,7 @@ class BaseLangGraph(ABC):
 
         self.mcp_tools = None
         self.stores: VectorStores | None = None
+        self.QueryDomainSchema: Type[BaseModel] | None = None
 
         self._setup_logging(logging_level)
 
@@ -161,6 +162,15 @@ class BaseLangGraph(ABC):
             self.logger.info(
                 f"Vector stores loaded from {self.config.vs_config_file}: {self.stores.domains}"
             )
+
+            # dynamically generate schema for domains
+            all_domains = self.stores.domains.copy()
+            all_domains.append("undefined")
+
+            self.QueryDomainSchema = create_model(
+                "QueryDomainSchema",
+                query_domain=(Literal[tuple(all_domains)], "undefined"),
+            )
         else:
             self.logger.warning("No vector stores configured.")
 
@@ -232,8 +242,7 @@ class BaseLangGraph(ABC):
         Override to perform subclass-specific initialisation that depends
         on config and MCP client but must happen before the LangGraph is built.
         """
-        await self._get_mcp_tools()
-        await self._get_vector_stores()
+        pass
 
     async def setup(self) -> None:
         """Set up the orchestrator.
@@ -251,6 +260,8 @@ class BaseLangGraph(ABC):
         self._load_config()
         self._setup_models()
         self._create_mcp_client()
+        await self._get_mcp_tools()
+        await self._get_vector_stores()
         await self._pre_graph()
         await self._create_graph()
         self._post_setup()

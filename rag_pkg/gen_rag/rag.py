@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from textwrap import dedent
-from typing import Dict, List, Literal, Tuple
+from typing import Dict, List, Tuple
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -24,7 +24,6 @@ from neuroml_ai_utils.llm import (
     setup_llm,
     split_output_by_section,
 )
-from pydantic import create_model
 
 from .config import AppConfig
 from .schemas import EvaluateAnswerSchema, RAGState
@@ -55,29 +54,9 @@ class RAG(BaseLangGraph):
         # toggle for answer generator
         self.modify_query = False
 
-    async def setup(self) -> None:
-        """Set up the RAG orchestrator."""
-        self._load_config()
-        self._setup_models()
-        self._create_mcp_client()
-        self._pre_graph()
-        await self._create_graph()
-
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)
-
-    def _pre_graph(self) -> None:
-        """Set up vector stores and dynamic domain schema before graph creation."""
-        self.stores.setup()
-
-        # dynamically generate schema for domains
-        all_domains = self.stores.domains.copy()
-        all_domains.append("undefined")
-
-        self.QueryDomainSchema = create_model(
-            "QueryDomainSchema", query_domain=(Literal[tuple(all_domains)], "undefined")
-        )
 
     async def get_graph(self):
         """Setup and get compiled graph"""

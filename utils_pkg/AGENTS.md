@@ -49,7 +49,8 @@ neuroml_ai_utils/
 ├── graph.py     # BaseLangGraph abstract class
 ├── llm.py       # LLM utilities
 ├── logging.py   # Logging configuration
-└── nodes.py     # Shared LangGraph nodes
+├── nodes.py     # Shared LangGraph nodes
+└── stores.py    # Vector stores management (ChromaDB)
 ```
 
 ### Key Technologies

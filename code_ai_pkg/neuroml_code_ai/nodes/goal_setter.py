@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 from pathlib import Path
 from typing import Any, Dict
 
-from neuroml_ai_utils.nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
 
 from neuroml_code_ai import prompts

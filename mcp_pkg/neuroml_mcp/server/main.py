@@ -31,7 +31,7 @@ async def create_server(port: int = 8542):
 
         """
     )
-    mcp = FastMCP("neuroml_MCP", instructions=usage, port=8542)
+    mcp = FastMCP("neuroml_MCP", instructions=usage)
     register_tools(mcp, [code_tools])
 
     @mcp.custom_route("/health", methods=["GET"])
@@ -40,9 +40,9 @@ async def create_server(port: int = 8542):
 
     @mcp.custom_route("/list", methods=["GET"])
     async def tool_list(request: Request) -> JSONResponse:
-        all_tools = await mcp.get_tools()
+        all_tools = await mcp.list_tools()
         tools_description = [
-            {str(tool.name): str(tool.description)} for name, tool in all_tools.items()
+            {str(tool.name): str(tool.description)} for tool in all_tools
         ]
         resp = {"registered_tools": tools_description}
         return JSONResponse(resp)
@@ -57,7 +57,7 @@ async def create_server(port: int = 8542):
 def mcp_cli(port: int = 8542, transport: str = "streamable-http"):
     """main runner method"""
     mcp = asyncio.run(create_server(port))
-    mcp.run(transport=transport)
+    mcp.run(transport=transport, port=8542)
 
 
 if __name__ == "__main__":

@@ -8,30 +8,17 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
-import json
 import logging
-import os
-import sys
 from functools import cached_property
 from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-from fastmcp import Client
-from fastmcp.mcp_config import MCPConfig
-
-# from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.utils.function_calling import convert_to_json_schema
-from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
+from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import load_prompt, parse_output_with_thought, setup_llm
-from neuroml_ai_utils.logging import (
-    LoggerInfoFilter,
-    LoggerNotInfoFilter,
-    logger_formatter_info,
-    logger_formatter_other,
-)
 
 from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
@@ -43,10 +30,13 @@ logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
-class CodeAI(object):
+class CodeAI(BaseLangGraph):
     """NeuroML CodeAI implementation"""
 
-    checkpointer = InMemorySaver()
+    config_class = AppConfig
+    config_env_var = "CODE_AI_CONFIG_FILE"
+    config_file_default = "code_ai.env"
+    logger_name = "NeuroML-AI-codegen"
 
     def __init__(
         self,
@@ -54,49 +44,29 @@ class CodeAI(object):
         memory: bool = True,
     ):
         """Initialise"""
-        self.c_model = None
-        self.r_model = None
-        self.mcp_client: Client
+        super().__init__(logging_level=logging_level, memory=memory)
 
-        # number of conversations after which to summarise
-        # no need to summarise after each
-        # 5 rounds: 10 messages
-        self.num_recent_messages = 10
+        self.r_model = None
 
         self.mcp_tools = None
 
-        self.config_file = os.getenv("CODE_AI_CONFIG_FILE", "code_ai.env")
-        self.config: AppConfig
+    def _setup_models(self) -> None:
+        """Set up the LLM chat model"""
+        self.c_model = setup_llm(self.config.code_model, self.logger)
+        if self.config.code_model == self.config.reasoning_model:
+            self.r_model = self.c_model
+            self.logger.info(
+                f"Same model used for both chat and reasoning: {self.config.code_model}"
+            )
+        else:
+            self.r_model = setup_llm(self.config.reasoning_model, self.logger)
 
-        self.logger = logging.getLogger("NeuroML-AI-codegen")
-        self.logger.setLevel(logging_level)
-        self.logger.propagate = False
-
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.INFO)
-        stdout_handler.addFilter(LoggerInfoFilter())
-        stdout_handler.setFormatter(logger_formatter_info)
-        self.logger.addHandler(stdout_handler)
-
-        stderr_handler = logging.StreamHandler(sys.stderr)
-        stderr_handler.setLevel(logging_level)
-        stderr_handler.addFilter(LoggerNotInfoFilter())
-        stderr_handler.setFormatter(logger_formatter_other)
-        self.logger.addHandler(stderr_handler)
-
-    async def setup(self):
-        """Set up basics."""
-
-        self._load_config()
-        self._setup_models()
-        self._create_mcp_client()
-
+    async def _pre_graph(self) -> None:
+        """List MCP tools before graph creation."""
         async with self.mcp_client:
             self.mcp_tools = await self.mcp_client.list_tools()
         self.logger.debug(f"{self.mcp_tools =}")
-
         self.logger.debug(f"{self.tool_description =}")
-        await self._create_graph()
 
     @cached_property
     def tool_description(self):
@@ -128,40 +98,6 @@ class CodeAI(object):
                 )
 
         return description
-
-    def _setup_models(self):
-        """Set up the LLM chat model"""
-        self.c_model = setup_llm(self.config.code_model, self.logger)
-        if self.config.code_model == self.config.reasoning_model:
-            self.r_model = self.c_model
-            self.logger.info(
-                f"Same model used for both chat and reasoning: {self.config.code_model}"
-            )
-        else:
-            self.r_model = setup_llm(self.config.reasoning_model, self.logger)
-
-    def _load_config(self):
-        """Load configuration from file"""
-        cfg_path = Path(self.config_file)
-        if not cfg_path.exists():
-            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
-
-        self.config = AppConfig(_env_file=self.config_file)
-        assert self.config
-        self.logger.debug(f"Config file: {self.config_file}")
-        self.logger.debug(f"Config: {self.config}")
-
-    def _create_mcp_client(self):
-        """Create MCP client from config"""
-        mcp_config_text = ""
-        with open(self.config.mcp_config_file, "r") as f:
-            mcp_config_text = json.load(f)
-            self.logger.debug(f"{mcp_config_text = }")
-
-        self.mcp_config = MCPConfig(**mcp_config_text)
-        self.logger.debug(f"{self.mcp_config = }")
-        self.mcp_client = Client(self.mcp_config)
-        assert self.mcp_client
 
     def _init_graph_state_node(self, state: CodeAIState) -> dict:
         """Initialise, reset state before next iteration"""
@@ -296,7 +232,7 @@ class CodeAI(object):
                     self.logger.critical(
                         f"Received unexpected LLM output: {tool_picker_result =}"
                     )
-                    tool_picker_result = OutputSchema(status="failed")
+                    tool_picker_result = OutputSchema(tool="INVALID")
 
         self.logger.debug(f"{tool_picker_result =}")
 
@@ -405,61 +341,9 @@ class CodeAI(object):
         )
         self.workflow.add_edge("give_answer_to_user", END)
 
-        self.graph = self.workflow.compile(checkpointer=self.checkpointer)
-        if not os.environ.get("RUNNING_IN_DOCKER", 0):
-            try:
-                self.graph.get_graph().draw_mermaid_png(
-                    output_file_path="code-ai-lang-graph.png"
-                )
-            except BaseException as e:
-                self.logger.error("Something went wrong generating lang graph png")
-                self.logger.error(e)
-
-    async def run_graph_invoke_state(
-        self, state: dict, thread_id: str = "default_thread"
-    ):
-        """Run the graph but accept and return states"""
-
-        config = {"configurable": {"thread_id": thread_id}}
-
-        if "query" not in state:
-            self.logger.error(f"Provided state should include the key 'query': {state}")
-            sys.exit(-1)
-
-        final_state = await self.graph.ainvoke(state, config=config)
-        self.logger.debug(final_state)
-        return final_state
-
-    async def run_graph_invoke(self, query: str, thread_id: str = "default_thread"):
-        """Run the graph by using and returning string input"""
-
-        config = {"configurable": {"thread_id": thread_id}}
-
-        final_state = await self.graph.ainvoke({"query": query}, config=config)
-
-        self.logger.debug(f"{final_state =}")
-        if message := final_state.get("message_for_user", None):
-            return message
+        if self.checkpointer:
+            self.graph = self.workflow.compile(checkpointer=self.checkpointer)
         else:
-            return "I was unable to answer"
+            self.graph = self.workflow.compile()
 
-    async def run_graph_stream(self, query: str, thread_id: str = "default_thread"):
-        """Run the graph but return the stream"""
-        config = {"configurable": {"thread_id": thread_id}}
-
-        for chunk in self.graph.astream({"query": query}, config=config):
-            for node, state in chunk.items():
-                self.logger.debug(f"{node}: {repr(state)}")
-                # all nodes must return dicts
-                if message := state.get("message_for_user", None):
-                    self.logger.info(f"User message: {message}")
-                    yield message
-                else:
-                    self.logger.debug(f"Working in node: {node}")
-
-    async def graph_stream(self, query: str, thread_id: str = "default_threaD"):
-        """Run the graph but return the stream"""
-        config = {"configurable": {"thread_id": thread_id}}
-
-        res = await self.graph.astream({"query": query}, config=config)
-        return res
+        self._export_graph_png("code-ai-lang-graph.png")

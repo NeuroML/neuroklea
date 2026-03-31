@@ -7,12 +7,16 @@ on:
       - development
       - experimental
       - 'test*'
+      - 'feat*'
+      - 'fix*'
   pull_request:
     branches:
       - main
       - development
       - experimental
       - 'test*'
+      - 'feat*'
+      - 'fix*'
 
 jobs:
   build:

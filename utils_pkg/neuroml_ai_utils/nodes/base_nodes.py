@@ -2,7 +2,7 @@
 """
 Base node classes for LangGraph processing nodes
 
-File: neuroml_ai_utils/nodes.py
+File: neuroml_ai_utils/nodes/base_nodes.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -21,8 +21,43 @@ from pydantic import BaseModel
 from .llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 
 
-class BaseLLMNode[TSchema: BaseModel](ABC):
-    """Abstract base class for LangGraph nodes that use LLMs"""
+class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
+    """Abstract base class for all LangGraph nodes.
+
+    Generic over TReturn to support both state-updating nodes (Dict[str, Any])
+    and router nodes (str).
+
+    Provides a consistent interface: all nodes have a logger and an
+    execute(state) method.
+    """
+
+    def __init__(self, logger: logging.Logger):
+        """Initialise with a logger.
+
+        :param logger: Logger instance
+        """
+        self.logger = logger
+
+    @abstractmethod
+    async def execute(self, state: TSchema) -> TReturn:
+        """Execute this node and return the result.
+
+        :param state: Current graph state
+        :returns: State updates (dict) or routing label (str)
+        """
+        ...
+
+
+class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]):
+    """Abstract base class for LangGraph nodes that use LLMs.
+
+    Implements a template execution flow:
+    1. Pre-execution check (optional skip)
+    2. Build prompt (system + human)
+    3. Invoke LLM
+    4. Process output (structured or raw)
+    5. Update state
+    """
 
     def __init__(
         self,
@@ -31,8 +66,14 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
         temperature: float,
         output_schema: Optional[Type[TSchema]] = None,
     ):
-        """Initialize with logger and model"""
-        self.logger = logger
+        """Initialize with logger and model.
+
+        :param logger: Logger instance
+        :param model_inst: LLM model instance
+        :param temperature: Sampling temperature
+        :param output_schema: Pydantic schema for structured output
+        """
+        super().__init__(logger)
         self.model_inst = model_inst
         self.temperature = temperature
         self.output_schema = output_schema
@@ -68,7 +109,6 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
         """
         return True
 
-    # but can be overridden
     def _get_output_schema(self) -> Optional[Type[TSchema]]:
         """Return Pydantic schema for structured output if required"""
         return self.output_schema
@@ -128,34 +168,34 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
     @abstractmethod
     def _get_human_prompt(self, state: BaseModel) -> str:
         """Return human prompt for this node"""
-        pass
+        ...
 
     @abstractmethod
     def _get_system_prompt(self, state: BaseModel) -> str:
         """Return system prompt for this node"""
-        pass
+        ...
 
     @abstractmethod
     def _create_prompt_template(
         self, system_prompt: str, human_prompt: str
     ) -> ChatPromptTemplate:
         """Create ChatPromptTemplate for this node"""
-        pass
+        ...
 
     @abstractmethod
     def _get_prompt_variables(self, state: BaseModel) -> dict:
         """Format prompt with state-specific parameters"""
-        pass
+        ...
 
     @abstractmethod
-    def _update_state(self, result: TSchema, state: BaseModel) -> Dict[str, Any]:
+    def _update_state(self, result: Any, state: BaseModel) -> Dict[str, Any]:
         """Update and return state dictionary"""
-        pass
+        ...
 
     @abstractmethod
-    def _get_default_error_result(self) -> TSchema:
+    def _get_default_error_result(self) -> Any:
         """Return default result when processing fails"""
-        pass
+        ...
 
 
 class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
@@ -246,3 +286,16 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
             context_summary=state.context_summary,  # type: ignore
             num_recent_messages=self.num_recent_messages,
         )
+
+
+class BaseRouterNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, str]):
+    """Base class for LangGraph router nodes.
+
+    Router nodes inspect the state and return a string label that determines
+    which edge to follow next. Used with ``add_conditional_edges()``.
+    """
+
+    @abstractmethod
+    async def execute(self, state: TSchema) -> str:
+        """Return the routing label (edge name) based on state."""
+        ...

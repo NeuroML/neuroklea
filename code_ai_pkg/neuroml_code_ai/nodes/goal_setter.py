@@ -8,15 +8,17 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+from pathlib import Path
 from typing import Any, Dict
 
+from neuroml_ai_utils.nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
 
-from neuroml_code_ai.nodes.base_node import BaseCodeAINode
+from neuroml_code_ai import prompts
 from neuroml_code_ai.schemas import CodeAIState, GoalSchema
 
 
-class GoalSetterNode(BaseCodeAINode[GoalSchema]):
+class GoalSetterNode(BaseMemoryLLMNode[GoalSchema]):
     """Goal setter node"""
 
     def __init__(
@@ -36,7 +38,8 @@ class GoalSetterNode(BaseCodeAINode[GoalSchema]):
             output_schema,
             system_prompt_file,
             human_prompt_file,
-            memory,
+            prompt_registry_location=Path(prompts.__file__).parent,
+            memory=memory,
         )
 
     def _get_prompt_variables(self, state: CodeAIState) -> dict:

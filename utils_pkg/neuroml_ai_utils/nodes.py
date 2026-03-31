@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Base node class for LangGraph processing nodes
+Base node classes for LangGraph processing nodes
 
 File: neuroml_ai_utils/nodes.py
 
@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Any, Dict, Optional, Type, Union
 
 from langchain_core.prompt_values import PromptValue
@@ -17,7 +18,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 from pydantic import BaseModel
 
-from .llm import parse_output_with_thought
+from .llm import load_prompt, parse_output_with_thought
 
 
 class BaseLLMNode[TSchema: BaseModel](ABC):
@@ -143,3 +144,88 @@ class BaseLLMNode[TSchema: BaseModel](ABC):
     def _get_default_error_result(self) -> TSchema:
         """Return default result when processing fails"""
         pass
+
+
+class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
+    """Base class for LangGraph nodes that load prompts from files.
+
+    Extends BaseLLMNode with:
+    - File-based prompt loading via load_prompt()
+    - Optional memory support (appends memory content to human prompt)
+    - Configurable prompt registry location (package-specific prompt directories)
+    """
+
+    def __init__(
+        self,
+        logger: logging.Logger,
+        model: Any,
+        temperature: float,
+        output_schema: Type[TSchema],
+        system_prompt_file: str,
+        human_prompt_file: str,
+        prompt_registry_location: Path,
+        memory: bool = False,
+    ):
+        """Initialize with file-based prompt loading and memory support.
+
+        :param logger: Logger instance
+        :param model: LLM model instance
+        :param temperature: Sampling temperature for LLM calls
+        :param output_schema: Pydantic schema for structured output
+        :param system_prompt_file: Name of the system prompt file (no extension)
+        :param human_prompt_file: Name of the human prompt file (no extension)
+        :param prompt_registry_location: Path to the prompts directory
+        :param memory: Whether to append memory content to the human prompt
+        """
+        super().__init__(logger, model, temperature, output_schema=output_schema)
+
+        self.system_prompt_file = system_prompt_file
+        self.human_prompt_file = human_prompt_file
+        self.prompt_registry_location = prompt_registry_location
+        self.memory = memory
+
+    def _get_system_prompt(self) -> str:
+        """Load system prompt from file."""
+        system_prompt = self._load_prompt_file(self.system_prompt_file)
+        self.logger.debug(f"{system_prompt =}")
+        return system_prompt
+
+    def _get_human_prompt(self) -> str:
+        """Load human prompt from file, optionally appending memory content."""
+        human_prompt = self._load_prompt_file(self.human_prompt_file)
+
+        if self.memory:
+            memory_addition = self._get_memory_addition()
+            return human_prompt + memory_addition
+
+        self.logger.debug(f"{human_prompt =}")
+        return human_prompt
+
+    def _load_prompt_file(self, prompt_name: str) -> str:
+        """Load a prompt file from the registry.
+
+        :param prompt_name: Prompt file name (without extension)
+        :returns: Prompt text content
+        """
+        return load_prompt(
+            prompt_name=prompt_name,
+            prompt_registry_location=self.prompt_registry_location,
+        )
+
+    def _create_prompt_template(
+        self, system_prompt: str, human_prompt: str
+    ) -> ChatPromptTemplate:
+        """Create ChatPromptTemplate with system and human messages."""
+        prompt_template = ChatPromptTemplate(
+            [("system", system_prompt), ("human", human_prompt)]
+        )
+        self.logger.debug(f"{prompt_template =}")
+        return prompt_template
+
+    def _get_memory_addition(self) -> str:
+        """Hook for subclasses to inject memory content into the human prompt.
+
+        Override this method to provide memory-specific content.
+        The default implementation returns an empty string.
+        """
+        return ""

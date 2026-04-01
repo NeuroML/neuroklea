@@ -21,6 +21,7 @@ from neuroml_ai_utils.llm import (
     setup_llm,
     split_output_by_section,
 )
+from neuroml_ai_utils.nodes.answer_general import AnswerGeneral
 from neuroml_ai_utils.nodes.summarise_memory import SummariseMemoryNode
 from neuroml_ai_utils.stores import serialize_reference
 
@@ -162,72 +163,6 @@ class RAG(BaseLangGraph):
             "query_domain": query_domain_result.query_domain,
             "messages": messages,
         }
-
-    def _answer_general_question_node(self, state: RAGState) -> dict:
-        """Answer a general question"""
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-
-        system_prompt = dedent("""
-        You are a warm, easy-going conversational assistant.
-        Engage with the user and answer questions to the best of your ability.
-        Reflect their tone, acknowledge what they say, and continue the conversation naturally.
-
-        ## Core directives
-
-        - Do not assume this question is related to any particular domain.
-        - Only provide information you are confident about. If you are unsuare, clearly say so.
-        - Avoid inventing facts. If a fact is not known or uncertain, respond with "I was unable to find factual information about this query".
-        - Keep answers clear, concise, and user-friendly.
-        - Respond in a formal, academic style.
-
-        Examples:
-        User: Thank you.
-        Assistant: You are welcome.
-        User: I like cats.
-        Assistant: That's great, I like cats too. I also like dogs.
-
-        """)
-        if self.memory:
-            system_prompt += add_memory_to_prompt(
-                messages=state.messages,
-                context_summary=state.context_summary,
-                num_history_messages=10,
-            )
-
-        question_prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", "User query: {query}")]
-        )
-        self.logger.debug(f"{question_prompt_template =}")
-        prompt = question_prompt_template.invoke({"query": state.query})
-
-        output = self.c_model.invoke(
-            prompt, config={"configurable": {"temperature": 0.3}}
-        )
-        self.logger.debug(f"{output =}")
-
-        answer = ""
-        # add warning if we're falling back to training data for a domain query
-        if (
-            self.stores.vs_config.fallback_to_training_data
-            and state.query_domain != "undefined"
-        ):
-            answer += (
-                "\n\n"
-                + self.stores.vs_config.fallback_to_training_data.warning
-                + "\n\n"
-            )
-
-        thought, answer_text = split_output_by_section(
-            output.content, "<think>", "</think>"
-        )
-        answer += answer_text
-
-        messages = state.messages
-        output.content = answer
-        messages.append(output)
-
-        return {"messages": messages, "message_for_user": output.content}
 
     def _retrieve_info_node(self, state: RAGState) -> dict:
         self.logger.debug(f"retrieval query: {state.retrieval_query}")
@@ -441,8 +376,16 @@ class RAG(BaseLangGraph):
         self.workflow.add_node(
             "generate_retrieval_query", self._generate_retrieval_query_node.execute
         )
+        self._answer_general_node = AnswerGeneral(
+            logger=self.logger,
+            model=self.c_model,
+            temperature=0.3,
+            memory=self.memory,
+            num_history_messages=10,
+            fallback_config=self.stores.vs_config.fallback_to_training_data,
+        )
         self.workflow.add_node(
-            "answer_general_question", self._answer_general_question_node
+            "answer_general_question", self._answer_general_node.execute
         )
         self._refuse_answer_node = RefuseAnswer(logger=self.logger, stores=self.stores)
         self.workflow.add_node("refuse_to_answer", self._refuse_answer_node.execute)

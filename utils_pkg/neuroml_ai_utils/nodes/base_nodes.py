@@ -281,7 +281,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
             return self._prompt_registry_location
 
         subclass_file = inspect.getfile(self.__class__)
-        loc = Path(subclass_file).parent.parent / "prompts"
+        loc = Path(subclass_file).parent / "prompts"
         self.logger.debug(f"No prompt registry location set. Falling back to {loc}")
         return loc
 

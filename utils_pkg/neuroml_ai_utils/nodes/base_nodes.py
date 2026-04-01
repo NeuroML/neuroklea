@@ -308,11 +308,20 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
 
     def _create_prompt_template(
         self, system_prompt: str, human_prompt: str
-    ) -> ChatPromptTemplate:
+    ) -> ChatPromptTemplate | None:
         """Create ChatPromptTemplate with system and human messages."""
-        prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", human_prompt)]
-        )
+        if len(system_prompt) and len(human_prompt):
+            prompt_template = ChatPromptTemplate(
+                [("system", system_prompt), ("human", human_prompt)]
+            )
+        elif len(system_prompt) and not len(human_prompt):
+            prompt_template = ChatPromptTemplate([("system", system_prompt)])
+        elif len(human_prompt) and not len(system_prompt):
+            prompt_template = ChatPromptTemplate([("human", human_prompt)])
+        else:
+            self.logger.error("No prompts provided. Cannot create prompt template!")
+            return None
+
         self.logger.debug(f"{prompt_template =}")
         return prompt_template
 

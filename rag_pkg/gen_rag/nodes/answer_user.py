@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 
@@ -26,6 +26,7 @@ class AnswerUser(BaseLangGraphNode[RAGState, Dict[str, Any]]):
         """
         super().__init__(logger)
 
+    @override
     async def execute(self, state: RAGState) -> Dict[str, Any]:
         """Return the message for the user.
 

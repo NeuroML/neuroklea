@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from neuroml_ai_utils.stores import serialize_reference
@@ -35,6 +35,7 @@ class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
             memory=False,
         )
 
+    @override
     def _get_prompt_variables(self, state: RAGState) -> dict:
         """Format prompt with question, context, and answer."""
         question = state.query
@@ -48,6 +49,7 @@ class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
             "output_schema": self._get_output_schema_json(),
         }
 
+    @override
     def _update_state(
         self, result: EvaluateAnswerSchema, state: RAGState
     ) -> Dict[str, Any]:
@@ -56,6 +58,7 @@ class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
             "text_response_eval": result,
         }
 
+    @override
     def _get_default_error_result(self) -> EvaluateAnswerSchema:
         """Return default result when processing fails."""
         return EvaluateAnswerSchema(next_step="undefined", summary="Evaluation failed")

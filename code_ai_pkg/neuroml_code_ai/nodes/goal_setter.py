@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
@@ -44,18 +44,21 @@ class GoalSetter(BaseMemoryLLMNode[GoalSchema]):
             memory=memory,
         )
 
+    @override
     def _get_prompt_variables(self, state: CodeAIState) -> dict:
         """Format prompt with state-specific parameters"""
         variables = {"query": state.query}
         self.logger.debug(f"{variables =}")
         return variables
 
+    @override
     def _update_state(self, result: GoalSchema, state: BaseModel) -> Dict[str, Any]:
         """Update and return state dictionary"""
         state_update = {"goal": result, "message_for_user": result.goal}
         self.logger.debug(state_update)
         return state_update
 
+    @override
     def _get_default_error_result(self) -> GoalSchema:
         """Return default result when processing fails"""
         return self.output_schema(goal="Invalid", success_criteria="Invalid")

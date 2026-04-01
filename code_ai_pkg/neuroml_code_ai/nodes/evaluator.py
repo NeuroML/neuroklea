@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 # TODO: complete
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 
@@ -28,6 +28,7 @@ class Evaluator(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
         """
         super().__init__(logger)
 
+    @override
     async def execute(self, state: CodeAIState) -> Dict[str, Any]:
         """Check if all steps are completed and update plan status.
 

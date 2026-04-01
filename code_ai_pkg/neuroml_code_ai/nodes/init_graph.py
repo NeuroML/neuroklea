@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 
@@ -23,6 +23,7 @@ class InitGraphState(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
         """Initialise with a logger."""
         super().__init__(logger)
 
+    @override
     async def execute(self, state: CodeAIState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""
         return {

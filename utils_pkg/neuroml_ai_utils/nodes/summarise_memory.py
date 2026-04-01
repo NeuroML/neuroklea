@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
@@ -52,6 +52,7 @@ class SummariseMemoryNode(BaseLLMNode):
             prompt_registry_location = Path(__file__).parent / "prompts"
         self.prompt_registry_location = prompt_registry_location
 
+    @override
     def _pre_exec(self, state: BaseModel) -> bool:
         """Skip if not enough recent conversations to summarise."""
         self.conversation, human_messages, ai_messages = get_last_n_conversations(
@@ -69,6 +70,7 @@ class SummariseMemoryNode(BaseLLMNode):
             return False
         return True
 
+    @override
     def _get_system_prompt(self, state: BaseModel) -> str:
         """Load system prompt from file."""
         return load_prompt(
@@ -76,6 +78,7 @@ class SummariseMemoryNode(BaseLLMNode):
             prompt_registry_location=self.prompt_registry_location,
         )
 
+    @override
     def _get_human_prompt(self, state: BaseModel) -> str:
         """Load human prompt from file."""
         return load_prompt(
@@ -83,12 +86,14 @@ class SummariseMemoryNode(BaseLLMNode):
             prompt_registry_location=self.prompt_registry_location,
         )
 
+    @override
     def _create_prompt_template(
         self, system_prompt: str, human_prompt: str
     ) -> ChatPromptTemplate:
         """Create ChatPromptTemplate with system and human messages."""
         return ChatPromptTemplate([("system", system_prompt), ("human", human_prompt)])
 
+    @override
     def _get_prompt_variables(self, state: BaseModel) -> dict:
         """Format prompt with conversation data."""
         return {
@@ -96,6 +101,7 @@ class SummariseMemoryNode(BaseLLMNode):
             "conversation": self.conversation,
         }
 
+    @override
     def _update_state(self, result: Any, state: BaseModel) -> Dict[str, Any]:
         """Extract summary from raw AIMessage output."""
         self.logger.debug(f"Current history summary is:\n{result.content}")
@@ -105,6 +111,7 @@ class SummariseMemoryNode(BaseLLMNode):
             "summarised_till": len(state.messages),  # type: ignore
         }
 
+    @override
     def _get_default_error_result(self) -> AIMessage:
         """Return default result when processing fails."""
         return AIMessage(content="")

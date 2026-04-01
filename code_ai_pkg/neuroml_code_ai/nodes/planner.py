@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
@@ -40,6 +40,7 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
         """Set tool descriptions (called by orchestrator after construction)."""
         self._tools_description = description
 
+    @override
     def _get_prompt_variables(self, state: CodeAIState) -> dict:
         """Format prompt with current plan state."""
         return {
@@ -53,6 +54,7 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
             "output_schema": self._get_output_schema_json(),
         }
 
+    @override
     def _update_state(self, result: PlanSchema, state: BaseModel) -> Dict[str, Any]:
         """Update plan and generate summary for user."""
         plan_summary = "## Plan summary:\n\n"
@@ -64,6 +66,7 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
 
         return {"plan": plan, "message_for_user": plan_summary}
 
+    @override
     def _get_default_error_result(self) -> PlanSchema:
         """Return default result when processing fails."""
         return PlanSchema(status="failed")

@@ -9,7 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from langchain_core.utils.function_calling import convert_to_json_schema
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
@@ -41,10 +41,12 @@ class ToolPicker(BaseMemoryLLMNode[ToolCallSchema]):
         """Set tool descriptions (called by orchestrator after construction)."""
         self._tools_description = description
 
+    @override
     def _get_human_prompt(self, state: BaseModel) -> str:
         """Return empty string — this node only uses a system prompt."""
         return ""
 
+    @override
     def _get_prompt_variables(self, state: CodeAIState) -> dict:
         """Format prompt with current step state."""
         current_step_index = state.plan.current_step_index
@@ -58,10 +60,12 @@ class ToolPicker(BaseMemoryLLMNode[ToolCallSchema]):
             "output_schema": convert_to_json_schema(ToolCallSchema),
         }
 
+    @override
     def _update_state(self, result: ToolCallSchema, state: BaseModel) -> Dict[str, Any]:
         """Update state with the selected tool call."""
         return {"tool_call": result}
 
+    @override
     def _get_default_error_result(self) -> ToolCallSchema:
         """Return default result when processing fails."""
         return ToolCallSchema(tool="INVALID")

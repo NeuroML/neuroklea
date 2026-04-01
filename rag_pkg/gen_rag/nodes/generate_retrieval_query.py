@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from textwrap import dedent
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
 from langchain_core.utils import Output
@@ -37,6 +37,7 @@ class GenerateRetrievalQuery(BaseMemoryLLMNode[RAGState]):
             memory=True,
         )
 
+    @override
     def _get_system_prompt(self, state: RAGState) -> str:
         """Load system prompt, optionally appending evaluator feedback."""
         system_prompt = super()._get_system_prompt(state)
@@ -53,10 +54,12 @@ class GenerateRetrievalQuery(BaseMemoryLLMNode[RAGState]):
 
         return system_prompt
 
+    @override
     def _get_prompt_variables(self, state: RAGState) -> dict:
         """Format prompt with user query."""
         return {"query": state.query}
 
+    @override
     def _update_state(self, result: Output, state: RAGState) -> Dict[str, Any]:
         """Update state with the generated retrieval query."""
         thought, answer = (
@@ -72,6 +75,7 @@ class GenerateRetrievalQuery(BaseMemoryLLMNode[RAGState]):
 
         return {"messages": messages, "retrieval_query": answer}
 
+    @override
     def _get_default_error_result(self) -> Any:
         """Return default result when processing fails."""
         return ""

@@ -18,6 +18,7 @@ from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm
 
 from neuroml_code_ai.nodes.answer_user import AnswerUser
+from neuroml_code_ai.nodes.evaluator import Evaluator
 from neuroml_code_ai.nodes.goal_setter import GoalSetter
 from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
@@ -124,20 +125,6 @@ class CodeAI(BaseLangGraph):
         result["plan"] = plan
         return result
 
-    # TODO
-    async def _evaluator_node(self, state: CodeAIState) -> dict:
-        plan = state.plan
-        result = {}
-
-        # if all steps completed
-        if plan.current_step_index > len(plan.step_list):
-            plan.status = "completed"
-            result["plan"] = plan
-
-        # if any steps failed?
-
-        return result
-
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
 
@@ -165,11 +152,12 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._tool_picker_node.set_tools_description(self.tool_description)
+        self._evaluator_node = Evaluator(logger=self.logger)
         self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
         self.workflow.add_node("tool_caller", self._tool_caller_node)
-        self.workflow.add_node("evaluator", self._evaluator_node)
+        self.workflow.add_node("evaluator", self._evaluator_node.execute)
         self.workflow.add_node("step_router", self._step_router_node)
         self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
 

@@ -112,7 +112,8 @@ class VectorStores:
         self.embeddings = None
         self.vs_config_file = vs_config_file
         self.vs_config: VectorStoresConfig
-        self.logger = logger
+        self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
+        self.embedding_model: str | None = None
 
     def setup(self) -> None:
         """Load configuration and initialise embedding model."""
@@ -141,6 +142,8 @@ class VectorStores:
         self.default_k = self.vs_config.default_k
         self.k_max = self.vs_config.k_max
         self.logger.debug(f"{self.vs_config =}")
+
+        assert self.embedding_model
 
     def inc_k(self, inc: int = 1) -> bool:
         """Increase k by inc.

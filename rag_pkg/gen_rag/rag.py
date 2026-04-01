@@ -332,6 +332,33 @@ class RAG(BaseLangGraph):
 
         return {"messages": messages}
 
+    def _retrieve_info_node(self, state: RAGState) -> dict:
+        self.logger.debug(f"retrieval query: {state.messages[-1].content}")
+
+        # current reference material
+        reference_material = state.reference_material
+        cleaned_query = state.messages[-1].content
+
+        # If evaluator said we need more info, increase k for this round
+        if state.text_response_eval.next_step == "retrieve_more_info":
+            self.stores.inc_k()
+
+        # new references, or more references for an existing query from all
+        # stores
+        res = self.stores.retrieve(domain_name=state.query_domain, query=cleaned_query)
+
+        # rank info from all stores, keep top N
+        # remember that when asking for more ks from the vector store, they'll
+        # still return the initial ones, so we don't need to do any manual
+        # merging here for more refs for a particular query
+        sorted_res = sorted(res, key=lambda tup: tup[1], reverse=True)
+        new_ref = {state.query_domain: sorted_res[: self.num_refs_max]}
+
+        reference_material.update(new_ref)
+        self.logger.debug(f"{reference_material =}")
+
+        return {"reference_material": reference_material}
+
     def _generate_answer_from_context_node(self, state: RAGState) -> dict:
         """Generate the answer"""
         assert self.c_model
@@ -385,28 +412,9 @@ class RAG(BaseLangGraph):
             ]
         )
         question = state.query
-
-        self.logger.debug(f"retrieval query: {state.messages[-1].content}")
-
-        # current reference material
         reference_material = state.reference_material
-
-        cleaned_query = state.messages[-1].content
-
-        # new references, or more references for an existing query from all
-        # stores
-        res = self.stores.retrieve(domain_name=state.query_domain, query=cleaned_query)
-        # rank info from all stores, keep top N
-        # remember that when asking for more ks from the vector store, they'll
-        # still return the initial ones, so we don't need to do any manual
-        # merging here for more refs for a particular query
-        sorted_res = sorted(res, key=lambda tup: tup[1], reverse=True)
-        new_ref = {state.query_domain: sorted_res[: self.num_refs_max]}
-
-        reference_material.update(new_ref)
-        self.logger.debug(f"{reference_material =}")
-
         reference_material_text = serialize_reference(reference_material)
+
         prompt = generate_answer_template.invoke(
             {"question": question, "reference_material": reference_material_text}
         )
@@ -424,7 +432,7 @@ class RAG(BaseLangGraph):
         for rf in ["\nreference", "\nReference", "\nReferences", "\nreferences"]:
             if rf in answer:
                 answer_text, references = split_output_by_section(answer, rf)
-                ref_list = set(references.split())
+                ref_list = list(set(references.split()))
                 break
 
         if ref_list:
@@ -545,6 +553,7 @@ class RAG(BaseLangGraph):
             "answer_general_question", self._answer_general_question_node
         )
         self.workflow.add_node("refuse_to_answer", self._refuse_to_answer_node)
+        self.workflow.add_node("retrieve_info", self._retrieve_info_node)
         self.workflow.add_node(
             "generate_answer_from_context", self._generate_answer_from_context_node
         )

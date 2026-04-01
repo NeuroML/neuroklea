@@ -24,7 +24,7 @@ from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
 from neuroml_code_ai.nodes.tool_picker import ToolPicker
 
-from .api.conf import AppConfig
+from .config import AppConfig
 from .schemas import CodeAIState, GoalSchema
 
 logging.basicConfig()

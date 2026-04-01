@@ -29,6 +29,7 @@ from .nodes.answer_user import AnswerUser
 from .nodes.evaluator import Evaluator
 from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
+from .nodes.refuse_answer import RefuseAnswer
 from .schemas import RAGState
 
 logging.basicConfig()
@@ -161,13 +162,6 @@ class RAG(BaseLangGraph):
             "query_domain": query_domain_result.query_domain,
             "messages": messages,
         }
-
-    def _refuse_to_answer_node(self, state: RAGState) -> dict:
-        msg = "Sorry. I cannot answer this query as it does not fall into my permitted domains. Available domains are:\n"
-        msg += "\n- ".join([""] + self.stores.domains)
-        msg += "\n\n\nPlease try another query."
-
-        return {"message_for_user": msg}
 
     def _answer_general_question_node(self, state: RAGState) -> dict:
         """Answer a general question"""
@@ -450,7 +444,8 @@ class RAG(BaseLangGraph):
         self.workflow.add_node(
             "answer_general_question", self._answer_general_question_node
         )
-        self.workflow.add_node("refuse_to_answer", self._refuse_to_answer_node)
+        self._refuse_answer_node = RefuseAnswer(logger=self.logger, stores=self.stores)
+        self.workflow.add_node("refuse_to_answer", self._refuse_answer_node.execute)
         self.workflow.add_node("retrieve_info", self._retrieve_info_node)
         self.workflow.add_node(
             "generate_answer_from_context", self._generate_answer_from_context_node

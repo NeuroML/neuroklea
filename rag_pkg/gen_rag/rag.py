@@ -55,6 +55,7 @@ class RAG(BaseLangGraph):
         # total number of reference documents
         self.num_refs_max = 10
 
+    @override
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)

@@ -71,8 +71,6 @@ class BaseLangGraph(ABC):
         self.memory = memory
         self.checkpointer: InMemorySaver | None = InMemorySaver() if memory else None
 
-        self.num_recent_messages = 10
-
         self.config_file = os.getenv(self.config_env_var, self.config_file_default)
         self.config: BaseModel
 
@@ -145,12 +143,14 @@ class BaseLangGraph(ABC):
             assert self.mcp_client
         else:
             self.logger.warning("No MCP server configured.")
+            self.mcp_client = None
 
     async def _get_mcp_tools(self) -> None:
         """List MCP tools and optionally set up vector stores."""
-        async with self.mcp_client:
-            self.mcp_tools = await self.mcp_client.list_tools()
-        self.logger.debug(f"{self.mcp_tools =}")
+        if self.mcp_client:
+            async with self.mcp_client:
+                self.mcp_tools = await self.mcp_client.list_tools()
+            self.logger.debug(f"{self.mcp_tools =}")
 
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""

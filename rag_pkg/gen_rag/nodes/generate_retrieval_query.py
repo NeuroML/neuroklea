@@ -13,7 +13,7 @@ from textwrap import dedent
 from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
-from langchain_core.utils import Output
+from langchain_core.runnables.utils import Output
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 
 from gen_rag.schemas import RAGState

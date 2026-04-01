@@ -326,7 +326,8 @@ def get_last_n_conversations(
     )
 
 
-def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) -> str:
+# TODO: num_history_messages is currently part of the orchestrator, but nodes wont have access to it.
+def add_memory_to_prompt(context_summary: str, messages, num_history_messages) -> str:
     """Add memory to system prompt.
 
     Adds the context summary and recent conversation
@@ -359,7 +360,7 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
         """)
 
     conversation, _, _ = get_last_n_conversations(
-        messages, (-1 * num_recent_messages), None
+        messages, (-1 * num_history_messages), None
     )
     if len(conversation):
         ret_string += dedent(f"""

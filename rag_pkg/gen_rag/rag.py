@@ -17,12 +17,11 @@ from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import (
     add_memory_to_prompt,
-    get_history_summary_prompt,
-    get_last_n_conversations,
     parse_output_with_thought,
     setup_llm,
     split_output_by_section,
 )
+from neuroml_ai_utils.nodes.summarise_memory import SummariseMemoryNode
 from neuroml_ai_utils.stores import serialize_reference
 
 from .config import AppConfig
@@ -63,38 +62,6 @@ class RAG(BaseLangGraph):
         """Setup and get compiled graph"""
         await self.setup()
         return self.graph
-
-    def _summarise_history_node(self, state: RAGState) -> dict:
-        """Clean ups after every round of conversation"""
-        assert self.c_model
-        conversation, human_messages, ai_messages = get_last_n_conversations(
-            state.messages, state.summarised_till, None
-        )
-        conversations_num = len(human_messages) + len(ai_messages)
-
-        if conversations_num < self.num_recent_messages:
-            self.logger.debug(
-                f"Not enough conversations to summarise yet: {conversations_num}/{self.num_recent_messages}"
-            )
-            return {}
-
-        prompt = get_history_summary_prompt(
-            conversation=conversation,
-            logger=self.logger,
-            current_summary=state.context_summary,
-        )
-        output = self.c_model.invoke(
-            prompt, config={"configurable": {"temperature": 0.3}}
-        )
-        self.logger.debug(f"Current history summary is:\n{output.content}")
-        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
-
-        # Do not update messages here, since we don't want this to be noted as
-        # an AI response to a user query
-        return {
-            "context_summary": answer,
-            "summarised_till": len(state.messages),
-        }
 
     def _classify_question_domain(self, state: RAGState) -> dict:
         """Ask LLM to figure out the domain of the query"""
@@ -145,7 +112,7 @@ class RAG(BaseLangGraph):
             system_prompt += add_memory_to_prompt(
                 messages=state.messages,
                 context_summary=state.context_summary,
-                num_recent_messages=self.num_recent_messages,
+                num_history_messages=10,
             )
 
         self.logger.debug(f"{system_prompt = }")
@@ -231,7 +198,7 @@ class RAG(BaseLangGraph):
             system_prompt += add_memory_to_prompt(
                 messages=state.messages,
                 context_summary=state.context_summary,
-                num_recent_messages=self.num_recent_messages,
+                num_history_messages=10,
             )
 
         question_prompt_template = ChatPromptTemplate(
@@ -330,14 +297,6 @@ class RAG(BaseLangGraph):
 
         """)
 
-        # Do not add memory at this step: limit to provided context
-        # if self.memory:
-        #     system_prompt += add_memory_to_prompt(
-        #         messages=state.messages,
-        #         context_summary=state.context_summary,
-        #         num_recent_messages=self.num_recent_messages,
-        #     )
-        #
         generate_answer_template = ChatPromptTemplate(
             [
                 ("system", system_prompt),
@@ -508,7 +467,15 @@ class RAG(BaseLangGraph):
             "ask_user_for_clarification", self._ask_user_for_clarification_node
         )
         if self.memory:
-            self.workflow.add_node("summarise_history", self._summarise_history_node)
+            self._summarise_history_node = SummariseMemoryNode(
+                logger=self.logger,
+                model=self.c_model,
+                temperature=0.3,
+                summarisation_threshold=10,
+            )
+            self.workflow.add_node(
+                "summarise_history", self._summarise_history_node.execute
+            )
 
         self.workflow.add_edge(START, "init_rag_state")
         self.workflow.add_edge("init_rag_state", "classify_question_domain")

@@ -32,7 +32,7 @@ class SummariseMemoryNode(BaseLLMNode):
         logger: logging.Logger,
         model: Any,
         temperature: float = 0.3,
-        num_recent_messages: int = 10,
+        summarisation_threshold: int = 10,
         prompt_registry_location: Path | None = None,
     ):
         """Initialise the summarisation node.
@@ -40,12 +40,12 @@ class SummariseMemoryNode(BaseLLMNode):
         :param logger: Logger instance
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
-        :param num_recent_messages: Minimum number of messages before summarising
+        :param summarisation_threshold: Minimum number of messages before summarising
         :param prompt_registry_location: Path to prompts directory (defaults to built-in)
         """
         super().__init__(logger, model, temperature, output_schema=None)
 
-        self.num_recent_messages = num_recent_messages
+        self.summarisation_threshold = summarisation_threshold
         self.conversation = ""
 
         if prompt_registry_location is None:
@@ -62,10 +62,10 @@ class SummariseMemoryNode(BaseLLMNode):
         )
         conversations_num = len(human_messages) + len(ai_messages)
 
-        if conversations_num < self.num_recent_messages:
+        if conversations_num < self.summarisation_threshold:
             self.logger.debug(
                 f"Not enough conversations to summarise yet: "
-                f"{conversations_num}/{self.num_recent_messages}"
+                f"{conversations_num}/{self.summarisation_threshold}"
             )
             return False
         return True

@@ -17,11 +17,11 @@ from typing import Any, Dict, Type
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
-from langchain_core.utils import Output
+from langchain_core.runnables.utils import Output
 from langchain_core.utils.function_calling import convert_to_json_schema
 from pydantic import BaseModel
 
-from .llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
+from ..llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 
 
 class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
@@ -251,7 +251,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         self._prompt_prefix: str | None = None
         self._prompt_registry_location: Path | None = None
         self.memory = memory
-        self.num_recent_messages = 10
+        self.num_history_messages = 10
 
     @property
     def prompt_prefix(self) -> str:
@@ -279,7 +279,9 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
             return self._prompt_registry_location
 
         subclass_file = inspect.getfile(self.__class__)
-        return Path(subclass_file).parent / "prompts"
+        loc = Path(subclass_file).parent.parent / "prompts"
+        self.logger.debug(f"No prompt registry location set. Falling back to {loc}")
+        return loc
 
     @prompt_registry_location.setter
     def prompt_registry_location(self, value: Path) -> None:
@@ -343,7 +345,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         return add_memory_to_prompt(
             messages=state.messages,  # type: ignore
             context_summary=state.context_summary,  # type: ignore
-            num_recent_messages=self.num_recent_messages,
+            num_history_messages=self.num_history_messages,
         )
 
 

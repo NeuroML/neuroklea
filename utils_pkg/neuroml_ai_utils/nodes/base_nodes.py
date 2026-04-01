@@ -216,6 +216,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         ...
 
 
+# TODO: collapse into BaseLLMNode?
 class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
     """Base class for LangGraph nodes that load prompts from files.
 

@@ -17,10 +17,10 @@ from pydantic import BaseModel
 
 from ..llm import split_output_by_section
 from ..stores import FallbackConfig
-from .base_nodes import BaseLLMNode
+from .base_nodes import BaseMemoryLLMNode
 
 
-class AnswerGeneral(BaseLLMNode):
+class AnswerGeneral(BaseMemoryLLMNode):
     """Answer general (non-domain) questions using the LLM's training data.
 
     Provides a conversational, user-friendly response. Optionally appends
@@ -35,7 +35,6 @@ class AnswerGeneral(BaseLLMNode):
         memory: bool = False,
         num_history_messages: int = 10,
         fallback_config: FallbackConfig | None = None,
-        prompt_registry_location: Path | None = None,
     ):
         """Initialise the general answer node.
 
@@ -45,17 +44,17 @@ class AnswerGeneral(BaseLLMNode):
         :param memory: Whether to include conversation history in the prompt
         :param num_history_messages: Number of recent messages to include when memory is enabled
         :param fallback_config: Optional config for fallback warning text
-        :param prompt_registry_location: Path to prompts directory (defaults to built-in)
         """
-        super().__init__(logger, model, temperature, output_schema=None)
+        super().__init__(
+            logger=logger,
+            model=model,
+            temperature=temperature,
+            output_schema=None,
+            memory=memory,
+        )
 
-        self.memory = memory
         self.num_history_messages = num_history_messages
         self.fallback_config = fallback_config
-
-        if prompt_registry_location is None:
-            prompt_registry_location = Path(__file__).parent / "prompts"
-        self.prompt_registry_location = prompt_registry_location
 
     @override
     def _get_prompt_variables(self, state: BaseModel) -> dict:

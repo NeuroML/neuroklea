@@ -13,14 +13,13 @@ from pathlib import Path
 from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
-from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
 
-from ..llm import get_last_n_conversations, load_prompt, split_output_by_section
-from .base_nodes import BaseLLMNode
+from ..llm import get_last_n_conversations, split_output_by_section
+from .base_nodes import BaseMemoryLLMNode
 
 
-class SummariseMemoryNode(BaseLLMNode):
+class SummariseMemoryNode(BaseMemoryLLMNode):
     """Node that summarises conversation history into a context summary.
 
     Uses _pre_exec() to skip execution if there aren't enough recent messages.
@@ -33,7 +32,7 @@ class SummariseMemoryNode(BaseLLMNode):
         model: Any,
         temperature: float = 0.3,
         summarisation_threshold: int = 10,
-        prompt_registry_location: Path | None = None,
+        memory: bool = False,
     ):
         """Initialise the summarisation node.
 
@@ -41,16 +40,18 @@ class SummariseMemoryNode(BaseLLMNode):
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param summarisation_threshold: Minimum number of messages before summarising
-        :param prompt_registry_location: Path to prompts directory (defaults to built-in)
+        :param memory: Whether to include conversation history in the prompt
         """
-        super().__init__(logger, model, temperature, output_schema=None)
+        super().__init__(
+            logger=logger,
+            model=model,
+            temperature=temperature,
+            output_schema=None,
+            memory=memory,
+        )
 
         self.summarisation_threshold = summarisation_threshold
         self.conversation = ""
-
-        if prompt_registry_location is None:
-            prompt_registry_location = Path(__file__).parent / "prompts"
-        self.prompt_registry_location = prompt_registry_location
 
     @override
     def _pre_exec(self, state: BaseModel) -> bool:

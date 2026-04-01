@@ -237,7 +237,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         logger: logging.Logger,
         model: Any,
         temperature: float,
-        output_schema: Type[TSchema],
+        output_schema: Type[TSchema] | None,
         memory: bool = False,
     ):
         """Initialize with file-based prompt loading and memory support.

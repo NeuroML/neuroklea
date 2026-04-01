@@ -243,10 +243,10 @@ class RAG(BaseLangGraph):
         self._classify_question_node = ClassifyQuestion(
             logger=self.logger,
             model=self.c_model,
-            stores=self.stores,
-            query_domain_schema=self.QueryDomainSchema,
+            output_schema=self.QueryDomainSchema,
             temperature=0.3,
             memory=self.memory,
+            stores=self.stores,
             num_history_messages=10,
         )
         self.workflow.add_node(

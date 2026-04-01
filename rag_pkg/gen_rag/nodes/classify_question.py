@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any, Dict, Type, override
 
 from langchain_core.messages import AIMessage, HumanMessage
-from neuroml_ai_utils.llm import load_prompt
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from neuroml_ai_utils.stores import VectorStores
 from pydantic import BaseModel
@@ -34,34 +33,27 @@ class ClassifyQuestion(BaseMemoryLLMNode[RAGState]):
         logger: logging.Logger,
         model: Any,
         stores: VectorStores,
-        query_domain_schema: Type[BaseModel],
+        output_schema: Type[BaseModel],
         temperature: float = 0.3,
         memory: bool = False,
-        prompt_registry_location: Path | None = None,
     ):
         """Initialise the classifier node.
 
         :param logger: Logger instance
         :param model: LLM model instance
         :param stores: VectorStores instance (provides domain configuration)
-        :param query_domain_schema: Dynamically generated Pydantic schema for classification output
+        :param output_schema: Pydantic schema for classification output
         :param temperature: Sampling temperature for LLM calls
         :param memory: Whether to include conversation history in the prompt
-        :param prompt_registry_location: Path to prompts directory (defaults to built-in)
         """
         super().__init__(
             logger=logger,
             model=model,
             temperature=temperature,
-            output_schema=query_domain_schema,
+            output_schema=output_schema,
             memory=memory,
         )
-
         self.stores = stores
-
-        if prompt_registry_location is None:
-            prompt_registry_location = Path(__file__).parent / "prompts"
-        self.prompt_registry_location = prompt_registry_location
 
     def _build_domain_str(self) -> str:
         """Build the domain classification string from vector store config."""
@@ -84,10 +76,7 @@ class ClassifyQuestion(BaseMemoryLLMNode[RAGState]):
     @override
     def _get_system_prompt(self, state: RAGState) -> str:
         """Load base prompt, append domains, then rules, then optional memory."""
-        system_prompt = load_prompt(
-            prompt_name="classify_question_system",
-            prompt_registry_location=self.prompt_registry_location,
-        )
+        system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
         system_prompt += f"\n\n## Domains\n{self._build_domain_str()}\n\n"
 
         if self.memory:

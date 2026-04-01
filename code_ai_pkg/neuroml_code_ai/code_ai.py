@@ -10,24 +10,21 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from functools import cached_property
-from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.utils.function_calling import convert_to_json_schema
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
-from neuroml_ai_utils.llm import load_prompt, parse_output_with_thought, setup_llm
+from neuroml_ai_utils.llm import setup_llm
 
-from neuroml_code_ai import prompts
 from neuroml_code_ai.nodes.answer_user import AnswerUserNode
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
 from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
 from neuroml_code_ai.nodes.planner import PlannerNode
+from neuroml_code_ai.nodes.tool_picker import ToolPicker
 
 from .api.conf import AppConfig
-from .schemas import CodeAIState, GoalSchema, ToolCallSchema
+from .schemas import CodeAIState, GoalSchema
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
@@ -92,62 +89,6 @@ class CodeAI(BaseLangGraph):
                 )
 
         return description
-
-    async def _tool_picker_node(self, state: CodeAIState) -> dict:
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-        current_step_index = state.plan.current_step_index
-        current_step = state.plan.step_list[current_step_index]
-
-        system_prompt = load_prompt(
-            prompt_name="tool_picker",
-            prompt_registry_location=Path(prompts.__file__).parent,
-        )
-        self.logger.debug(f"{system_prompt = }")
-
-        OutputSchema = ToolCallSchema
-
-        prompt_template = ChatPromptTemplate([("system", system_prompt)])
-
-        # can use | to merge these lines
-        planner_llm = self.c_model.with_structured_output(
-            OutputSchema, method="json_schema", include_raw=True
-        )
-        prompt = prompt_template.invoke(
-            {
-                "current_step": current_step,
-                "artefacts": state.artefacts,
-                "observations": state.tool_responses,
-                "tools_description": self.tool_description,
-                # TODO: investigate use of OutputSchema.model_json_schema()
-                "output_schema": convert_to_json_schema(OutputSchema),
-            }
-        )
-
-        self.logger.debug(f"{prompt = }")
-
-        output = planner_llm.invoke(
-            prompt, config={"configurable": {"temperature": 0.01}}
-        )
-
-        self.logger.debug(f"{output = }")
-
-        if output["parsing_error"]:
-            tool_picker_result = parse_output_with_thought(output["raw"], OutputSchema)
-        else:
-            tool_picker_result = output["parsed"]
-            if isinstance(tool_picker_result, dict):
-                tool_picker_result = OutputSchema(**tool_picker_result)
-            else:
-                if not isinstance(tool_picker_result, OutputSchema):
-                    self.logger.critical(
-                        f"Received unexpected LLM output: {tool_picker_result =}"
-                    )
-                    tool_picker_result = OutputSchema(tool="INVALID")
-
-        self.logger.debug(f"{tool_picker_result =}")
-
-        return {"tool_call": tool_picker_result}
 
     async def _tool_caller_node(self, state: CodeAIState) -> dict:
         self.logger.debug(f"{state =}")
@@ -222,9 +163,13 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tool_description)
+        self._tool_picker_node = ToolPicker(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self._tool_picker_node.set_tools_description(self.tool_description)
         self._answer_user_node = AnswerUserNode(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
-        self.workflow.add_node("tool_picker", self._tool_picker_node)
+        self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
         self.workflow.add_node("tool_caller", self._tool_caller_node)
         self.workflow.add_node("evaluator", self._evaluator_node)
         self.workflow.add_node("step_router", self._step_router_node)

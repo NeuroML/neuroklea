@@ -8,17 +8,20 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import inspect
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Type
 
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
+from langchain_core.runnables.utils import Output
+from langchain_core.utils.function_calling import convert_to_json_schema
 from pydantic import BaseModel
 
-from .llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
+from ..llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 
 
 class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
@@ -32,11 +35,13 @@ class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
     """
 
     def __init__(self, logger: logging.Logger):
-        """Initialise with a logger.
+        """Initialise
 
-        :param logger: Logger instance
+        Creates a new hierarchical logger.
+
+        :param logger: Parent logger instance (used to derive child logger name)
         """
-        self.logger = logger
+        self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
 
     @abstractmethod
     async def execute(self, state: TSchema) -> TReturn:
@@ -64,7 +69,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         logger: logging.Logger,
         model_inst: Any,
         temperature: float,
-        output_schema: Optional[Type[TSchema]] = None,
+        output_schema: Type[TSchema] | None = None,
     ):
         """Initialize with logger and model.
 
@@ -76,7 +81,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         super().__init__(logger)
         self.model_inst = model_inst
         self.temperature = temperature
-        self.output_schema = output_schema
+        self._output_schema = output_schema
 
     async def execute(self, state: BaseModel) -> Dict[str, Any]:
         """Template method defining standard execution flow"""
@@ -109,21 +114,34 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         """
         return True
 
-    def _get_output_schema(self) -> Optional[Type[TSchema]]:
+    @property
+    def output_schema(self) -> Type[TSchema] | None:
         """Return Pydantic schema for structured output if required"""
-        return self.output_schema
+        return self._output_schema
+
+    @output_schema.setter
+    def output_schema(self, value: Type[TSchema] | None) -> None:
+        """Set Pydantic schema for structured output"""
+        self._output_schema = value
+
+    def _get_output_schema_json(self) -> str:
+        """Return JSON schema string for use in prompts."""
+        schema = self.output_schema
+        if schema is None:
+            return ""
+        return convert_to_json_schema(schema)
 
     def _configure_llm(self) -> Runnable:
         """Configure LLM with structured output"""
-        output_schema = self._get_output_schema()
-        if output_schema:
+        schema = self.output_schema
+        if schema:
             return self.model_inst.with_structured_output(
-                output_schema, method="json_schema", include_raw=True
+                schema, method="json_schema", include_raw=True
             )
         else:
             return self.model_inst
 
-    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> Any:
+    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> Output:
         """Invoke LLM with default temperature - can be overridden"""
         output = llm.invoke(
             prompt, config={"configurable": {"temperature": self.temperature}}
@@ -131,21 +149,21 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         self.logger.debug(f"{output = }")
         return output
 
-    def _process_output(self, output: Any) -> Any:
+    def _process_output(self, output: Output) -> Any:
         """Common output processing with error handling"""
-        output_schema = self._get_output_schema()
-        if output_schema:
+        schema = self.output_schema
+        if schema:
             if output["parsing_error"]:
                 self.logger.warning(
                     f"LLM parsing error, using fallback: {output['parsing_error']}"
                 )
-                result = parse_output_with_thought(output["raw"], output_schema)
+                result = parse_output_with_thought(output["raw"], schema)
             else:
                 result = output["parsed"]
                 if isinstance(result, dict):
-                    result = output_schema(**result)
+                    result = schema(**result)
                 else:
-                    if not isinstance(result, output_schema):
+                    if not isinstance(result, schema):
                         self.logger.critical(f"Unexpected output type: {type(result)}")
                         result = self._get_default_error_result()
 
@@ -157,7 +175,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         return result
 
     def _invoke_prompt(
-        self, prompt_template: ChatPromptTemplate, variables: Union[Any, Dict[str, Any]]
+        self, prompt_template: ChatPromptTemplate, variables: Any | Dict[str, Any]
     ) -> PromptValue:
         """Format prompt with state-specific parameters"""
         prompt = prompt_template.invoke(variables)
@@ -198,13 +216,21 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         ...
 
 
+# TODO: collapse into BaseLLMNode?
 class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
     """Base class for LangGraph nodes that load prompts from files.
 
     Extends BaseLLMNode with:
     - File-based prompt loading via load_prompt()
-    - Optional memory support (appends memory content to human prompt)
-    - Configurable prompt registry location (package-specific prompt directories)
+    - Optional memory support (appends memory content to system prompt)
+    - Auto-derived prompt registry location from subclass file path
+
+    Prompt files are expected to be named ``{prefix}_system.md`` and
+    ``{prefix}_user.md``.
+
+    Subclasses can override ``prompt_prefix`` or ``prompt_registry_location``
+    via the setter if the defaults (lowercase class name / sibling ``prompts/``)
+    are not appropriate.
     """
 
     def __init__(
@@ -212,11 +238,9 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         logger: logging.Logger,
         model: Any,
         temperature: float,
-        output_schema: Type[TSchema],
-        system_prompt_file: str,
-        human_prompt_file: str,
-        prompt_registry_location: Path,
+        output_schema: Type[TSchema] | None,
         memory: bool = False,
+        num_history_messages: int = 10,
     ):
         """Initialize with file-based prompt loading and memory support.
 
@@ -224,32 +248,64 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param output_schema: Pydantic schema for structured output
-        :param system_prompt_file: Name of the system prompt file (no extension)
-        :param human_prompt_file: Name of the human prompt file (no extension)
-        :param prompt_registry_location: Path to the prompts directory
-        :param memory: Whether to append memory content to the human prompt
+        :param memory: Whether to append memory content to the system prompt
         """
         super().__init__(logger, model, temperature, output_schema=output_schema)
 
-        self.system_prompt_file = system_prompt_file
-        self.human_prompt_file = human_prompt_file
-        self.prompt_registry_location = prompt_registry_location
+        self._prompt_prefix: str | None = None
+        self._prompt_registry_location: Path | None = None
         self.memory = memory
-        self.num_recent_messages = 10
+        self.num_history_messages = num_history_messages
+
+    @property
+    def prompt_prefix(self) -> str:
+        """Return the prompt file prefix.
+
+        Falls back to the lowercase class name if not explicitly set.
+        """
+        if self._prompt_prefix is not None:
+            return self._prompt_prefix
+        return self.__class__.__name__
+
+    @prompt_prefix.setter
+    def prompt_prefix(self, value: str) -> None:
+        """Set the prompt file prefix."""
+        self._prompt_prefix = value
+
+    @property
+    def prompt_registry_location(self) -> Path:
+        """Return path to the prompts directory.
+
+        Falls back to a sibling ``prompts/`` directory relative to the
+        subclass file if not explicitly set.
+        """
+        if self._prompt_registry_location is not None:
+            return self._prompt_registry_location
+
+        subclass_file = inspect.getfile(self.__class__)
+        loc = Path(subclass_file).parent / "prompts"
+        self.logger.debug(f"No prompt registry location set. Falling back to {loc}")
+        return loc
+
+    @prompt_registry_location.setter
+    def prompt_registry_location(self, value: Path) -> None:
+        """Set the prompts directory path."""
+        self._prompt_registry_location = value
 
     def _get_system_prompt(self, state: BaseModel) -> str:
-        """Load system prompt from file."""
-        system_prompt = self._load_prompt_file(self.system_prompt_file)
+        """Load system prompt from file, optionally adding memory summary."""
+        system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
+
+        if self.memory:
+            memory_addition = self._get_memory_addition(state)
+            return system_prompt + memory_addition
+
         self.logger.debug(f"{system_prompt =}")
         return system_prompt
 
     def _get_human_prompt(self, state: BaseModel) -> str:
-        """Load human prompt from file, optionally appending memory content."""
-        human_prompt = self._load_prompt_file(self.human_prompt_file)
-
-        if self.memory:
-            memory_addition = self._get_memory_addition(state)
-            return human_prompt + memory_addition
+        """Load human prompt from file."""
+        human_prompt = self._load_prompt_file(f"{self.prompt_prefix}_user")
 
         self.logger.debug(f"{human_prompt =}")
         return human_prompt
@@ -267,16 +323,25 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
 
     def _create_prompt_template(
         self, system_prompt: str, human_prompt: str
-    ) -> ChatPromptTemplate:
+    ) -> ChatPromptTemplate | None:
         """Create ChatPromptTemplate with system and human messages."""
-        prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", human_prompt)]
-        )
+        if len(system_prompt) and len(human_prompt):
+            prompt_template = ChatPromptTemplate(
+                [("system", system_prompt), ("human", human_prompt)]
+            )
+        elif len(system_prompt) and not len(human_prompt):
+            prompt_template = ChatPromptTemplate([("system", system_prompt)])
+        elif len(human_prompt) and not len(system_prompt):
+            prompt_template = ChatPromptTemplate([("human", human_prompt)])
+        else:
+            self.logger.error("No prompts provided. Cannot create prompt template!")
+            return None
+
         self.logger.debug(f"{prompt_template =}")
         return prompt_template
 
     def _get_memory_addition(self, state: BaseModel) -> str:
-        """Hook for subclasses to inject memory content into the human prompt.
+        """Hook for subclasses to append memory content into the system prompt.
 
         Override this method to provide memory-specific content.
         The default implementation returns an empty string.
@@ -284,7 +349,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         return add_memory_to_prompt(
             messages=state.messages,  # type: ignore
             context_summary=state.context_summary,  # type: ignore
-            num_recent_messages=self.num_recent_messages,
+            num_history_messages=self.num_history_messages,
         )
 
 

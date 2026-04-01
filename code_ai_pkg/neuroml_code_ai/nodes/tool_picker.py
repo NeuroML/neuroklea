@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Planner node for CodeAI
+Tool picker node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/planner.py
+File: code_ai_pkg/neuroml_code_ai/nodes/tool_picker.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -11,17 +11,18 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
+from langchain_core.utils.function_calling import convert_to_json_schema
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
 
-from neuroml_code_ai.schemas import CodeAIState, PlanSchema
+from neuroml_code_ai.schemas import CodeAIState, ToolCallSchema
 
 
-class Planner(BaseMemoryLLMNode[PlanSchema]):
-    """Node that creates or updates an execution plan."""
+class ToolPicker(BaseMemoryLLMNode[ToolCallSchema]):
+    """Node that selects the best tool for the current step."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
-        """Initialise the planner node.
+        """Initialise the tool picker node.
 
         :param logger: Logger instance
         :param model: LLM model instance (reasoning model)
@@ -31,7 +32,7 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
             logger=logger,
             model=model,
             temperature=temperature,
-            output_schema=PlanSchema,
+            output_schema=ToolCallSchema,
             memory=False,
         )
         self._tools_description = ""
@@ -41,32 +42,30 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
         self._tools_description = description
 
     @override
+    def _get_human_prompt(self, state: BaseModel) -> str:
+        """Return empty string — this node only uses a system prompt."""
+        return ""
+
+    @override
     def _get_prompt_variables(self, state: CodeAIState) -> dict:
-        """Format prompt with current plan state."""
+        """Format prompt with current step state."""
+        current_step_index = state.plan.current_step_index
+        current_step = state.plan.step_list[current_step_index]
+
         return {
-            "query": state.query,
-            "goal": state.goal,
-            "step_list": state.plan.step_list,
-            "current_step_index": state.plan.current_step_index,
+            "current_step": current_step,
             "artefacts": state.artefacts,
             "observations": state.tool_responses,
             "tools_description": self._tools_description,
-            "output_schema": self._get_output_schema_json(),
+            "output_schema": convert_to_json_schema(ToolCallSchema),
         }
 
     @override
-    def _update_state(self, result: PlanSchema, state: BaseModel) -> Dict[str, Any]:
-        """Update plan and generate summary for user."""
-        plan_summary = "## Plan summary:\n\n"
-        for step in result.step_list:
-            plan_summary += f"- {step.step_number}: {step.description}"
-
-        plan = state.plan  # type: ignore
-        plan.step_list = result.step_list
-
-        return {"plan": plan, "message_for_user": plan_summary}
+    def _update_state(self, result: ToolCallSchema, state: BaseModel) -> Dict[str, Any]:
+        """Update state with the selected tool call."""
+        return {"tool_call": result}
 
     @override
-    def _get_default_error_result(self) -> PlanSchema:
+    def _get_default_error_result(self) -> ToolCallSchema:
         """Return default result when processing fails."""
-        return PlanSchema(status="failed")
+        return ToolCallSchema(tool="INVALID")

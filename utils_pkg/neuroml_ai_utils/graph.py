@@ -14,7 +14,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Literal, Optional, Type
+from typing import Any, Literal, Type
 
 from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
@@ -69,14 +69,12 @@ class BaseLangGraph(ABC):
         self.mcp_client: Client
 
         self.memory = memory
-        self.checkpointer: Optional[InMemorySaver] = InMemorySaver() if memory else None
-
-        self.num_recent_messages = 10
+        self.checkpointer: InMemorySaver | None = InMemorySaver() if memory else None
 
         self.config_file = os.getenv(self.config_env_var, self.config_file_default)
         self.config: BaseModel
 
-        self.graph: Optional[CompiledStateGraph] = None
+        self.graph: CompiledStateGraph | None = None
 
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(logging_level)
@@ -145,12 +143,14 @@ class BaseLangGraph(ABC):
             assert self.mcp_client
         else:
             self.logger.warning("No MCP server configured.")
+            self.mcp_client = None
 
     async def _get_mcp_tools(self) -> None:
         """List MCP tools and optionally set up vector stores."""
-        async with self.mcp_client:
-            self.mcp_tools = await self.mcp_client.list_tools()
-        self.logger.debug(f"{self.mcp_tools =}")
+        if self.mcp_client:
+            async with self.mcp_client:
+                self.mcp_tools = await self.mcp_client.list_tools()
+            self.logger.debug(f"{self.mcp_tools =}")
 
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""

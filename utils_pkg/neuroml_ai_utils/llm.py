@@ -16,14 +16,13 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Type
+from typing import Type
 
 import ollama
 from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import (
     ChatHuggingFace,
     HuggingFaceEndpoint,
@@ -86,7 +85,7 @@ def parse_output_with_thought[TSchema: BaseModel](
 
 
 def split_output_by_section(
-    text: str, section_start_marker: str, section_end_marker: Optional[str] = None
+    text: str, section_start_marker: str, section_end_marker: str | None = None
 ):
     """Split out thoughts and actual responses from AI responses"""
     if not text:
@@ -291,7 +290,7 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
 
 
 def get_last_n_conversations(
-    all_messages, start: int = 0, stop: Optional[int] = None
+    all_messages, start: int = 0, stop: int | None = None
 ) -> tuple[str, list[HumanMessage], list[AIMessage]]:
     """Get recent converstations between start and stop indices
 
@@ -327,7 +326,8 @@ def get_last_n_conversations(
     )
 
 
-def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) -> str:
+# TODO: num_history_messages is currently part of the orchestrator, but nodes wont have access to it.
+def add_memory_to_prompt(context_summary: str, messages, num_history_messages) -> str:
     """Add memory to system prompt.
 
     Adds the context summary and recent conversation
@@ -339,6 +339,9 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
     ret_string = ""
 
     directive = dedent("""
+
+        ## Previous context
+
         IMPORTANT:
 
         - Consider both the latest user message AND the conversation history.
@@ -347,24 +350,23 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
 
     if len(context_summary):
         ret_string += dedent(f"""
-        -----
 
-        Here is a concise summary of the previous conversation to maintain
-        continuity:
+        ### Context summary
+
+        Here is a concise summary of the past conversation to maintain continuity:
 
         {context_summary}
 
-        -----
         """)
 
     conversation, _, _ = get_last_n_conversations(
-        messages, (-1 * num_recent_messages), None
+        messages, (-1 * num_history_messages), None
     )
     if len(conversation):
         ret_string += dedent(f"""
-        -----
+        ### Recent messages
 
-        Here are the recent messages between the user and the assistant:
+        Here are recent messages between the user and the assistant:
 
         {conversation}
 

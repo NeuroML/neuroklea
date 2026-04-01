@@ -49,11 +49,6 @@ class NML_Assistant(object):
 
         self.checkpointer = InMemorySaver()
 
-        # number of conversations after which to summarise
-        # no need to summarise after each
-        # 5 rounds: 10 messages
-        self.num_recent_messages = 10
-
         self.logger = logging.getLogger("NML_AI_Assistant")
         self.logger.setLevel(logging_level)
         self.logger.propagate = False
@@ -159,7 +154,7 @@ class NML_Assistant(object):
         system_prompt += add_memory_to_prompt(
             messages=state.messages,
             context_summary=state.context_summary,
-            num_recent_messages=self.num_recent_messages,
+            num_history_messages=10,
         )
 
         prompt_template = ChatPromptTemplate(

@@ -27,7 +27,8 @@ At the start of each session, check the `.agents/` folder for previous session l
 - Line endings must be Unix format
 
 ### Git Conventions
-- Never commit without explicit user approval
+- Never stage or commit without explicit user approval
+- When creating new files, use `git add --intent-to-add <file>` so they appear in `git diff`
 - Flag large changes and suggest breaking them into smaller, focused commits for provenance and clarity
 - Use conventional commit messages when possible
 - Include relevant issue numbers in commit messages
@@ -42,5 +43,9 @@ At the start of each session, check the `.agents/` folder for previous session l
 - Implement proper access controls
 - Use HTTPS for all external communications
 - Never log sensitive information or credentials
+
+### Comments
+- Never remove TODO, FIXME, NOTE, or other comments from the codebase
+- Preserve all existing comments during refactoring unless explicitly asked to remove them
 
 This file should be updated as the project evolves. All agents should familiarize themselves with these guidelines before making changes to the codebase.

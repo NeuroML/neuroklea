@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Tuple
 
 import chromadb
 from langchain_chroma import Chroma
@@ -19,6 +19,40 @@ from langchain_core.documents import Document
 from pydantic import BaseModel
 
 from .llm import setup_embedding
+
+
+def serialize_reference(
+    reference_material: Dict[str, List[Tuple[Document, float]]],
+) -> str:
+    """Serialize reference material into text for use in prompt context.
+
+    Documents are sorted by relevance score within each group.
+
+    :param reference_material: Dict mapping query/domain to list of (doc, score) tuples
+    :returns: Formatted string representation of references
+    """
+    serialized = ""
+    for q, sorted_refs in reference_material.items():
+        ctr = 1
+        serialized += f"## {q}\n"
+        for r, score in sorted_refs:
+            metadata = [
+                f"{key}: {val}"
+                for key, val in r.metadata.items()
+                if "header" in key.lower()
+            ]
+            metadata_str = f"### Document {ctr}/{len(sorted_refs)}: " + " | ".join(
+                metadata
+            )
+            serialized += "\n" + f"{metadata_str}\n"
+            url = r.metadata.get("url", None)
+            if url:
+                serialized += f"Reference URL: {url}\n"
+            serialized += r.page_content
+            ctr += 1
+
+    reference_material_text = serialized.replace("{", "{{").replace("}", "}}")
+    return reference_material_text
 
 
 class FallbackConfig(BaseModel):
@@ -33,7 +67,7 @@ class VectorStoreInfo(BaseModel):
 
     name: str
     path: str
-    loaded_object: Optional[Any] = None
+    loaded_object: Any | None = None
 
 
 class PerDomainConfig(BaseModel):
@@ -78,7 +112,8 @@ class VectorStores:
         self.embeddings = None
         self.vs_config_file = vs_config_file
         self.vs_config: VectorStoresConfig
-        self.logger = logger
+        self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
+        self.embedding_model: str | None = None
 
     def setup(self) -> None:
         """Load configuration and initialise embedding model."""
@@ -107,6 +142,8 @@ class VectorStores:
         self.default_k = self.vs_config.default_k
         self.k_max = self.vs_config.k_max
         self.logger.debug(f"{self.vs_config =}")
+
+        assert self.embedding_model
 
     def inc_k(self, inc: int = 1) -> bool:
         """Increase k by inc.

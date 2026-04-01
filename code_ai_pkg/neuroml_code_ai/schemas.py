@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 from fastmcp.client.client import CallToolResult
 from langchain_core.messages import AnyMessage
 from pydantic import BaseModel, Field
-from typing_extensions import Any, Dict, List, Literal, Optional
+from typing_extensions import Any, Dict, List, Literal
 
 
 class ToolCallSchema(BaseModel):
@@ -31,7 +31,7 @@ class CodeSchema(BaseModel):
 class StepSchema(BaseModel):
     step_number: int = 1
     description: str = ""
-    suggested_tool: Optional[str] = None
+    suggested_tool: str | None = None
     status: Literal["pending", "done", "failed"] = Field(default="pending")
 
 
@@ -69,7 +69,7 @@ class CodeAIState(BaseModel):
     plan: PlanSchema = PlanSchema()
 
     # current tool call
-    tool_call: Optional[ToolCallSchema] = None
+    tool_call: ToolCallSchema | None = None
     # keep history of responses for context
     tool_responses: list[CallToolResult] = Field(default_factory=list)
 

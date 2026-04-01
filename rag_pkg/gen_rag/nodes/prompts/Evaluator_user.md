@@ -1,0 +1,12 @@
+Question:
+{question}
+
+-----
+
+Context:
+{context}
+
+-----
+
+Answer:
+{answer}

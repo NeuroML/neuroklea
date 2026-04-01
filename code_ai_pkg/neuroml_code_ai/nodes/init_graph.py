@@ -9,20 +9,21 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 
 from neuroml_code_ai.schemas import CodeAIState, GoalSchema, PlanSchema
 
 
-class InitGraphStateNode(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
+class InitGraphState(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
     """Initialise/reset graph state before each iteration."""
 
     def __init__(self, logger: logging.Logger):
         """Initialise with a logger."""
         super().__init__(logger)
 
+    @override
     async def execute(self, state: CodeAIState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""
         return {

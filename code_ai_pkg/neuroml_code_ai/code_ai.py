@@ -10,23 +10,22 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from functools import cached_property
-from pathlib import Path
 from textwrap import dedent
 from typing import Any
 
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.utils.function_calling import convert_to_json_schema
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
-from neuroml_ai_utils.llm import load_prompt, parse_output_with_thought, setup_llm
+from neuroml_ai_utils.llm import setup_llm
 
-from neuroml_code_ai import prompts
-from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
-from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
-from neuroml_code_ai.nodes.planner import PlannerNode
+from neuroml_code_ai.nodes.answer_user import AnswerUser
+from neuroml_code_ai.nodes.evaluator import Evaluator
+from neuroml_code_ai.nodes.goal_setter import GoalSetter
+from neuroml_code_ai.nodes.init_graph import InitGraphState
+from neuroml_code_ai.nodes.planner import Planner
+from neuroml_code_ai.nodes.tool_picker import ToolPicker
 
-from .api.conf import AppConfig
-from .schemas import CodeAIState, GoalSchema, ToolCallSchema
+from .config import AppConfig
+from .schemas import CodeAIState, GoalSchema
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
@@ -92,62 +91,6 @@ class CodeAI(BaseLangGraph):
 
         return description
 
-    async def _tool_picker_node(self, state: CodeAIState) -> dict:
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-        current_step_index = state.plan.current_step_index
-        current_step = state.plan.step_list[current_step_index]
-
-        system_prompt = load_prompt(
-            prompt_name="tool_picker",
-            prompt_registry_location=Path(prompts.__file__).parent,
-        )
-        self.logger.debug(f"{system_prompt = }")
-
-        OutputSchema = ToolCallSchema
-
-        prompt_template = ChatPromptTemplate([("system", system_prompt)])
-
-        # can use | to merge these lines
-        planner_llm = self.c_model.with_structured_output(
-            OutputSchema, method="json_schema", include_raw=True
-        )
-        prompt = prompt_template.invoke(
-            {
-                "current_step": current_step,
-                "artefacts": state.artefacts,
-                "observations": state.tool_responses,
-                "tools_description": self.tool_description,
-                # TODO: investigate use of OutputSchema.model_json_schema()
-                "output_schema": convert_to_json_schema(OutputSchema),
-            }
-        )
-
-        self.logger.debug(f"{prompt = }")
-
-        output = planner_llm.invoke(
-            prompt, config={"configurable": {"temperature": 0.01}}
-        )
-
-        self.logger.debug(f"{output = }")
-
-        if output["parsing_error"]:
-            tool_picker_result = parse_output_with_thought(output["raw"], OutputSchema)
-        else:
-            tool_picker_result = output["parsed"]
-            if isinstance(tool_picker_result, dict):
-                tool_picker_result = OutputSchema(**tool_picker_result)
-            else:
-                if not isinstance(tool_picker_result, OutputSchema):
-                    self.logger.critical(
-                        f"Received unexpected LLM output: {tool_picker_result =}"
-                    )
-                    tool_picker_result = OutputSchema(tool="INVALID")
-
-        self.logger.debug(f"{tool_picker_result =}")
-
-        return {"tool_call": tool_picker_result}
-
     async def _tool_caller_node(self, state: CodeAIState) -> dict:
         self.logger.debug(f"{state =}")
 
@@ -182,60 +125,41 @@ class CodeAI(BaseLangGraph):
         result["plan"] = plan
         return result
 
-    # TODO
-    async def _evaluator_node(self, state: CodeAIState) -> dict:
-        plan = state.plan
-        result = {}
-
-        # if all steps completed
-        if plan.current_step_index > len(plan.step_list):
-            plan.status = "completed"
-            result["plan"] = plan
-
-        # if any steps failed?
-
-        return result
-
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
-
-    def _give_answer_to_user_node(self, state: CodeAIState) -> dict:
-        """Return the message to the user"""
-        self.logger.debug(f"{state =}")
-
-        answer = state.message_for_user
-        self.logger.info(f"Returning final answer to user: {answer}")
-
-        return {"message_for_user": answer}
 
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(CodeAIState)
-        self._init_graph_state_node = InitGraphStateNode(logger=self.logger)
+        self._init_graph_state_node = InitGraphState(logger=self.logger)
         self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
         # self.workflow.add_node("summarise_history", self._summarise_history_node)
 
-        self._goal_setter_node = GoalSetterNode(
+        self._goal_setter_node = GoalSetter(
             logger=self.logger,
             model=self.r_model,
             temperature=0.01,
             output_schema=GoalSchema,
-            system_prompt_file="goal",
-            human_prompt_file="goal_human",
             memory=False,
         )
         self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
 
-        self._planner_node = PlannerNode(
+        self._planner_node = Planner(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tool_description)
+        self._tool_picker_node = ToolPicker(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self._tool_picker_node.set_tools_description(self.tool_description)
+        self._evaluator_node = Evaluator(logger=self.logger)
+        self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
-        self.workflow.add_node("tool_picker", self._tool_picker_node)
+        self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
         self.workflow.add_node("tool_caller", self._tool_caller_node)
-        self.workflow.add_node("evaluator", self._evaluator_node)
+        self.workflow.add_node("evaluator", self._evaluator_node.execute)
         self.workflow.add_node("step_router", self._step_router_node)
-        self.workflow.add_node("give_answer_to_user", self._give_answer_to_user_node)
+        self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
 
         self.workflow.add_edge(START, "init_graph_state")
         self.workflow.add_edge("init_graph_state", "goal_setter")

@@ -44,4 +44,8 @@ At the start of each session, check the `.agents/` folder for previous session l
 - Use HTTPS for all external communications
 - Never log sensitive information or credentials
 
+### Comments
+- Never remove TODO, FIXME, NOTE, or other comments from the codebase
+- Preserve all existing comments during refactoring unless explicitly asked to remove them
+
 This file should be updated as the project evolves. All agents should familiarize themselves with these guidelines before making changes to the codebase.

@@ -10,13 +10,14 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from textwrap import dedent
+from typing import override
 
-from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm, split_output_by_section
 from neuroml_ai_utils.nodes.answer_general import AnswerGeneral
+from neuroml_ai_utils.nodes.fixed_answer import FixedAnswer
 from neuroml_ai_utils.nodes.summarise_memory import SummariseMemoryNode
 from neuroml_ai_utils.stores import serialize_reference
 
@@ -26,7 +27,6 @@ from .nodes.classify_question import ClassifyQuestion
 from .nodes.evaluator import Evaluator
 from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
-from .nodes.refuse_answer import RefuseAnswer
 from .nodes.retrieve_info import RetrieveInfoNode
 from .nodes.route_evaluator import RouteEvalutor
 from .schemas import RAGState
@@ -155,18 +155,18 @@ class RAG(BaseLangGraph):
             else:
                 return "non_domain_refuse"
 
-    def _ask_user_for_clarification_node(self, state: RAGState) -> dict:
-        """Ask the user for clarification or a different question"""
-        self.logger.debug(f"{state =}")
+    @override
+    async def _pre_graph(self):
+        "Set up bits required before graph is compiled"
+        # for refusal node
+        self.refusal_message = "Sorry. I cannot answer this query as it does not fall into my permitted domains. Available domains are:\n"
+        self.refusal_message += "\n- ".join([""] + self.stores.domains)
+        self.refusal_message += "\n\n\nPlease try another query."
 
-        answer = AIMessage(
-            "Apologies. I could not answer that question. Can you please ask another one or try to reword it and I will try again?"
-        )
+        # for clarification node
+        self.clarification_message = "Apologies. I could not answer that question. Can you please ask another one or try to reword it and I will try again?"
 
-        self.logger.info(f"Asking user for clarification: {answer.content}")
-
-        return {"message_for_user": answer.content}
-
+    @override
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(RAGState)
@@ -200,8 +200,14 @@ class RAG(BaseLangGraph):
         self.workflow.add_node(
             "answer_general_question", self._answer_general_node.execute
         )
-        self._refuse_answer_node = RefuseAnswer(logger=self.logger, stores=self.stores)
+
+        self._refuse_answer_node = FixedAnswer(
+            logger=self.logger,
+            state_attr="message_for_user",
+            message=self.refusal_message,
+        )
         self.workflow.add_node("refuse_to_answer", self._refuse_answer_node.execute)
+
         self._retrieve_info_node = RetrieveInfoNode(
             logger=self.logger,
             stores=self.stores,
@@ -224,9 +230,16 @@ class RAG(BaseLangGraph):
         self.workflow.add_node(
             "give_domain_answer_to_user", self._answer_user_node.execute
         )
-        self.workflow.add_node(
-            "ask_user_for_clarification", self._ask_user_for_clarification_node
+
+        self._ask_user_for_clarification_node = FixedAnswer(
+            logger=self.logger,
+            state_attr="message_for_user",
+            message=self.clarification_message,
         )
+        self.workflow.add_node(
+            "ask_user_for_clarification", self._ask_user_for_clarification_node.execute
+        )
+
         if self.memory:
             self._summarise_history_node = SummariseMemoryNode(
                 logger=self.logger,

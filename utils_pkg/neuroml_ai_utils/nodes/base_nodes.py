@@ -210,7 +210,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
 
     Extends BaseLLMNode with:
     - File-based prompt loading via load_prompt()
-    - Optional memory support (appends memory content to human prompt)
+    - Optional memory support (appends memory content to system prompt)
     - Auto-derived prompt registry location from subclass file path
 
     Prompt files are expected to be named ``{prefix}_system.md`` and
@@ -235,7 +235,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param output_schema: Pydantic schema for structured output
-        :param memory: Whether to append memory content to the human prompt
+        :param memory: Whether to append memory content to the system prompt
         """
         super().__init__(logger, model, temperature, output_schema=output_schema)
 
@@ -317,7 +317,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         return prompt_template
 
     def _get_memory_addition(self, state: BaseModel) -> str:
-        """Hook for subclasses to inject memory content into the human prompt.
+        """Hook for subclasses to append memory content into the system prompt.
 
         Override this method to provide memory-specific content.
         The default implementation returns an empty string.

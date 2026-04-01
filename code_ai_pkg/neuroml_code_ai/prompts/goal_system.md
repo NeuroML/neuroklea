@@ -8,7 +8,6 @@
 ## Inputs you will receive
 
 * `query`: the user query
-* `context_summary`: summary of context so far, if available
 
 ---
 

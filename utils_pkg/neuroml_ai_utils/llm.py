@@ -338,6 +338,9 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
     ret_string = ""
 
     directive = dedent("""
+
+        ## Previous context
+
         IMPORTANT:
 
         - Consider both the latest user message AND the conversation history.
@@ -346,14 +349,13 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
 
     if len(context_summary):
         ret_string += dedent(f"""
-        -----
 
-        Here is a concise summary of the previous conversation to maintain
-        continuity:
+        ### Context summary
+
+        Here is a concise summary of the past conversation to maintain continuity:
 
         {context_summary}
 
-        -----
         """)
 
     conversation, _, _ = get_last_n_conversations(
@@ -361,9 +363,9 @@ def add_memory_to_prompt(context_summary: str, messages, num_recent_messages) ->
     )
     if len(conversation):
         ret_string += dedent(f"""
-        -----
+        ### Recent messages
 
-        Here are the recent messages between the user and the assistant:
+        Here are recent messages between the user and the assistant:
 
         {conversation}
 

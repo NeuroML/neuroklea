@@ -24,6 +24,13 @@ class SummariseMemoryNode(BaseMemoryLLMNode):
 
     Uses _pre_exec() to skip execution if there aren't enough recent messages.
     Does NOT append the summary to messages — it's metadata, not a turn.
+
+    Expects state to have the following fields:
+
+    - messages: list of messages
+    - summarised_till: index of messages that have been summarised already
+    - context_summary: previous memory/context summary
+
     """
 
     def __init__(

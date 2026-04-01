@@ -13,7 +13,6 @@ from typing import Any, Dict
 
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from neuroml_ai_utils.stores import serialize_reference
-from pydantic import BaseModel
 
 from gen_rag.schemas import EvaluateAnswerSchema, RAGState
 
@@ -50,10 +49,12 @@ class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
         }
 
     def _update_state(
-        self, result: EvaluateAnswerSchema, state: BaseModel
+        self, result: EvaluateAnswerSchema, state: RAGState
     ) -> Dict[str, Any]:
-        """Update state with evaluation result."""
-        return {"text_response_eval": result, "messages": state.messages}
+        """Update state with evaluation result and computed routing decision."""
+        return {
+            "text_response_eval": result,
+        }
 
     def _get_default_error_result(self) -> EvaluateAnswerSchema:
         """Return default result when processing fails."""

@@ -16,7 +16,7 @@ from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 from gen_rag.schemas import RAGState
 
 
-class AnswerUserNode(BaseLangGraphNode[RAGState, Dict[str, Any]]):
+class AnswerUser(BaseLangGraphNode[RAGState, Dict[str, Any]]):
     """Node that returns the final message to the user."""
 
     def __init__(self, logger: logging.Logger):

@@ -16,7 +16,7 @@ from neuroml_ai_utils.stores import VectorStores
 from gen_rag.schemas import RAGState
 
 
-class RouteEvalutor(BaseRouterNode):
+class RouteEvaluator(BaseRouterNode):
     """Route based on Evaluator node results"""
 
     def __init__(self, logger: logging.Logger, stores: VectorStores):

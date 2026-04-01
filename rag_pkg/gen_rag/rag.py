@@ -28,7 +28,8 @@ from .nodes.evaluator import Evaluator
 from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
 from .nodes.retrieve_info import RetrieveInfoNode
-from .nodes.route_evaluator import RouteEvalutor
+from .nodes.route_evaluator import RouteEvaluator
+from .nodes.route_query import RouteQuery
 from .schemas import RAGState
 
 logging.basicConfig()
@@ -142,19 +143,6 @@ class RAG(BaseLangGraph):
 
         return {"messages": messages, "reference_material": reference_material}
 
-    def _route_query_domain_node(self, state: RAGState) -> str:
-        """Route the query depending on LLM's result"""
-        self.logger.debug(f"{state =}")
-        query_domain = state.query_domain
-
-        if query_domain in self.stores.domains and query_domain != "undefined":
-            return "domain_query"
-        else:
-            if self.config.non_domain_chat:
-                return "non_domain_query"
-            else:
-                return "non_domain_refuse"
-
     @override
     async def _pre_graph(self):
         "Set up bits required before graph is compiled"
@@ -182,6 +170,12 @@ class RAG(BaseLangGraph):
         )
         self.workflow.add_node(
             "classify_question_domain", self._classify_question_node.execute
+        )
+
+        self._route_query_domain_node = RouteQuery(
+            logger=self.logger,
+            stores=self.stores,
+            non_domain_chat=self.config.non_domain_chat,
         )
 
         self._generate_retrieval_query_node = GenerateRetrievalQuery(
@@ -222,7 +216,7 @@ class RAG(BaseLangGraph):
         )
         self.workflow.add_node("evaluate_answer", self._evaluate_answer_node.execute)
 
-        self._route_evaluator_node = RouteEvalutor(
+        self._route_evaluator_node = RouteEvaluator(
             logger=self.logger, stores=self.stores
         )
 
@@ -256,7 +250,7 @@ class RAG(BaseLangGraph):
 
         self.workflow.add_conditional_edges(
             "classify_question_domain",
-            self._route_query_domain_node,
+            self._route_query_domain_node.execute,
             {
                 "domain_query": "generate_retrieval_query",
                 "non_domain_query": "answer_general_question",

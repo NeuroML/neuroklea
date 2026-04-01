@@ -26,6 +26,7 @@ from neuroml_ai_utils.llm import (
 )
 
 from .config import AppConfig
+from .nodes.answer_user import AnswerUserNode
 from .schemas import EvaluateAnswerSchema, RAGState
 
 logging.basicConfig()
@@ -720,17 +721,6 @@ class RAG(BaseLangGraph):
             else:
                 return "non_domain_refuse"
 
-    def _give_domain_answer_to_user_node(self, state: RAGState) -> dict:
-        """Return the answer message to the user"""
-        self.logger.debug(f"{state =}")
-
-        messages = state.messages
-        answer = messages[-1]
-
-        self.logger.info(f"Returning final answer to user: {answer}")
-
-        return {"message_for_user": answer.content}
-
     def _ask_user_for_clarification_node(self, state: RAGState) -> dict:
         """Ask the user for clarification or a different question"""
         self.logger.debug(f"{state =}")
@@ -762,8 +752,9 @@ class RAG(BaseLangGraph):
             "generate_answer_from_context", self._generate_answer_from_context_node
         )
         self.workflow.add_node("evaluate_answer", self._evaluate_answer_node)
+        self._answer_user_node = AnswerUserNode(logger=self.logger)
         self.workflow.add_node(
-            "give_domain_answer_to_user", self._give_domain_answer_to_user_node
+            "give_domain_answer_to_user", self._answer_user_node.execute
         )
         self.workflow.add_node(
             "ask_user_for_clarification", self._ask_user_for_clarification_node

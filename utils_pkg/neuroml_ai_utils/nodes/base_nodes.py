@@ -17,6 +17,7 @@ from typing import Any, Dict, Type
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
+from langchain_core.utils.function_calling import convert_to_json_schema
 from pydantic import BaseModel
 
 from .llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
@@ -119,6 +120,13 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
     def output_schema(self, value: Type[TSchema] | None) -> None:
         """Set Pydantic schema for structured output"""
         self._output_schema = value
+
+    def _get_output_schema_json(self) -> str:
+        """Return JSON schema string for use in prompts."""
+        schema = self.output_schema
+        if schema is None:
+            return ""
+        return convert_to_json_schema(schema)
 
     def _configure_llm(self) -> Runnable:
         """Configure LLM with structured output"""

@@ -11,7 +11,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict
 
-from langchain_core.utils.function_calling import convert_to_json_schema
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
 
@@ -68,7 +67,3 @@ class Planner(BaseMemoryLLMNode[PlanSchema]):
     def _get_default_error_result(self) -> PlanSchema:
         """Return default result when processing fails."""
         return PlanSchema(status="failed")
-
-    def _get_output_schema_json(self) -> str:
-        """Get JSON schema string for the prompt."""
-        return convert_to_json_schema(self.output_schema)

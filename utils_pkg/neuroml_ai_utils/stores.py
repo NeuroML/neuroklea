@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import json
 import logging
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import chromadb
 from langchain_chroma import Chroma
@@ -33,7 +33,7 @@ class VectorStoreInfo(BaseModel):
 
     name: str
     path: str
-    loaded_object: Optional[Any] = None
+    loaded_object: Any | None = None
 
 
 class PerDomainConfig(BaseModel):

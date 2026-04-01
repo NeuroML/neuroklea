@@ -12,7 +12,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from pydantic import Field
 from typing_extensions import Annotated
@@ -49,7 +49,7 @@ async def list_files_tool(
         ),
     ],
     max_depth: Annotated[
-        Optional[int],
+        int | None,
         Field(description="Maximum directory depth to traverse. 'None' for unlimited"),
     ] = None,
     # LLMs are trained on shell style globs, so they insist on using space

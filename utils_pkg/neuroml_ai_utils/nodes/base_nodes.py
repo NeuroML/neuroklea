@@ -12,7 +12,7 @@ import inspect
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Dict, Type
 
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
@@ -65,7 +65,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         logger: logging.Logger,
         model_inst: Any,
         temperature: float,
-        output_schema: Optional[Type[TSchema]] = None,
+        output_schema: Type[TSchema] | None = None,
     ):
         """Initialize with logger and model.
 
@@ -111,12 +111,12 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         return True
 
     @property
-    def output_schema(self) -> Optional[Type[TSchema]]:
+    def output_schema(self) -> Type[TSchema] | None:
         """Return Pydantic schema for structured output if required"""
         return self._output_schema
 
     @output_schema.setter
-    def output_schema(self, value: Optional[Type[TSchema]]) -> None:
+    def output_schema(self, value: Type[TSchema] | None) -> None:
         """Set Pydantic schema for structured output"""
         self._output_schema = value
 
@@ -164,7 +164,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         return result
 
     def _invoke_prompt(
-        self, prompt_template: ChatPromptTemplate, variables: Union[Any, Dict[str, Any]]
+        self, prompt_template: ChatPromptTemplate, variables: Any | Dict[str, Any]
     ) -> PromptValue:
         """Format prompt with state-specific parameters"""
         prompt = prompt_template.invoke(variables)

@@ -16,14 +16,13 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Optional, Type
+from typing import Type
 
 import ollama
 from langchain.chat_models import init_chat_model
 from langchain.embeddings import init_embeddings
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_huggingface import (
     ChatHuggingFace,
     HuggingFaceEndpoint,
@@ -86,7 +85,7 @@ def parse_output_with_thought[TSchema: BaseModel](
 
 
 def split_output_by_section(
-    text: str, section_start_marker: str, section_end_marker: Optional[str] = None
+    text: str, section_start_marker: str, section_end_marker: str | None = None
 ):
     """Split out thoughts and actual responses from AI responses"""
     if not text:
@@ -291,7 +290,7 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
 
 
 def get_last_n_conversations(
-    all_messages, start: int = 0, stop: Optional[int] = None
+    all_messages, start: int = 0, stop: int | None = None
 ) -> tuple[str, list[HumanMessage], list[AIMessage]]:
     """Get recent converstations between start and stop indices
 

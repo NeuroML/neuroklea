@@ -54,9 +54,6 @@ class RAG(BaseLangGraph):
         # total number of reference documents
         self.num_refs_max = 10
 
-        # toggle for answer generator
-        self.modify_query = False
-
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)
@@ -304,7 +301,7 @@ class RAG(BaseLangGraph):
                 num_recent_messages=self.num_recent_messages,
             )
 
-        if self.modify_query:
+        if state.query_modified:
             # toggle off
             system_prompt += dedent("""
             Generate a new query on EXACTLY one of concepts that the
@@ -441,7 +438,7 @@ class RAG(BaseLangGraph):
 
         return {"messages": messages, "reference_material": reference_material}
 
-    def _route_answer_evaluator_node(self, state: RAGState) -> str:
+    def _route_evaluator_node(self, state: RAGState) -> str:
         """Route depending on evaluation of answer"""
         self.logger.debug(f"{state =}")
         resp = state.text_response_eval
@@ -458,10 +455,9 @@ class RAG(BaseLangGraph):
             self.stores.reset_k()
             self.logger.debug("returning: continue")
             return "continue"
-        elif not self.modify_query and (
+        elif not state.query_modified and (
             next_step == "modify_query" or resp.coverage < 0.3
         ):
-            self.modify_query = True
             self.logger.debug("returning: modify_query")
             return "modify_query"
         elif next_step == "retrieve_more_info" or (
@@ -475,8 +471,7 @@ class RAG(BaseLangGraph):
             else:
                 # we are already at max context, so we need to modify the query
                 # to get a better result if possible
-                if not self.modify_query:
-                    self.modify_query = True
+                if not state.query_modified:
                     self.logger.debug("returning: modify_query")
                     return "modify_query"
                 # if we've already modified query, fallback to training data if
@@ -579,19 +574,18 @@ class RAG(BaseLangGraph):
                 "non_domain_refuse": "refuse_to_answer",
             },
         )
-        self.workflow.add_edge(
-            "generate_retrieval_query", "generate_answer_from_context"
-        )
+        self.workflow.add_edge("generate_retrieval_query", "retrieve_info")
+        self.workflow.add_edge("retrieve_info", "generate_answer_from_context")
         self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")
 
         self.workflow.add_conditional_edges(
             "evaluate_answer",
-            self._route_answer_evaluator_node,
+            self._route_evaluator_node,
             {
                 "continue": "give_domain_answer_to_user",
-                "retrieve_more_info": "generate_answer_from_context",
+                "retrieve_more_info": "retrieve_info",  # more info
                 "rewrite_answer": "generate_answer_from_context",
-                "modify_query": "generate_retrieval_query",
+                "modify_query": "generate_retrieval_query",  # new query
                 "fallback": "answer_general_question",
                 "undefined": "ask_user_for_clarification",
             },

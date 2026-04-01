@@ -30,4 +30,5 @@ class InitRAGState(BaseLangGraphNode[RAGState, Dict[str, Any]]):
             "text_response_eval": EvaluateAnswerSchema(),
             "message_for_user": "",
             "reference_material": {},
+            "query_modified": False,
         }

@@ -21,6 +21,7 @@ from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import load_prompt, parse_output_with_thought, setup_llm
 
 from neuroml_code_ai import prompts
+from neuroml_code_ai.nodes.answer_user import AnswerUserNode
 from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
 from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
 from neuroml_code_ai.nodes.planner import PlannerNode
@@ -199,15 +200,6 @@ class CodeAI(BaseLangGraph):
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
 
-    def _give_answer_to_user_node(self, state: CodeAIState) -> dict:
-        """Return the message to the user"""
-        self.logger.debug(f"{state =}")
-
-        answer = state.message_for_user
-        self.logger.info(f"Returning final answer to user: {answer}")
-
-        return {"message_for_user": answer}
-
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(CodeAIState)
@@ -230,12 +222,13 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tool_description)
+        self._answer_user_node = AnswerUserNode(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node)
         self.workflow.add_node("tool_caller", self._tool_caller_node)
         self.workflow.add_node("evaluator", self._evaluator_node)
         self.workflow.add_node("step_router", self._step_router_node)
-        self.workflow.add_node("give_answer_to_user", self._give_answer_to_user_node)
+        self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
 
         self.workflow.add_edge(START, "init_graph_state")
         self.workflow.add_edge("init_graph_state", "goal_setter")

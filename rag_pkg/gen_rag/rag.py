@@ -28,7 +28,8 @@ from neuroml_ai_utils.stores import serialize_reference
 from .config import AppConfig
 from .nodes.answer_user import AnswerUser
 from .nodes.evaluator import Evaluator
-from .schemas import EvaluateAnswerSchema, RAGState
+from .nodes.init_rag import InitRAGState
+from .schemas import RAGState
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
@@ -95,16 +96,6 @@ class RAG(BaseLangGraph):
         return {
             "context_summary": answer,
             "summarised_till": len(state.messages),
-        }
-
-    def _init_rag_state_node(self, state: RAGState) -> dict:
-        """Initialise, reset state before next iteration"""
-        self.modify_query = False
-        return {
-            "query_domain": "undefined",
-            "text_response_eval": EvaluateAnswerSchema(),
-            "message_for_user": "",
-            "reference_material": {},
         }
 
     def _classify_question_domain(self, state: RAGState) -> dict:
@@ -546,7 +537,8 @@ class RAG(BaseLangGraph):
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(RAGState)
-        self.workflow.add_node("init_rag_state", self._init_rag_state_node)
+        self._init_rag_state_node = InitRAGState(logger=self.logger)
+        self.workflow.add_node("init_rag_state", self._init_rag_state_node.execute)
         self.workflow.add_node(
             "classify_question_domain", self._classify_question_domain
         )

@@ -31,4 +31,5 @@ class InitRAGState(BaseLangGraphNode[RAGState, Dict[str, Any]]):
             "message_for_user": "",
             "reference_material": {},
             "query_modified": False,
+            "retrieval_query": "",
         }

@@ -17,6 +17,7 @@ from typing import Any, Dict, Type
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
+from langchain_core.utils import Output
 from langchain_core.utils.function_calling import convert_to_json_schema
 from pydantic import BaseModel
 
@@ -138,7 +139,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         else:
             return self.model_inst
 
-    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> Any:
+    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> Output:
         """Invoke LLM with default temperature - can be overridden"""
         output = llm.invoke(
             prompt, config={"configurable": {"temperature": self.temperature}}
@@ -146,7 +147,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         self.logger.debug(f"{output = }")
         return output
 
-    def _process_output(self, output: Any) -> Any:
+    def _process_output(self, output: Output) -> Any:
         """Common output processing with error handling"""
         schema = self.output_schema
         if schema:

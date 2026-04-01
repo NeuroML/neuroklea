@@ -28,6 +28,7 @@ from neuroml_ai_utils.stores import serialize_reference
 from .config import AppConfig
 from .nodes.answer_user import AnswerUser
 from .nodes.evaluator import Evaluator
+from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
 from .schemas import RAGState
 
@@ -267,77 +268,12 @@ class RAG(BaseLangGraph):
 
         return {"messages": messages, "message_for_user": output.content}
 
-    def _generate_retrieval_query_node(self, state: RAGState) -> dict:
-        """Generate a retrieval query"""
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-
-        system_prompt = dedent("""
-        Generate a concise retrieval query from the user's question.  Think
-        about the user's intent step by step.
-
-        Directives:
-        - a concept is a single technical entity or noun phrase
-        - extract all concepts from the query
-        - split multiple concepts that are joined by 'and', commas and other
-          conjunctions into separate, individual concepts
-        - generate a query for EXACTLY one concept
-
-        For the rewritten query:
-        - only include content words (nouns, verbs, adjectives)
-        - do NOT include stop words: a, an, the, in, of, for, on, at, and
-        - limit yourself to 3-8 words
-        - no sentences
-        - no explanations
-        - ignore sentency fluency, only use keywords
-
-        Only return the rewritten query.
-        """)
-
-        if self.memory:
-            system_prompt += add_memory_to_prompt(
-                messages=state.messages,
-                context_summary=state.context_summary,
-                num_recent_messages=self.num_recent_messages,
-            )
-
-        if state.query_modified:
-            # toggle off
-            system_prompt += dedent("""
-            Generate a new query on EXACTLY one of concepts that the
-            evaluator's feedback says is missing.
-
-            Evaluator feedback:
-            {feedback}
-            """)
-
-        question_prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", "User query: {query}")]
-        )
-        prompt = question_prompt_template.invoke(
-            {"query": state.query, "feedback": state.text_response_eval.summary}
-        )
-        self.logger.debug(f"{prompt =}")
-
-        output = self.c_model.invoke(
-            prompt, config={"configurable": {"temperature": 0.3}}
-        )
-
-        self.logger.debug(f"{output =}")
-        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
-
-        messages = state.messages
-        output.content = answer
-        messages.append(output)
-
-        return {"messages": messages}
-
     def _retrieve_info_node(self, state: RAGState) -> dict:
-        self.logger.debug(f"retrieval query: {state.messages[-1].content}")
+        self.logger.debug(f"retrieval query: {state.retrieval_query}")
 
         # current reference material
         reference_material = state.reference_material
-        cleaned_query = state.messages[-1].content
+        cleaned_query = state.retrieval_query
 
         # If evaluator said we need more info, increase k for this round
         if state.text_response_eval.next_step == "retrieve_more_info":
@@ -546,8 +482,11 @@ class RAG(BaseLangGraph):
             "classify_question_domain", self._classify_question_domain
         )
 
+        self._generate_retrieval_query_node = GenerateRetrievalQuery(
+            logger=self.logger, model=self.c_model, temperature=0.3
+        )
         self.workflow.add_node(
-            "generate_retrieval_query", self._generate_retrieval_query_node
+            "generate_retrieval_query", self._generate_retrieval_query_node.execute
         )
         self.workflow.add_node(
             "answer_general_question", self._answer_general_question_node

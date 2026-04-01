@@ -24,7 +24,7 @@ from pydantic import BaseModel
 from ..llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 
 
-class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
+class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
     """Abstract base class for all LangGraph nodes.
 
     Generic over TReturn to support both state-updating nodes (Dict[str, Any])
@@ -53,7 +53,11 @@ class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
         ...
 
 
-class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]):
+# TODO: limit implementation to execute method only, which then implements the contract/flow
+# TODO: move all implementations to BaseLLMNode to indicate that it is an implementation base.
+class AbstractLLMNode[TSchema: BaseModel](
+    AbstractLangGraphNode[TSchema, Dict[str, Any]]
+):
     """Abstract base class for LangGraph nodes that use LLMs.
 
     Implements a template execution flow:
@@ -106,83 +110,37 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
 
         return state_updates
 
+    @abstractmethod
     def _pre_exec(self, state: BaseModel) -> bool:
         """Pre-execution check. Override to conditionally skip node execution.
 
         Return False to skip execution (returns empty dict).
         Return True (default) to proceed with the standard flow.
         """
-        return True
+        ...
 
-    @property
-    def output_schema(self) -> Type[TSchema] | None:
-        """Return Pydantic schema for structured output if required"""
-        return self._output_schema
-
-    @output_schema.setter
-    def output_schema(self, value: Type[TSchema] | None) -> None:
-        """Set Pydantic schema for structured output"""
-        self._output_schema = value
-
-    def _get_output_schema_json(self) -> str:
-        """Return JSON schema string for use in prompts."""
-        schema = self.output_schema
-        if schema is None:
-            return ""
-        return convert_to_json_schema(schema)
-
+    @abstractmethod
     def _configure_llm(self) -> Runnable:
         """Configure LLM with structured output"""
-        schema = self.output_schema
-        if schema:
-            return self.model_inst.with_structured_output(
-                schema, method="json_schema", include_raw=True
-            )
-        else:
-            return self.model_inst
+        ...
 
-    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> Output:
+    @abstractmethod
+    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> str | dict[str, Any]:
         """Invoke LLM with default temperature - can be overridden"""
-        output = llm.invoke(
-            prompt, config={"configurable": {"temperature": self.temperature}}
-        )
-        self.logger.debug(f"{output = }")
-        return output
+        ...
 
-    def _process_output(self, output: Output) -> Any:
+    @abstractmethod
+    def _process_output(self, output: str | dict[str, Any]) -> Any:
         """Common output processing with error handling"""
-        schema = self.output_schema
-        if schema:
-            if output["parsing_error"]:
-                self.logger.warning(
-                    f"LLM parsing error, using fallback: {output['parsing_error']}"
-                )
-                result = parse_output_with_thought(output["raw"], schema)
-            else:
-                result = output["parsed"]
-                if isinstance(result, dict):
-                    result = schema(**result)
-                else:
-                    if not isinstance(result, schema):
-                        self.logger.critical(f"Unexpected output type: {type(result)}")
-                        result = self._get_default_error_result()
+        ...
 
-            self.logger.debug(f"Processed output: {result}")
-        else:
-            result = output
-            self.logger.debug(f"No output schema. Output: {result}")
-
-        return result
-
+    @abstractmethod
     def _invoke_prompt(
         self, prompt_template: ChatPromptTemplate, variables: Any | Dict[str, Any]
     ) -> PromptValue:
         """Format prompt with state-specific parameters"""
-        prompt = prompt_template.invoke(variables)
-        self.logger.debug(f"{prompt =}")
-        return prompt
+        ...
 
-    # Abstract methods to be implemented by subclasses
     @abstractmethod
     def _get_human_prompt(self, state: BaseModel) -> str:
         """Return human prompt for this node"""
@@ -216,11 +174,10 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         ...
 
 
-# TODO: collapse into BaseLLMNode?
-class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
+class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
     """Base class for LangGraph nodes that load prompts from files.
 
-    Extends BaseLLMNode with:
+    Extends AbstractLLMNode with:
     - File-based prompt loading via load_prompt()
     - Optional memory support (appends memory content to system prompt)
     - Auto-derived prompt registry location from subclass file path
@@ -292,6 +249,87 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         """Set the prompts directory path."""
         self._prompt_registry_location = value
 
+    def _pre_exec(self, state: BaseModel) -> bool:
+        """Pre-execution check. Override to conditionally skip node execution.
+
+        Return False to skip execution (returns empty dict).
+        Return True (default) to proceed with the standard flow.
+        """
+        return True
+
+    @property
+    def output_schema(self) -> Type[TSchema] | None:
+        """Return Pydantic schema for structured output if required"""
+        return self._output_schema
+
+    @output_schema.setter
+    def output_schema(self, value: Type[TSchema] | None) -> None:
+        """Set Pydantic schema for structured output"""
+        self._output_schema = value
+
+    def _get_output_schema_json(self) -> dict[str, Any]:
+        """Return JSON schema string for use in prompts."""
+        schema = self.output_schema
+        if schema is None:
+            return {}
+        return convert_to_json_schema(schema)
+
+    def _configure_llm(self) -> Runnable:
+        """Configure LLM with structured output"""
+        schema = self.output_schema
+        if schema:
+            return self.model_inst.with_structured_output(
+                schema, method="json_schema", include_raw=True
+            )
+        else:
+            return self.model_inst
+
+    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> str | dict[str, Any]:
+        """Invoke LLM with default temperature - can be overridden"""
+        output = llm.invoke(
+            prompt, config={"configurable": {"temperature": self.temperature}}
+        )
+        self.logger.debug(f"{output = }")
+        return output
+
+    def _process_output(self, output: str | dict[str, Any]) -> Any:
+        """Common output processing with error handling"""
+        result: TSchema | str | None = None
+        schema = self.output_schema
+
+        if schema:
+            assert isinstance(output, dict)
+
+            if output["parsing_error"]:
+                self.logger.warning(
+                    f"LLM parsing error, using fallback: {output['parsing_error']}"
+                )
+                result = parse_output_with_thought(output["raw"], schema)
+            else:
+                result = output["parsed"]
+                if isinstance(result, dict):
+                    result = schema(**result)
+                else:
+                    if not isinstance(result, schema):
+                        self.logger.critical(f"Unexpected output type: {type(result)}")
+                        result = self._get_default_error_result()
+
+            self.logger.debug(f"Processed output: {result}")
+        else:
+            assert isinstance(output, str)
+            result = output
+            self.logger.debug(f"No output schema. Output: {result}")
+
+        return result
+
+    def _invoke_prompt(
+        self, prompt_template: ChatPromptTemplate, variables: Any | Dict[str, Any]
+    ) -> PromptValue:
+        """Format prompt with state-specific parameters"""
+        prompt = prompt_template.invoke(variables)
+        self.logger.debug(f"{prompt =}")
+        return prompt
+
     def _get_system_prompt(self, state: BaseModel) -> str:
         """Load system prompt from file, optionally adding memory summary."""
         system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
@@ -323,7 +361,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
 
     def _create_prompt_template(
         self, system_prompt: str, human_prompt: str
-    ) -> ChatPromptTemplate | None:
+    ) -> ChatPromptTemplate:
         """Create ChatPromptTemplate with system and human messages."""
         if len(system_prompt) and len(human_prompt):
             prompt_template = ChatPromptTemplate(
@@ -335,6 +373,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
             prompt_template = ChatPromptTemplate([("human", human_prompt)])
         else:
             self.logger.error("No prompts provided. Cannot create prompt template!")
+            # TODO: raise exception, this should crash the system
             return None
 
         self.logger.debug(f"{prompt_template =}")
@@ -353,7 +392,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         )
 
 
-class BaseRouterNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, str]):
+class BaseRouterNode[TSchema: BaseModel](AbstractLangGraphNode[TSchema, str]):
     """Base class for LangGraph router nodes.
 
     Router nodes inspect the state and return a string label that determines

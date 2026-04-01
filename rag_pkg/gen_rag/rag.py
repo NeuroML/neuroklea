@@ -11,13 +11,11 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from textwrap import dedent
 
-from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.messages import AIMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import (
-    add_memory_to_prompt,
-    parse_output_with_thought,
     setup_llm,
     split_output_by_section,
 )
@@ -27,6 +25,7 @@ from neuroml_ai_utils.stores import serialize_reference
 
 from .config import AppConfig
 from .nodes.answer_user import AnswerUser
+from .nodes.classify_question import ClassifyQuestion
 from .nodes.evaluator import Evaluator
 from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
@@ -65,105 +64,6 @@ class RAG(BaseLangGraph):
         """Setup and get compiled graph"""
         await self.setup()
         return self.graph
-
-    def _classify_question_domain(self, state: RAGState) -> dict:
-        """Ask LLM to figure out the domain of the query"""
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-
-        messages = state.messages
-        messages.append(HumanMessage(content=state.query))
-
-        domain_info = self.stores.vs_config.domains
-
-        domain_str = ""
-        domain_str += self.stores.vs_config.pre_prompt
-        domain_str += "\n\nCategories:\n\n"
-
-        for d, info in domain_info.items():
-            desc = info.description
-            if not desc or len(desc) == 0:
-                desc = f"if the question is about {d}"
-            else:
-                desc = f"if the question is about {desc}"
-            domain_str += f"\n- {d}: {desc}"
-
-        system_prompt = dedent("""
-            You are an expert query classifier.
-            Reason about the user's query to classify it into one of the given
-            categories.
-
-            """)
-        system_prompt += domain_str + "\n- undefined: otherwise\n\n"
-        system_prompt += dedent("""
-            Rules:
-
-            - Choose exactly ONE category
-            - Base your decision on semantic intent
-            - Do not explain your reasoning
-            - Do not include any other additional text
-            - Provide your answer ONLY as a JSON object matching the requested
-              schema:
-              {{
-                "query_domain": "..."
-              }}
-            - Take past conversation history and context into account.
-
-        """)
-
-        if self.memory:
-            system_prompt += add_memory_to_prompt(
-                messages=state.messages,
-                context_summary=state.context_summary,
-                num_history_messages=10,
-            )
-
-        self.logger.debug(f"{system_prompt = }")
-
-        prompt_template = ChatPromptTemplate(
-            [("system", system_prompt), ("human", "User query: {query}")]
-        )
-
-        # can use | to merge these lines
-        query_node_llm = self.c_model.with_structured_output(
-            self.QueryDomainSchema, method="json_schema", include_raw=True
-        )
-        prompt = prompt_template.invoke({"query": state.query})
-
-        self.logger.debug(f"{prompt = }")
-
-        output = query_node_llm.invoke(
-            prompt, config={"configurable": {"temperature": 0.3}}
-        )
-
-        self.logger.debug(f"{output = }")
-
-        if output["parsing_error"]:
-            query_domain_result = parse_output_with_thought(
-                output["raw"], self.QueryDomainSchema
-            )
-        else:
-            query_domain_result = output["parsed"]
-            if isinstance(query_domain_result, str):
-                query_domain_result = self.QueryDomainSchema(
-                    query_domain=query_domain_result
-                )
-            elif isinstance(query_domain_result, dict):
-                query_domain_result = self.QueryDomainSchema(**query_domain_result)
-            else:
-                if not isinstance(query_domain_result, self.QueryDomainSchema):
-                    self.logger.critical(
-                        f"Received unexpected query classification: {query_domain_result =}"
-                    )
-                    query_domain_result = self.QueryDomainSchema(
-                        query_domain="undefined"
-                    )
-
-        self.logger.debug(f"{query_domain_result =}")
-        return {
-            "query_domain": query_domain_result.query_domain,
-            "messages": messages,
-        }
 
     def _generate_answer_from_context_node(self, state: RAGState) -> dict:
         """Generate the answer"""
@@ -340,8 +240,17 @@ class RAG(BaseLangGraph):
         self.workflow = StateGraph(RAGState)
         self._init_rag_state_node = InitRAGState(logger=self.logger)
         self.workflow.add_node("init_rag_state", self._init_rag_state_node.execute)
+        self._classify_question_node = ClassifyQuestion(
+            logger=self.logger,
+            model=self.c_model,
+            stores=self.stores,
+            query_domain_schema=self.QueryDomainSchema,
+            temperature=0.3,
+            memory=self.memory,
+            num_history_messages=10,
+        )
         self.workflow.add_node(
-            "classify_question_domain", self._classify_question_domain
+            "classify_question_domain", self._classify_question_node.execute
         )
 
         self._generate_retrieval_query_node = GenerateRetrievalQuery(

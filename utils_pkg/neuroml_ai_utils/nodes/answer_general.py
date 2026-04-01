@@ -13,10 +13,9 @@ from pathlib import Path
 from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
-from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel
 
-from ..llm import add_memory_to_prompt, load_prompt, split_output_by_section
+from ..llm import split_output_by_section
 from ..stores import FallbackConfig
 from .base_nodes import BaseLLMNode
 
@@ -59,38 +58,6 @@ class AnswerGeneral(BaseLLMNode):
         self.prompt_registry_location = prompt_registry_location
 
     @override
-    def _get_system_prompt(self, state: BaseModel) -> str:
-        """Load system prompt from file, optionally adding memory context."""
-        system_prompt = load_prompt(
-            prompt_name="answer_general_system",
-            prompt_registry_location=self.prompt_registry_location,
-        )
-
-        if self.memory:
-            system_prompt += add_memory_to_prompt(
-                messages=state.messages,  # type: ignore
-                context_summary=state.context_summary,  # type: ignore
-                num_history_messages=self.num_history_messages,
-            )
-
-        return system_prompt
-
-    @override
-    def _get_human_prompt(self, state: BaseModel) -> str:
-        """Load human prompt from file."""
-        return load_prompt(
-            prompt_name="answer_general_user",
-            prompt_registry_location=self.prompt_registry_location,
-        )
-
-    @override
-    def _create_prompt_template(
-        self, system_prompt: str, human_prompt: str
-    ) -> ChatPromptTemplate:
-        """Create ChatPromptTemplate with system and human messages."""
-        return ChatPromptTemplate([("system", system_prompt), ("human", human_prompt)])
-
-    @override
     def _get_prompt_variables(self, state: BaseModel) -> dict:
         """Format prompt with the user's query."""
         return {"query": state.query}  # type: ignore
@@ -117,6 +84,7 @@ class AnswerGeneral(BaseLLMNode):
 
         return {"messages": messages, "message_for_user": answer}
 
+    # TODO: may need updating
     @override
     def _get_default_error_result(self) -> AIMessage:
         """Return default result when processing fails."""

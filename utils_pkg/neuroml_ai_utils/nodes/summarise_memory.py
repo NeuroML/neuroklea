@@ -71,29 +71,6 @@ class SummariseMemoryNode(BaseLLMNode):
         return True
 
     @override
-    def _get_system_prompt(self, state: BaseModel) -> str:
-        """Load system prompt from file."""
-        return load_prompt(
-            prompt_name="summarise_memory",
-            prompt_registry_location=self.prompt_registry_location,
-        )
-
-    @override
-    def _get_human_prompt(self, state: BaseModel) -> str:
-        """Load human prompt from file."""
-        return load_prompt(
-            prompt_name="summarise_memory_human",
-            prompt_registry_location=self.prompt_registry_location,
-        )
-
-    @override
-    def _create_prompt_template(
-        self, system_prompt: str, human_prompt: str
-    ) -> ChatPromptTemplate:
-        """Create ChatPromptTemplate with system and human messages."""
-        return ChatPromptTemplate([("system", system_prompt), ("human", human_prompt)])
-
-    @override
     def _get_prompt_variables(self, state: BaseModel) -> dict:
         """Format prompt with conversation data."""
         return {
@@ -111,6 +88,7 @@ class SummariseMemoryNode(BaseLLMNode):
             "summarised_till": len(state.messages),  # type: ignore
         }
 
+    # TODO: may need updating
     @override
     def _get_default_error_result(self) -> AIMessage:
         """Return default result when processing fails."""

@@ -16,7 +16,7 @@ from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
 from neuroml_code_ai.schemas import CodeAIState, GoalSchema, PlanSchema
 
 
-class InitGraphStateNode(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
+class InitGraphState(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
     """Initialise/reset graph state before each iteration."""
 
     def __init__(self, logger: logging.Logger):

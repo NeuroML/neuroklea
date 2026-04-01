@@ -9,17 +9,16 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from pathlib import Path
 from typing import Any, Dict
 
+from langchain_core.utils.function_calling import convert_to_json_schema
 from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
 from pydantic import BaseModel
 
-from neuroml_code_ai import prompts
 from neuroml_code_ai.schemas import CodeAIState, PlanSchema
 
 
-class PlannerNode(BaseMemoryLLMNode[PlanSchema]):
+class Planner(BaseMemoryLLMNode[PlanSchema]):
     """Node that creates or updates an execution plan."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
@@ -34,9 +33,6 @@ class PlannerNode(BaseMemoryLLMNode[PlanSchema]):
             model=model,
             temperature=temperature,
             output_schema=PlanSchema,
-            system_prompt_file="planner",
-            human_prompt_file="planner_human",
-            prompt_registry_location=Path(prompts.__file__).parent,
             memory=False,
         )
         self._tools_description = ""
@@ -75,6 +71,4 @@ class PlannerNode(BaseMemoryLLMNode[PlanSchema]):
 
     def _get_output_schema_json(self) -> str:
         """Get JSON schema string for the prompt."""
-        from langchain_core.utils.function_calling import convert_to_json_schema
-
-        return convert_to_json_schema(self._get_output_schema())
+        return convert_to_json_schema(self.output_schema)

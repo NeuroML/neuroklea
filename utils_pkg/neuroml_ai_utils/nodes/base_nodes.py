@@ -252,7 +252,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         """
         if self._prompt_prefix is not None:
             return self._prompt_prefix
-        return self.__class__.__name__.lower()
+        return self.__class__.__name__
 
     @prompt_prefix.setter
     def prompt_prefix(self, value: str) -> None:

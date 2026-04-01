@@ -26,7 +26,7 @@ from neuroml_ai_utils.llm import (
 )
 
 from .config import AppConfig
-from .nodes.answer_user import AnswerUserNode
+from .nodes.answer_user import AnswerUser
 from .schemas import EvaluateAnswerSchema, RAGState
 
 logging.basicConfig()
@@ -752,7 +752,7 @@ class RAG(BaseLangGraph):
             "generate_answer_from_context", self._generate_answer_from_context_node
         )
         self.workflow.add_node("evaluate_answer", self._evaluate_answer_node)
-        self._answer_user_node = AnswerUserNode(logger=self.logger)
+        self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node(
             "give_domain_answer_to_user", self._answer_user_node.execute
         )

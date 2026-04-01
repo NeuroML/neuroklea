@@ -17,10 +17,10 @@ from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm
 
-from neuroml_code_ai.nodes.answer_user import AnswerUserNode
-from neuroml_code_ai.nodes.goal_setter import GoalSetterNode
-from neuroml_code_ai.nodes.init_graph import InitGraphStateNode
-from neuroml_code_ai.nodes.planner import PlannerNode
+from neuroml_code_ai.nodes.answer_user import AnswerUser
+from neuroml_code_ai.nodes.goal_setter import GoalSetter
+from neuroml_code_ai.nodes.init_graph import InitGraphState
+from neuroml_code_ai.nodes.planner import Planner
 from neuroml_code_ai.nodes.tool_picker import ToolPicker
 
 from .api.conf import AppConfig
@@ -144,22 +144,20 @@ class CodeAI(BaseLangGraph):
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(CodeAIState)
-        self._init_graph_state_node = InitGraphStateNode(logger=self.logger)
+        self._init_graph_state_node = InitGraphState(logger=self.logger)
         self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
         # self.workflow.add_node("summarise_history", self._summarise_history_node)
 
-        self._goal_setter_node = GoalSetterNode(
+        self._goal_setter_node = GoalSetter(
             logger=self.logger,
             model=self.r_model,
             temperature=0.01,
             output_schema=GoalSchema,
-            system_prompt_file="goal",
-            human_prompt_file="goal_human",
             memory=False,
         )
         self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
 
-        self._planner_node = PlannerNode(
+        self._planner_node = Planner(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tool_description)
@@ -167,7 +165,7 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._tool_picker_node.set_tools_description(self.tool_description)
-        self._answer_user_node = AnswerUserNode(logger=self.logger)
+        self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
         self.workflow.add_node("tool_caller", self._tool_caller_node)

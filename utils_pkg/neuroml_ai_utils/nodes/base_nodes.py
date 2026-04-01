@@ -8,6 +8,7 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import inspect
 import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -76,7 +77,7 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         super().__init__(logger)
         self.model_inst = model_inst
         self.temperature = temperature
-        self.output_schema = output_schema
+        self._output_schema = output_schema
 
     async def execute(self, state: BaseModel) -> Dict[str, Any]:
         """Template method defining standard execution flow"""
@@ -109,16 +110,22 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
         """
         return True
 
-    def _get_output_schema(self) -> Optional[Type[TSchema]]:
+    @property
+    def output_schema(self) -> Optional[Type[TSchema]]:
         """Return Pydantic schema for structured output if required"""
-        return self.output_schema
+        return self._output_schema
+
+    @output_schema.setter
+    def output_schema(self, value: Optional[Type[TSchema]]) -> None:
+        """Set Pydantic schema for structured output"""
+        self._output_schema = value
 
     def _configure_llm(self) -> Runnable:
         """Configure LLM with structured output"""
-        output_schema = self._get_output_schema()
-        if output_schema:
+        schema = self.output_schema
+        if schema:
             return self.model_inst.with_structured_output(
-                output_schema, method="json_schema", include_raw=True
+                schema, method="json_schema", include_raw=True
             )
         else:
             return self.model_inst
@@ -133,19 +140,19 @@ class BaseLLMNode[TSchema: BaseModel](BaseLangGraphNode[TSchema, Dict[str, Any]]
 
     def _process_output(self, output: Any) -> Any:
         """Common output processing with error handling"""
-        output_schema = self._get_output_schema()
-        if output_schema:
+        schema = self.output_schema
+        if schema:
             if output["parsing_error"]:
                 self.logger.warning(
                     f"LLM parsing error, using fallback: {output['parsing_error']}"
                 )
-                result = parse_output_with_thought(output["raw"], output_schema)
+                result = parse_output_with_thought(output["raw"], schema)
             else:
                 result = output["parsed"]
                 if isinstance(result, dict):
-                    result = output_schema(**result)
+                    result = schema(**result)
                 else:
-                    if not isinstance(result, output_schema):
+                    if not isinstance(result, schema):
                         self.logger.critical(f"Unexpected output type: {type(result)}")
                         result = self._get_default_error_result()
 
@@ -204,7 +211,14 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
     Extends BaseLLMNode with:
     - File-based prompt loading via load_prompt()
     - Optional memory support (appends memory content to human prompt)
-    - Configurable prompt registry location (package-specific prompt directories)
+    - Auto-derived prompt registry location from subclass file path
+
+    Prompt files are expected to be named ``{prefix}_system.md`` and
+    ``{prefix}_user.md``.
+
+    Subclasses can override ``prompt_prefix`` or ``prompt_registry_location``
+    via the setter if the defaults (lowercase class name / sibling ``prompts/``)
+    are not appropriate.
     """
 
     def __init__(
@@ -213,9 +227,6 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         model: Any,
         temperature: float,
         output_schema: Type[TSchema],
-        system_prompt_file: str,
-        human_prompt_file: str,
-        prompt_registry_location: Path,
         memory: bool = False,
     ):
         """Initialize with file-based prompt loading and memory support.
@@ -224,32 +235,62 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param output_schema: Pydantic schema for structured output
-        :param system_prompt_file: Name of the system prompt file (no extension)
-        :param human_prompt_file: Name of the human prompt file (no extension)
-        :param prompt_registry_location: Path to the prompts directory
         :param memory: Whether to append memory content to the human prompt
         """
         super().__init__(logger, model, temperature, output_schema=output_schema)
 
-        self.system_prompt_file = system_prompt_file
-        self.human_prompt_file = human_prompt_file
-        self.prompt_registry_location = prompt_registry_location
+        self._prompt_prefix: str | None = None
+        self._prompt_registry_location: Path | None = None
         self.memory = memory
         self.num_recent_messages = 10
 
+    @property
+    def prompt_prefix(self) -> str:
+        """Return the prompt file prefix.
+
+        Falls back to the lowercase class name if not explicitly set.
+        """
+        if self._prompt_prefix is not None:
+            return self._prompt_prefix
+        return self.__class__.__name__.lower()
+
+    @prompt_prefix.setter
+    def prompt_prefix(self, value: str) -> None:
+        """Set the prompt file prefix."""
+        self._prompt_prefix = value
+
+    @property
+    def prompt_registry_location(self) -> Path:
+        """Return path to the prompts directory.
+
+        Falls back to a sibling ``prompts/`` directory relative to the
+        subclass file if not explicitly set.
+        """
+        if self._prompt_registry_location is not None:
+            return self._prompt_registry_location
+
+        subclass_file = inspect.getfile(self.__class__)
+        return Path(subclass_file).parent / "prompts"
+
+    @prompt_registry_location.setter
+    def prompt_registry_location(self, value: Path) -> None:
+        """Set the prompts directory path."""
+        self._prompt_registry_location = value
+
     def _get_system_prompt(self, state: BaseModel) -> str:
-        """Load system prompt from file."""
-        system_prompt = self._load_prompt_file(self.system_prompt_file)
+        """Load system prompt from file, optionally adding memory summary."""
+        system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
+
+        if self.memory:
+            memory_addition = self._get_memory_addition(state)
+            return system_prompt + memory_addition
+
         self.logger.debug(f"{system_prompt =}")
         return system_prompt
 
     def _get_human_prompt(self, state: BaseModel) -> str:
-        """Load human prompt from file, optionally appending memory content."""
-        human_prompt = self._load_prompt_file(self.human_prompt_file)
-
-        if self.memory:
-            memory_addition = self._get_memory_addition(state)
-            return human_prompt + memory_addition
+        """Load human prompt from file."""
+        human_prompt = self._load_prompt_file(f"{self.prompt_prefix}_user")
 
         self.logger.debug(f"{human_prompt =}")
         return human_prompt

@@ -35,11 +35,13 @@ class BaseLangGraphNode[TSchema: BaseModel, TReturn](ABC):
     """
 
     def __init__(self, logger: logging.Logger):
-        """Initialise with a logger.
+        """Initialise
 
-        :param logger: Logger instance
+        Creates a new hierarchical logger.
+
+        :param logger: Parent logger instance (used to derive child logger name)
         """
-        self.logger = logger
+        self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
 
     @abstractmethod
     async def execute(self, state: TSchema) -> TReturn:

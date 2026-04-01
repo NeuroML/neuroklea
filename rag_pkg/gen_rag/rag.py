@@ -31,6 +31,7 @@ from .nodes.evaluator import Evaluator
 from .nodes.generate_retrieval_query import GenerateRetrievalQuery
 from .nodes.init_rag import InitRAGState
 from .nodes.refuse_answer import RefuseAnswer
+from .nodes.retrieve_info import RetrieveInfoNode
 from .schemas import RAGState
 
 logging.basicConfig()
@@ -163,33 +164,6 @@ class RAG(BaseLangGraph):
             "query_domain": query_domain_result.query_domain,
             "messages": messages,
         }
-
-    def _retrieve_info_node(self, state: RAGState) -> dict:
-        self.logger.debug(f"retrieval query: {state.retrieval_query}")
-
-        # current reference material
-        reference_material = state.reference_material
-        cleaned_query = state.retrieval_query
-
-        # If evaluator said we need more info, increase k for this round
-        if state.text_response_eval.next_step == "retrieve_more_info":
-            self.stores.inc_k()
-
-        # new references, or more references for an existing query from all
-        # stores
-        res = self.stores.retrieve(domain_name=state.query_domain, query=cleaned_query)
-
-        # rank info from all stores, keep top N
-        # remember that when asking for more ks from the vector store, they'll
-        # still return the initial ones, so we don't need to do any manual
-        # merging here for more refs for a particular query
-        sorted_res = sorted(res, key=lambda tup: tup[1], reverse=True)
-        new_ref = {state.query_domain: sorted_res[: self.num_refs_max]}
-
-        reference_material.update(new_ref)
-        self.logger.debug(f"{reference_material =}")
-
-        return {"reference_material": reference_material}
 
     def _generate_answer_from_context_node(self, state: RAGState) -> dict:
         """Generate the answer"""
@@ -389,7 +363,12 @@ class RAG(BaseLangGraph):
         )
         self._refuse_answer_node = RefuseAnswer(logger=self.logger, stores=self.stores)
         self.workflow.add_node("refuse_to_answer", self._refuse_answer_node.execute)
-        self.workflow.add_node("retrieve_info", self._retrieve_info_node)
+        self._retrieve_info_node = RetrieveInfoNode(
+            logger=self.logger,
+            stores=self.stores,
+            num_refs_max=self.num_refs_max,
+        )
+        self.workflow.add_node("retrieve_info", self._retrieve_info_node.execute)
         self.workflow.add_node(
             "generate_answer_from_context", self._generate_answer_from_context_node
         )

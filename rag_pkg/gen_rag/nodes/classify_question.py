@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from pathlib import Path
 from typing import Any, Dict, Type, override
 
 from langchain_core.messages import AIMessage, HumanMessage
@@ -20,7 +19,8 @@ from pydantic import BaseModel
 from gen_rag.schemas import RAGState
 
 
-class ClassifyQuestion(BaseMemoryLLMNode[RAGState]):
+# Type is calculated at runtime in orchestrator
+class ClassifyQuestion[TSchema: BaseModel](BaseMemoryLLMNode[TSchema]):
     """Classify a user query into a domain category.
 
     Uses an LLM to determine which domain the query belongs to, based on
@@ -33,7 +33,7 @@ class ClassifyQuestion(BaseMemoryLLMNode[RAGState]):
         logger: logging.Logger,
         model: Any,
         stores: VectorStores,
-        output_schema: Type[BaseModel],
+        output_schema: Type[TSchema],
         temperature: float = 0.3,
         memory: bool = False,
     ):

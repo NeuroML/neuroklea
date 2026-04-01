@@ -239,6 +239,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         temperature: float,
         output_schema: Type[TSchema] | None,
         memory: bool = False,
+        num_history_messages: int = 10,
     ):
         """Initialize with file-based prompt loading and memory support.
 
@@ -253,7 +254,7 @@ class BaseMemoryLLMNode[TSchema: BaseModel](BaseLLMNode[TSchema]):
         self._prompt_prefix: str | None = None
         self._prompt_registry_location: Path | None = None
         self.memory = memory
-        self.num_history_messages = 10
+        self.num_history_messages = num_history_messages
 
     @property
     def prompt_prefix(self) -> str:

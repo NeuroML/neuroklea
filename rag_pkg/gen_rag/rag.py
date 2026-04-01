@@ -247,7 +247,6 @@ class RAG(BaseLangGraph):
             temperature=0.3,
             memory=self.memory,
             stores=self.stores,
-            num_history_messages=10,
         )
         self.workflow.add_node(
             "classify_question_domain", self._classify_question_node.execute
@@ -264,7 +263,6 @@ class RAG(BaseLangGraph):
             model=self.c_model,
             temperature=0.3,
             memory=self.memory,
-            num_history_messages=10,
             fallback_config=self.stores.vs_config.fallback_to_training_data,
         )
         self.workflow.add_node(

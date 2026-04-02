@@ -22,6 +22,7 @@ from neuroml_code_ai.nodes.evaluator import Evaluator
 from neuroml_code_ai.nodes.goal_setter import GoalSetter
 from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
+from neuroml_code_ai.nodes.tool_caller import ToolCaller
 from neuroml_code_ai.nodes.tool_picker import ToolPicker
 
 from .config import AppConfig
@@ -92,40 +93,6 @@ class CodeAI(BaseLangGraph):
 
         return description
 
-    async def _tool_caller_node(self, state: CodeAIState) -> dict:
-        self.logger.debug(f"{state =}")
-
-        plan = state.plan
-        current_step = plan.step_list[plan.current_step_index]
-        result: dict[str, Any] = {}
-
-        # call tool if it is in the current state
-        if state.tool_call:
-            # TODO: retry X times if fails before marking as failed
-            tool_call = state.tool_call
-            assert tool_call
-
-            tool_responses = state.tool_responses
-            async with self.mcp_client:
-                tool_result = await self.mcp_client.call_tool(
-                    name=tool_call.tool, arguments=tool_call.args, raise_on_error=False
-                )
-            tool_responses.append(tool_result)
-
-            if tool_result.is_error:
-                current_step.status = "failed"
-            else:
-                current_step.status = "done"
-
-            # TODO: populate artefacts
-            result["tool_responses"] = tool_responses
-            self.logger.debug(f"{tool_responses =}")
-
-        plan.current_step_index += 1
-
-        result["plan"] = plan
-        return result
-
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
 
@@ -153,11 +120,14 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._tool_picker_node.set_tools_description(self.tool_description)
+        self._tool_caller_node = ToolCaller(
+            logger=self.logger, mcp_client=self.mcp_client
+        )
         self._evaluator_node = Evaluator(logger=self.logger)
         self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
-        self.workflow.add_node("tool_caller", self._tool_caller_node)
+        self.workflow.add_node("tool_caller", self._tool_caller_node.execute)
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
         self.workflow.add_node("step_router", self._step_router_node)
         self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)

@@ -19,6 +19,7 @@ from langchain_core.runnables import Runnable
 from langchain_core.utils.function_calling import convert_to_json_schema
 from pydantic import BaseModel
 
+from ..errors import PromptTemplateError
 from ..llm import add_memory_to_prompt, load_prompt, parse_output_with_thought
 from .abstract import AbstractLLMNode
 
@@ -221,9 +222,9 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         elif len(human_prompt) and not len(system_prompt):
             prompt_template = ChatPromptTemplate([("human", human_prompt)])
         else:
-            self.logger.error("No prompts provided. Cannot create prompt template!")
-            # TODO: raise exception, this should crash the system
-            return None
+            raise PromptTemplateError(
+                "No prompts provided. Cannot create prompt template!"
+            )
 
         self.logger.debug(f"{prompt_template =}")
         return prompt_template

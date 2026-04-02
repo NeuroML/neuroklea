@@ -198,7 +198,7 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
                 f"""
                 ## Output schema (strict)
 
-                Return your response using this output schema.
+                Respond in JSON following this schema:
 
                 {self.output_schema_json}
                 """

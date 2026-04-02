@@ -63,13 +63,6 @@
 
 ---
 
-## Output format (strict)
-
-* Output **only valid JSON** based on the provided schema
-* Do not include markdown
-
----
-
 ## Available tools
 
 {tools_description}

@@ -16,14 +16,6 @@ Your job is to pick the right tool to carry out a step in a larger plan.
 
 ---
 
-
-## Output format (strict)
-
-* Output **only valid JSON** based on the provided schema
-* Do not include markdown
-
----
-
 ## Rules:
 
 * Only pick tools from the provided list

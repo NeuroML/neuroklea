@@ -11,14 +11,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from langchain_core.utils.function_calling import convert_to_json_schema
 from neuroml_ai_utils.nodes.base import BaseLLMNode
-from pydantic import BaseModel
 
 from neuroml_code_ai.schemas import CodeAIState, ToolCallSchema
 
 
-class ToolPicker(BaseLLMNode[ToolCallSchema]):
+class ToolPicker(BaseLLMNode[CodeAIState]):
     """Node that selects the best tool for the current step."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
@@ -42,8 +40,8 @@ class ToolPicker(BaseLLMNode[ToolCallSchema]):
         self._tools_description = description
 
     @override
-    def _get_human_prompt(self, state: BaseModel) -> str:
-        """Return empty string — this node only uses a system prompt."""
+    def _get_human_prompt(self, state: CodeAIState) -> str:
+        """Return empty string  ---  this node only uses a system prompt."""
         return ""
 
     @override
@@ -57,11 +55,12 @@ class ToolPicker(BaseLLMNode[ToolCallSchema]):
             "artefacts": state.artefacts,
             "observations": state.tool_responses,
             "tools_description": self._tools_description,
-            "output_schema": convert_to_json_schema(ToolCallSchema),
         }
 
     @override
-    def _update_state(self, result: ToolCallSchema, state: BaseModel) -> Dict[str, Any]:
+    def _update_state(
+        self, result: ToolCallSchema, state: CodeAIState
+    ) -> Dict[str, Any]:
         """Update state with the selected tool call."""
         return {"tool_call": result}
 

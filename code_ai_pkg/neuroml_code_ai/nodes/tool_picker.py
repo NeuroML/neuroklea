@@ -12,13 +12,13 @@ import logging
 from typing import Any, Dict, override
 
 from langchain_core.utils.function_calling import convert_to_json_schema
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from pydantic import BaseModel
 
 from neuroml_code_ai.schemas import CodeAIState, ToolCallSchema
 
 
-class ToolPicker(BaseMemoryLLMNode[ToolCallSchema]):
+class ToolPicker(BaseLLMNode[ToolCallSchema]):
     """Node that selects the best tool for the current step."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):

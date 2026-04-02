@@ -13,12 +13,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
 from neuroml_code_ai.schemas import CodeAIState
 
 
-class Evaluator(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
+class Evaluator(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
     """Node that evaluates whether all plan steps are completed."""
 
     def __init__(self, logger: logging.Logger):

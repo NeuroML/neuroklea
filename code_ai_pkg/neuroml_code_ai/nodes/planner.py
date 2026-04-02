@@ -11,13 +11,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from pydantic import BaseModel
 
 from neuroml_code_ai.schemas import CodeAIState, PlanSchema
 
 
-class Planner(BaseMemoryLLMNode[PlanSchema]):
+class Planner(BaseLLMNode[PlanSchema]):
     """Node that creates or updates an execution plan."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):

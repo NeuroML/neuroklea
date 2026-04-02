@@ -14,10 +14,10 @@ from typing import Any, Dict, override
 from gen_rag.schemas import RAGState
 from pydantic import BaseModel
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
 
-class FixedAnswer(BaseLangGraphNode[BaseModel, Dict[str, Any]]):
+class FixedAnswer(AbstractLangGraphNode[BaseModel, Dict[str, Any]]):
     """Provide a fixed answer"""
 
     def __init__(self, logger: logging.Logger, state_attr: str, message: str):

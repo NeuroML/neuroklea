@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, Type, override
 
 from langchain_core.messages import AIMessage, HumanMessage
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_ai_utils.stores import VectorStores
 from pydantic import BaseModel
 
@@ -20,7 +20,7 @@ from gen_rag.schemas import RAGState
 
 
 # Type is calculated at runtime in orchestrator
-class ClassifyQuestion[TSchema: BaseModel](BaseMemoryLLMNode[TSchema]):
+class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
     """Classify a user query into a domain category.
 
     Uses an LLM to determine which domain the query belongs to, based on

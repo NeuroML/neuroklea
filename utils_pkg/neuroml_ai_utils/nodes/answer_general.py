@@ -17,10 +17,10 @@ from pydantic import BaseModel
 
 from ..llm import split_output_by_section
 from ..stores import FallbackConfig
-from .base_nodes import BaseMemoryLLMNode
+from .base import BaseLLMNode
 
 
-class AnswerGeneral(BaseMemoryLLMNode):
+class AnswerGeneral(BaseLLMNode):
     """Answer general (non-domain) questions using the LLM's training data.
 
     Provides a conversational, user-friendly response. Optionally appends

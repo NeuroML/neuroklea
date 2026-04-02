@@ -11,11 +11,11 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any
 
-from .base_nodes import BaseMemoryLLMNode
+from .base import BaseLLMNode
 
 
 # TODO: complete
-class AnswerFromContext(BaseMemoryLLMNode):
+class AnswerFromContext(BaseLLMNode):
     """Generate an answer from the provided context"""
 
     def __init__(

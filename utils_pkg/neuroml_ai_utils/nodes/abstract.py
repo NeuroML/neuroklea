@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, final
 
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
@@ -47,8 +47,6 @@ class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
         ...
 
 
-# TODO: limit implementation to execute method only, which then implements the contract/flow
-# TODO: move all implementations to BaseLLMNode to indicate that it is an implementation base.
 class AbstractLLMNode[TSchema: BaseModel](
     AbstractLangGraphNode[TSchema, Dict[str, Any]]
 ):
@@ -81,6 +79,7 @@ class AbstractLLMNode[TSchema: BaseModel](
         self.temperature = temperature
         self._output_schema = output_schema
 
+    @final
     async def execute(self, state: BaseModel) -> Dict[str, Any]:
         """Template method defining standard execution flow"""
         self.logger.debug(f"{state =}")

@@ -11,12 +11,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
 from neuroml_code_ai.schemas import CodeAIState, GoalSchema, PlanSchema
 
 
-class InitGraphState(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
+class InitGraphState(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
     """Initialise/reset graph state before each iteration."""
 
     def __init__(self, logger: logging.Logger):

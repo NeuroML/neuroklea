@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 
-from neuroml_ai_utils.nodes.base_nodes import BaseRouterNode
+from neuroml_ai_utils.nodes.base import BaseRouterNode
 from neuroml_ai_utils.stores import VectorStores
 
 from gen_rag.schemas import RAGState

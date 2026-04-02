@@ -13,6 +13,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Type
 
+from langchain.messages import AIMessage
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
@@ -134,7 +135,9 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         else:
             return self.model_inst
 
-    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> str | dict[str, Any]:
+    def _invoke_llm(
+        self, llm: Runnable, prompt: PromptValue
+    ) -> AIMessage | dict[str, Any]:
         """Invoke LLM with default temperature - can be overridden"""
         output = llm.invoke(
             prompt, config={"configurable": {"temperature": self.temperature}}
@@ -142,9 +145,9 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         self.logger.debug(f"{output = }")
         return output
 
-    def _process_output(self, output: str | dict[str, Any]) -> Any:
+    def _process_output(self, output: AIMessage | dict[str, Any]) -> Any:
         """Common output processing with error handling"""
-        result: TSchema | str | None = None
+        result: TSchema | AIMessage | None = None
         schema = self.output_schema
 
         if schema:
@@ -166,9 +169,11 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
 
             self.logger.debug(f"Processed output: {result}")
         else:
-            assert isinstance(output, str)
+            assert isinstance(output, AIMessage)
             result = output
-            self.logger.debug(f"No output schema. Output: {result}")
+            self.logger.debug(
+                f"No output schema. Returning unprocessed output: {result}"
+            )
 
         return result
 

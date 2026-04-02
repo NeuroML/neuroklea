@@ -12,6 +12,7 @@ import logging
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Type, final
 
+from langchain.messages import AIMessage
 from langchain_core.prompt_values import PromptValue
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
@@ -118,12 +119,14 @@ class AbstractLLMNode[TSchema: BaseModel](
         ...
 
     @abstractmethod
-    def _invoke_llm(self, llm: Runnable, prompt: PromptValue) -> str | dict[str, Any]:
+    def _invoke_llm(
+        self, llm: Runnable, prompt: PromptValue
+    ) -> AIMessage | dict[str, Any]:
         """Invoke LLM with default temperature - can be overridden"""
         ...
 
     @abstractmethod
-    def _process_output(self, output: str | dict[str, Any]) -> Any:
+    def _process_output(self, output: AIMessage | dict[str, Any]) -> Any:
         """Common output processing with error handling"""
         ...
 

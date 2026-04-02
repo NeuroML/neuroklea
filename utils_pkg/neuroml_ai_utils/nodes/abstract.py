@@ -23,7 +23,7 @@ class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
     """Abstract base class for all LangGraph nodes.
 
     Generic over TReturn to support both state-updating nodes (Dict[str, Any])
-    and router nodes (str).
+    and other nodes, e.g., router nodes (str) and tool caller nodes.
 
     Provides a consistent interface: all nodes have a logger and an
     execute(state) method.

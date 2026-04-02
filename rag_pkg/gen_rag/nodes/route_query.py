@@ -10,13 +10,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 
-from neuroml_ai_utils.nodes.base import BaseRouterNode
+from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
 from neuroml_ai_utils.stores import VectorStores
 
 from gen_rag.schemas import RAGState
 
 
-class RouteQuery(BaseRouterNode):
+class RouteQuery(AbstractRouterNode):
     """Route based on Query node results"""
 
     def __init__(

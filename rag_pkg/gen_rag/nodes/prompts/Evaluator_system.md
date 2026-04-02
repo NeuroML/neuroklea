@@ -53,7 +53,3 @@ Guidelines for 'next_step':
 5. all coverage, confidence, relevance and groundedness are low: return "undefined".
 
 Always return a brief summary.
-
-## Output schema (strict)
-
-{output_schema}

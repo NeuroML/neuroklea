@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 from textwrap import dedent
-from typing import override
+from typing import final, override
 
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
@@ -36,6 +36,7 @@ logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
+@final
 class RAG(BaseLangGraph):
     """General RAG implementation"""
 

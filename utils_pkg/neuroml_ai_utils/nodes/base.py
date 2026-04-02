@@ -10,7 +10,9 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import inspect
 import logging
+from functools import cached_property
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Dict, Type
 
 from langchain.messages import AIMessage
@@ -118,12 +120,10 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         """Set Pydantic schema for structured output"""
         self._output_schema = value
 
-    def _get_output_schema_json(self) -> dict[str, Any]:
+    @cached_property
+    def output_schema_json(self) -> dict[str, Any]:
         """Return JSON schema string for use in prompts."""
-        schema = self.output_schema
-        if schema is None:
-            return {}
-        return convert_to_json_schema(schema)
+        return convert_to_json_schema(self.output_schema) if self.output_schema else {}
 
     def _configure_llm(self) -> Runnable:
         """Configure LLM with structured output"""
@@ -186,12 +186,23 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         return prompt
 
     def _get_system_prompt(self, state: BaseModel) -> str:
-        """Load system prompt from file, optionally adding memory summary."""
+        """Load system prompt from file, optionally adding memory summary and output schema."""
         system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
 
         if self.memory:
             memory_addition = self._get_memory_addition(state)
-            return system_prompt + memory_addition
+            system_prompt += memory_addition
+
+        if self.output_schema:
+            system_prompt += dedent(
+                f"""
+                ## Output schema (strict)
+
+                Return your response using this output schema.
+
+                {self.output_schema_json}
+                """
+            )
 
         self.logger.debug(f"{system_prompt =}")
         return system_prompt

@@ -70,12 +70,6 @@
 
 ---
 
-## Output schema (strict)
-
-{output_schema}
-
----
-
 ## Available tools
 
 {tools_description}

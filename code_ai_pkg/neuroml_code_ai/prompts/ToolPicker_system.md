@@ -24,12 +24,6 @@ Your job is to pick the right tool to carry out a step in a larger plan.
 
 ---
 
-## Output schema (strict)
-
-{output_schema}
-
----
-
 ## Rules:
 
 * Only pick tools from the provided list

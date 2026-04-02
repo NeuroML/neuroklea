@@ -51,7 +51,6 @@ class Planner(BaseLLMNode[PlanSchema]):
             "artefacts": state.artefacts,
             "observations": state.tool_responses,
             "tools_description": self._tools_description,
-            "output_schema": self._get_output_schema_json(),
         }
 
     @override

@@ -46,7 +46,6 @@ class Evaluator(BaseLLMNode[EvaluateAnswerSchema]):
             "question": question,
             "context": context,
             "answer": answer,
-            "output_schema": self._get_output_schema_json(),
         }
 
     @override

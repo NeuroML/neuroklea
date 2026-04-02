@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from functools import cached_property
 from textwrap import dedent
-from typing import Any
+from typing import Any, final
 
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
@@ -31,6 +31,7 @@ logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
+@final
 class CodeAI(BaseLangGraph):
     """NeuroML CodeAI implementation"""
 

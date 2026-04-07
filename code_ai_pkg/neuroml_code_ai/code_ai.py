@@ -127,6 +127,12 @@ class CodeAI(BaseLangGraph):
         self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
         self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
+        # TODO: modify to use a ToolOrchestrator that can call multiple tools
+        # in parallel asynchronously
+        # Note that this depends on how the agent is setup---if it's setup to
+        # run one call at a time, this isn't required, but ideally, it should
+        # be able to call multiple tools---but the prompts/state schema will
+        # need to updated for that
         self.workflow.add_node("tool_caller", self._tool_caller_node.execute)
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
         self.workflow.add_node("step_router", self._step_router_node)

@@ -29,7 +29,6 @@ class ToolCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
         """
         super().__init__(
             logger=logger,
-            memory=False,
         )
         self._mcp_client = mcp_client
 

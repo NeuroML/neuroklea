@@ -9,17 +9,15 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from textwrap import dedent
 from typing import final, override
 
-from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph import BaseLangGraph
-from neuroml_ai_utils.llm import setup_llm, split_output_by_section
+from neuroml_ai_utils.llm import setup_llm
+from neuroml_ai_utils.nodes.answer_from_context import AnswerFromContext
 from neuroml_ai_utils.nodes.answer_general import AnswerGeneral
 from neuroml_ai_utils.nodes.fixed_answer import FixedAnswer
 from neuroml_ai_utils.nodes.summarise_memory import SummariseMemoryNode
-from neuroml_ai_utils.stores import serialize_reference
 
 from .config import AppConfig
 from .nodes.answer_user import AnswerUser
@@ -65,85 +63,6 @@ class RAG(BaseLangGraph):
         """Setup and get compiled graph"""
         await self.setup()
         return self.graph
-
-    def _generate_answer_from_context_node(self, state: RAGState) -> dict:
-        """Generate the answer"""
-        assert self.c_model
-        self.logger.debug(f"{state =}")
-
-        system_prompt = dedent("""
-        You are a query assistant. Your goal is to use the provided context to
-        answer the user's query.
-
-        If the context is missing some information to answer the question,
-        say so.
-
-        # Core Directives:
-
-        - Limit yourself to facts from the provided context only, avoid using
-          knowledge from your general training.
-        - Use concise, formal language appropriate for neurosience and
-          computational modelling.
-        - Write the answer as a self contained explanation that does not assume
-          access to the context.
-        - Do not mention "context", "reference material", "documents" or
-          "retrieval".
-        - Do not include inline links.
-        - Always include a section called "References" at the end of your answer.
-            - In this section, list the reference URLs of the documents
-              from the provided context that you used to generate the
-              current answer.
-            - Only include each reference URL ONCE in the list
-
-        # Context (reference material not visible to the user, ordered from most relevant to least relevant):
-
-        {reference_material}
-
-        """)
-
-        generate_answer_template = ChatPromptTemplate(
-            [
-                ("system", system_prompt),
-                (
-                    "human",
-                    "Question: {question}",
-                ),
-            ]
-        )
-        question = state.query
-        reference_material = state.reference_material
-        reference_material_text = serialize_reference(reference_material)
-
-        prompt = generate_answer_template.invoke(
-            {"question": question, "reference_material": reference_material_text}
-        )
-        self.logger.debug(f"{prompt =}")
-        output = self.c_model.invoke(
-            prompt, config={"configurable": {"temperature": 0.3}}
-        )
-        thought, answer = split_output_by_section(output.content, "<think>", "</think>")
-
-        # remove redundant references and format
-        references = ""
-        answer_text = ""
-        ref_list = []
-        # could use re. but using split function already, so keeping it simple
-        for rf in ["\nreference", "\nReference", "\nReferences", "\nreferences"]:
-            if rf in answer:
-                answer_text, references = split_output_by_section(answer, rf)
-                ref_list = list(set(references.split()))
-                break
-
-        if ref_list:
-            answer_text += "\nReferences:" + "\n- ".join(ref_list)
-
-        output.content = answer
-        self.logger.debug(output.pretty_repr())
-
-        messages = state.messages
-        messages.append(output)
-
-        return {"messages": messages, "reference_material": reference_material}
 
     @override
     async def _pre_graph(self):
@@ -210,8 +129,15 @@ class RAG(BaseLangGraph):
             num_refs_max=self.num_refs_max,
         )
         self.workflow.add_node("retrieve_info", self._retrieve_info_node.execute)
+        self._generate_answer_from_context_node = AnswerFromContext(
+            logger=self.logger,
+            model=self.c_model,
+            temperature=0.3,
+            memory=False,
+        )
         self.workflow.add_node(
-            "generate_answer_from_context", self._generate_answer_from_context_node
+            "generate_answer_from_context",
+            self._generate_answer_from_context_node.execute,
         )
         self._evaluate_answer_node = Evaluator(
             logger=self.logger, model=self.c_model, temperature=0.0

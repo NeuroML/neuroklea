@@ -11,13 +11,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_ai_utils.stores import serialize_reference
 
 from gen_rag.schemas import EvaluateAnswerSchema, RAGState
 
 
-class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
+class Evaluator(BaseLLMNode[EvaluateAnswerSchema]):
     """Node that evaluates a RAG-generated answer against retrieved context."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.0):
@@ -46,7 +46,6 @@ class Evaluator(BaseMemoryLLMNode[EvaluateAnswerSchema]):
             "question": question,
             "context": context,
             "answer": answer,
-            "output_schema": self._get_output_schema_json(),
         }
 
     @override

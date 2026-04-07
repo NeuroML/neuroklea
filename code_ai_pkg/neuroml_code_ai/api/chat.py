@@ -8,8 +8,18 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import logging
+import traceback
+
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
+
+logging.basicConfig(
+    format="%(name)s (%(levelname)s) >>> %(message)s\n", level=logging.WARNING
+)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 chat_router = APIRouter()
 
@@ -31,6 +41,9 @@ async def query(request: Request, payload: ChatPayload):
     try:
         result = await code_ai.run_graph_invoke(payload.query, thread_id)
     except Exception as e:
-        result = HTTPException(status_code=500, detail=str(e))
+        detail = f"{e}\n{traceback.format_exc()}"
+        result = HTTPException(status_code=500, detail=detail)
+
+        logger.error(detail)
 
     return {"result": result}

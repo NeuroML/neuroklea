@@ -11,12 +11,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
 from gen_rag.schemas import EvaluateAnswerSchema, RAGState
 
 
-class InitRAGState(BaseLangGraphNode[RAGState, Dict[str, Any]]):
+class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Initialise/reset RAG state before each iteration."""
 
     def __init__(self, logger: logging.Logger):

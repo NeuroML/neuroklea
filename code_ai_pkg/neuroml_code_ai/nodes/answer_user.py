@@ -11,12 +11,12 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
 from neuroml_code_ai.schemas import CodeAIState
 
 
-class AnswerUser(BaseLangGraphNode[CodeAIState, Dict[str, Any]]):
+class AnswerUser(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
     """Node that returns the final message to the user."""
 
     def __init__(self, logger: logging.Logger):

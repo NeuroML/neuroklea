@@ -11,13 +11,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from pydantic import BaseModel
 
 from neuroml_code_ai.schemas import CodeAIState, GoalSchema
 
 
-class GoalSetter(BaseMemoryLLMNode[GoalSchema]):
+class GoalSetter(BaseLLMNode[GoalSchema]):
     """Goal setter node"""
 
     def __init__(

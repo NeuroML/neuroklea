@@ -14,12 +14,12 @@ from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage
 from langchain_core.runnables.utils import Output
-from neuroml_ai_utils.nodes.base_nodes import BaseMemoryLLMNode
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 
 from gen_rag.schemas import RAGState
 
 
-class GenerateRetrievalQuery(BaseMemoryLLMNode[RAGState]):
+class GenerateRetrievalQuery(BaseLLMNode[RAGState]):
     """Node that generates a concise retrieval query from the user's question."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.3):

@@ -11,3 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 class LLMInitializationError(Exception):
     pass
+
+
+class PromptTemplateError(Exception):
+    pass

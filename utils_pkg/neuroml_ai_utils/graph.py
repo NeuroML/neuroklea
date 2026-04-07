@@ -14,7 +14,7 @@ import os
 import sys
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Literal, Type
+from typing import Any, Literal, Type, final
 
 from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
@@ -244,6 +244,7 @@ class BaseLangGraph(ABC):
         """
         pass
 
+    @final
     async def setup(self) -> None:
         """Set up the orchestrator.
 
@@ -289,6 +290,8 @@ class BaseLangGraph(ABC):
         self.logger.debug(final_state)
         return final_state
 
+    # TODO: fields to be extracted from the final state to be returned should
+    # be configurable with a schema
     async def run_graph_invoke(
         self, query: str, thread_id: str = "default_thread"
     ) -> str:

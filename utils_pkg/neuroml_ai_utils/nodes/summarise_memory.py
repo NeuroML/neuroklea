@@ -16,10 +16,10 @@ from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
 from ..llm import get_last_n_conversations, split_output_by_section
-from .base_nodes import BaseMemoryLLMNode
+from .base import BaseLLMNode
 
 
-class SummariseMemoryNode(BaseMemoryLLMNode):
+class SummariseMemoryNode(BaseLLMNode):
     """Node that summarises conversation history into a context summary.
 
     Uses _pre_exec() to skip execution if there aren't enough recent messages.

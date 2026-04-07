@@ -10,13 +10,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 
-from neuroml_ai_utils.nodes.base_nodes import BaseRouterNode
+from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
 from neuroml_ai_utils.stores import VectorStores
 
 from gen_rag.schemas import RAGState
 
 
-class RouteEvaluator(BaseRouterNode):
+class RouteEvaluator(AbstractRouterNode):
     """Route based on Evaluator node results"""
 
     def __init__(self, logger: logging.Logger, stores: VectorStores):

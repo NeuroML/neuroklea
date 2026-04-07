@@ -11,13 +11,13 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base_nodes import BaseLangGraphNode
+from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 from neuroml_ai_utils.stores import VectorStores
 
 from gen_rag.schemas import RAGState
 
 
-class RetrieveInfoNode(BaseLangGraphNode[RAGState, Dict[str, Any]]):
+class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Retrieve reference material from vector stores.
 
     Queries the vector stores for a given domain and query, ranks results by

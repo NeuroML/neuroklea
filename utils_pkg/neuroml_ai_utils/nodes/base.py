@@ -200,7 +200,7 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
 
                 Respond in JSON following this schema:
 
-                {self.output_schema_json}
+                {str(self.output_schema_json).replace("{", "{{").replace("}", "}}")}
                 """
             )
 

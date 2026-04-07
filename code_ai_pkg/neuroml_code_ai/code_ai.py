@@ -134,6 +134,8 @@ class CodeAI(BaseLangGraph):
         # be able to call multiple tools---but the prompts/state schema will
         # need to updated for that
         self.workflow.add_node("tool_caller", self._tool_caller_node.execute)
+        # Evaluator: needs to handle failed tool calls and ask the planner to
+        # update the plan if required
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
         self.workflow.add_node("step_router", self._step_router_node)
         self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)

@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from functools import cached_property
 from textwrap import dedent
-from typing import Any, final
+from typing import final
 
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph.base import BaseLangGraph
@@ -23,8 +23,8 @@ from neuroml_code_ai.nodes.explore_planner import ExplorePlanner
 from neuroml_code_ai.nodes.goal_setter import GoalSetter
 from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
-from neuroml_code_ai.nodes.tool_caller import ToolCaller
-from neuroml_code_ai.nodes.tool_picker import ToolPicker
+from neuroml_code_ai.nodes.tools_caller import ToolsCaller
+from neuroml_code_ai.nodes.tools_picker import ToolsPicker
 
 from .config import AppConfig
 from .schemas import CodeAIState, GoalSchema
@@ -125,24 +125,24 @@ class CodeAI(BaseLangGraph):
             logger=self.logger, model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tool_description)
-        self._tool_picker_node = ToolPicker(
+        self._tools_picker_node = ToolsPicker(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
-        self._tool_picker_node.set_tools_description(self.tool_description)
-        self._tool_caller_node = ToolCaller(
+        self._tools_picker_node.set_tools_description(self.tool_description)
+        self._tools_caller_node = ToolsCaller(
             logger=self.logger, mcp_client=self.mcp_client
         )
         self._evaluator_node = Evaluator(logger=self.logger)
         self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
-        self.workflow.add_node("tool_picker", self._tool_picker_node.execute)
+        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
         # TODO: modify to use a ToolOrchestrator that can call multiple tools
         # in parallel asynchronously
         # Note that this depends on how the agent is setup---if it's setup to
         # run one call at a time, this isn't required, but ideally, it should
         # be able to call multiple tools---but the prompts/state schema will
         # need to updated for that
-        self.workflow.add_node("tool_caller", self._tool_caller_node.execute)
+        self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
         # Evaluator: needs to handle failed tool calls and ask the planner to
         # update the plan if required
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
@@ -152,16 +152,16 @@ class CodeAI(BaseLangGraph):
         self.workflow.add_edge(START, "init_graph_state")
         self.workflow.add_edge("init_graph_state", "goal_setter")
         self.workflow.add_edge("goal_setter", "explore_planner")
-        self.workflow.add_edge("explore_planner", "planner")
-        self.workflow.add_edge("planner", "tool_picker")
-        self.workflow.add_edge("tool_picker", "tool_caller")
+        self.workflow.add_edge("explore_planner", "tools_picker")
+        self.workflow.add_edge("planner", "tools_picker")
+        self.workflow.add_edge("tools_picker", "tools_caller")
 
         self.workflow.add_conditional_edges(
             "evaluator",
             self._step_router_node,
             {
                 "not_started": "planner",
-                "in_progress": "tool_picker",
+                "in_progress": "tools_picker",
                 "failed": "planner",
                 "aborted": "give_answer_to_user",
                 "completed": "give_answer_to_user",

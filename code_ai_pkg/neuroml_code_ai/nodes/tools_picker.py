@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Tool picker node
+Tools picker node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/tool_picker.py
+File: code_ai_pkg/neuroml_code_ai/nodes/tools_picker.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -16,11 +16,11 @@ from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_code_ai.schemas import CodeAIState, ToolCallSchema
 
 
-class ToolPicker(BaseLLMNode[CodeAIState]):
-    """Node that selects the best tool for the current step."""
+class ToolsPicker(BaseLLMNode[CodeAIState]):
+    """Node that selects the best tools for the current step."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
-        """Initialise the tool picker node.
+        """Initialise the tools picker node.
 
         :param logger: Logger instance
         :param model: LLM model instance (reasoning model)

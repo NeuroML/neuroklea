@@ -98,6 +98,7 @@ class CodeAI(BaseLangGraph):
         else:
             return ""
 
+    # TODO: replace with class
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
 
@@ -148,7 +149,6 @@ class CodeAI(BaseLangGraph):
         # Evaluator: needs to handle failed tool calls and ask the planner to
         # update the plan if required
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
-        self.workflow.add_node("step_router", self._step_router_node)
         self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
 
         self.workflow.add_edge(START, "init_graph_state")
@@ -157,12 +157,19 @@ class CodeAI(BaseLangGraph):
         self.workflow.add_edge("explore_planner", "tools_picker")
         self.workflow.add_edge("planner", "tools_picker")
         self.workflow.add_edge("tools_picker", "tools_caller")
+        # TODO: we probably need a node here that takes tools output from
+        # picker and puts them in the right state field for exploration
+        # TODO: we also need some flag that decides whether the next step here
+        # should be planning or evaluation. If it's coming off exploration, it
+        # needs to go to planning. If it's in the plan, it needs to go to
+        # evaluation
         self.workflow.add_conditional_edges(
             "tools_caller",
             self._tools_router_node.execute,
             {
                 "failed": "tools_picker",
-                "continue": "planner",
+                "explored": "planner",
+                "continue": "evaluator",
             },
         )
 
@@ -170,8 +177,11 @@ class CodeAI(BaseLangGraph):
             "evaluator",
             self._step_router_node,
             {
+                # should never be here
                 "not_started": "planner",
+                # next step
                 "in_progress": "tools_picker",
+                # plan isn't working
                 "failed": "planner",
                 "aborted": "give_answer_to_user",
                 "completed": "give_answer_to_user",

@@ -17,7 +17,7 @@ from neuroml_code_ai.schemas import CodeAIState
 
 
 class ToolsRouter(AbstractRouterNode[CodeAIState]):
-    """Node that routes based on tool call outputs."""
+    """Route based on tool call outputs."""
 
     def __init__(self, logger: logging.Logger):
         """Initialise the tools router node.

@@ -19,6 +19,7 @@ from neuroml_ai_utils.llm import setup_llm
 
 from neuroml_code_ai.nodes.answer_user import AnswerUser
 from neuroml_code_ai.nodes.evaluator import Evaluator
+from neuroml_code_ai.nodes.explore_planner import ExplorePlanner
 from neuroml_code_ai.nodes.goal_setter import GoalSetter
 from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
@@ -112,6 +113,11 @@ class CodeAI(BaseLangGraph):
         )
         self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
 
+        self._explore_planner_node = ExplorePlanner(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self.workflow.add_node("explore_planner", self._explore_planner_node.execute)
+
         self._planner_node = Planner(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
@@ -142,7 +148,8 @@ class CodeAI(BaseLangGraph):
 
         self.workflow.add_edge(START, "init_graph_state")
         self.workflow.add_edge("init_graph_state", "goal_setter")
-        self.workflow.add_edge("goal_setter", "planner")
+        self.workflow.add_edge("goal_setter", "explore_planner")
+        self.workflow.add_edge("explore_planner", "planner")
         self.workflow.add_edge("planner", "tool_picker")
         self.workflow.add_edge("tool_picker", "tool_caller")
 

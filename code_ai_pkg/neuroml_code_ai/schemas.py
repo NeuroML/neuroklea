@@ -32,6 +32,7 @@ class StepSchema(BaseModel):
     step_number: int = 1
     description: str = ""
     suggested_tool: str | None = None
+    depends_on: list[int] = []
     status: Literal["pending", "done", "failed"] = Field(default="pending")
 
 
@@ -73,8 +74,10 @@ class CodeAIState(BaseModel):
 
     # planning related
     goal: GoalSchema = GoalSchema()
-    plan: PlanSchema = PlanSchema()
+    task_plan: PlanSchema = PlanSchema()
+    exploration_plan: PlanSchema = PlanSchema()
 
+    # TODO: update to handle multiple parallel tool calls
     # current tool call
     tool_call: ToolCallSchema | None = None
     # keep history of responses for context

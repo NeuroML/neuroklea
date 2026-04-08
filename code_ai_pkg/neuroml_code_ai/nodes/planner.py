@@ -46,8 +46,8 @@ class Planner(BaseLLMNode[PlanSchema]):
         return {
             "query": state.query,
             "goal": state.goal,
-            "step_list": state.plan.step_list,
-            "current_step_index": state.plan.current_step_index,
+            "step_list": state.task_plan.step_list,
+            "current_step_index": state.task_plan.current_step_index,
             "artefacts": state.artefacts,
             "observations": state.tool_responses,
             "tools_description": self._tools_description,
@@ -60,10 +60,10 @@ class Planner(BaseLLMNode[PlanSchema]):
         for step in result.step_list:
             plan_summary += f"- {step.step_number}: {step.description}"
 
-        plan = state.plan  # type: ignore
+        plan = state.task_plan  # type: ignore
         plan.step_list = result.step_list
 
-        return {"plan": plan, "message_for_user": plan_summary}
+        return {"task_plan": plan, "message_for_user": plan_summary}
 
     @override
     def _get_default_error_result(self) -> PlanSchema:

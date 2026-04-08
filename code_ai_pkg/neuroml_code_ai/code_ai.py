@@ -25,6 +25,7 @@ from neuroml_code_ai.nodes.init_graph import InitGraphState
 from neuroml_code_ai.nodes.planner import Planner
 from neuroml_code_ai.nodes.tools_caller import ToolsCaller
 from neuroml_code_ai.nodes.tools_picker import ToolsPicker
+from neuroml_code_ai.nodes.tools_router import ToolsRouter
 
 from .config import AppConfig
 from .schemas import CodeAIState, GoalSchema
@@ -98,7 +99,7 @@ class CodeAI(BaseLangGraph):
             return ""
 
     async def _step_router_node(self, state: CodeAIState) -> str:
-        return state.task_plan.status
+        return state.plan.status
 
     async def _create_graph(self):
         """Create the LangGraph"""
@@ -132,10 +133,10 @@ class CodeAI(BaseLangGraph):
         self._tools_caller_node = ToolsCaller(
             logger=self.logger, mcp_client=self.mcp_client
         )
+        self._tools_router_node = ToolsRouter(logger=self.logger)
         self._evaluator_node = Evaluator(logger=self.logger)
         self._answer_user_node = AnswerUser(logger=self.logger)
         self.workflow.add_node("planner", self._planner_node.execute)
-        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
         # TODO: modify to use a ToolOrchestrator that can call multiple tools
         # in parallel asynchronously
         # Note that this depends on how the agent is setup---if it's setup to
@@ -143,6 +144,7 @@ class CodeAI(BaseLangGraph):
         # be able to call multiple tools---but the prompts/state schema will
         # need to updated for that
         self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
+        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
         # Evaluator: needs to handle failed tool calls and ask the planner to
         # update the plan if required
         self.workflow.add_node("evaluator", self._evaluator_node.execute)
@@ -155,6 +157,14 @@ class CodeAI(BaseLangGraph):
         self.workflow.add_edge("explore_planner", "tools_picker")
         self.workflow.add_edge("planner", "tools_picker")
         self.workflow.add_edge("tools_picker", "tools_caller")
+        self.workflow.add_conditional_edges(
+            "tools_caller",
+            self._tools_router_node.execute,
+            {
+                "failed": "tools_picker",
+                "continue": "planner",
+            },
+        )
 
         self.workflow.add_conditional_edges(
             "evaluator",

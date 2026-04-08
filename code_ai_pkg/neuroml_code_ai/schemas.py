@@ -55,11 +55,18 @@ class ArtefactSchema(BaseModel):
     metadata: dict[str, Any] = {}
 
 
+class TokenUsage(BaseModel):
+    input_tokens: int = 0
+    output_tokens: int = 0
+    context_size: int = 0
+
+
 class CodeAIState(BaseModel):
     """The state of the graph"""
 
     query: str = ""
     messages: List[AnyMessage] = Field(default_factory=list)
+    usage_metrics: TokenUsage
 
     # code string if any
     code: CodeSchema = CodeSchema()

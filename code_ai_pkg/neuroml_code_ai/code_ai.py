@@ -66,36 +66,39 @@ class CodeAI(BaseLangGraph):
     @cached_property
     def tool_description(self):
         """Get the tool description"""
-        ctr = 0
-        description = ""
-        for t in self.mcp_tools:
-            if "dummy" in t.name:
-                continue
-            ctr += 1
-            description += dedent(
-                f"""
-                ## {ctr}.  {t.name}
-
-                ### Description
-
-                {t.description}
-
-                """
-            )
-            if t.inputSchema:
+        if self.mcp_client:
+            ctr = 0
+            description = ""
+            for t in self.mcp_tools:
+                if "dummy" in t.name:
+                    continue
+                ctr += 1
                 description += dedent(
                     f"""
-                    ### Parameters
+                    ## {ctr}.  {t.name}
 
-                    {t.inputSchema.get("properties")}
+                    ### Description
+
+                    {t.description}
 
                     """
                 )
+                if t.inputSchema:
+                    description += dedent(
+                        f"""
+                        ### Parameters
 
-        return description
+                        {t.inputSchema.get("properties")}
+
+                        """
+                    )
+
+            return description
+        else:
+            return ""
 
     async def _step_router_node(self, state: CodeAIState) -> str:
-        return state.plan.status
+        return state.task_plan.status
 
     async def _create_graph(self):
         """Create the LangGraph"""

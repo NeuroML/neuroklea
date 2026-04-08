@@ -41,15 +41,17 @@ class ExplorePlanner(Planner):
         return {
             "query": state.query,
             "goal": state.goal,
-            "step_list": state.exploration_plan.step_list,
-            "current_step_index": state.exploration_plan.current_step_index,
-            "observations": state.tool_responses,
+            "step_list": state.plan.step_list,
+            "current_step_index": state.plan.current_step_index,
+            "discovery": state.discovery_persistent,
+            "discovery_last_step": state.discovery_per_step,
+            "observations": state.step_outputs,
         }
 
     @override
     def _update_state(self, result: PlanSchema, state: BaseModel) -> Dict[str, Any]:
         """Update exploration_plan in state."""
-        return {"exploration_plan": result}
+        return {"plan": result}
 
     @override
     def _get_default_error_result(self) -> PlanSchema:

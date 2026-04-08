@@ -13,6 +13,7 @@
 * `query`: the original user request
 * `step_list` (optional): the current list of steps, if one already exists
 * `current_step_index` (optional): the index of the last completed step
+* `discovery`: general information about the project
 * `artefacts`: durable results produced so far
 * `observations`: recent tool outputs or errors
 * `tools`: tools you can use
@@ -41,7 +42,7 @@
 
 * Use the **fewest steps necessary**.
 * Steps must be **linear** (no branching).
-* Only reference and suggest **available tools**. Only suggest at most one tool for each step.
+* Only reference and suggest **available tools**.
 * Do not ignore tool usage rules.
 * Do not invent tool outputs.
 * Every step that produces a durable result must name an artefact.

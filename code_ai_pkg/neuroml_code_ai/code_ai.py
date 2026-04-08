@@ -14,7 +14,7 @@ from textwrap import dedent
 from typing import Any, final
 
 from langgraph.graph import END, START, StateGraph
-from neuroml_ai_utils.graph import BaseLangGraph
+from neuroml_ai_utils.graph.base import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm
 
 from neuroml_code_ai.nodes.answer_user import AnswerUser

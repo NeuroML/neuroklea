@@ -11,6 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
+from fastmcp import Client
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 from neuroml_ai_utils.stores import VectorStores
 
@@ -29,6 +30,7 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         self,
         logger: logging.Logger,
         stores: VectorStores,
+        mcp_client: Client | None = None,
         num_refs_max: int = 10,
     ):
         """Initialise the retrieval node.
@@ -40,6 +42,7 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         super().__init__(logger)
         self.stores = stores
         self.num_refs_max = num_refs_max
+        self.mcp_client = mcp_client
 
     @override
     async def execute(self, state: RAGState) -> Dict[str, Any]:
@@ -62,5 +65,7 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
 
         reference_material.update(new_ref)
         self.logger.debug(f"{reference_material =}")
+
+        # tool calls
 
         return {"reference_material": reference_material}

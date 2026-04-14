@@ -15,4 +15,5 @@ class AppConfig(BaseSettings):
     mcp_config_file: str = "mcp.json"
     code_model: str = "ollama:qwen3.5:0.8b"
     reasoning_model: str = "ollama:qwen3.5:0.8b"
+    guard_model: str = "ollama:llama-guard3:1b"
     vs_config_file: str | None = None

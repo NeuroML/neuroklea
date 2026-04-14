@@ -2,7 +2,7 @@
 """
 Base class for LangGraph-based orchestrators
 
-File: neuroml_ai_utils/graph.py
+File: neuroml_ai_utils/graph/base.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -91,7 +91,7 @@ class BaseLangGraph(ABC):
 
         :param level: Logging level for stderr handler
         """
-        from .logging import (
+        from neuroml_ai_utils.logging import (
             LoggerInfoFilter,
             LoggerNotInfoFilter,
             logger_formatter_info,

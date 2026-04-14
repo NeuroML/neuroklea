@@ -2,4 +2,3 @@
 ./rag_pkg[dev]
 ./code_ai_pkg[dev]
 ./mcp_pkg[dev]
-./neuroml_ai[dev]

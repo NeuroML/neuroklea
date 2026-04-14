@@ -34,6 +34,7 @@ class RAGState(BaseModel):
     query: str = ""
     query_domain: str = "undefined"
     text_response_eval: EvaluateAnswerSchema = EvaluateAnswerSchema()
+    guard_decision: str = "unsafe"
     messages: List[AnyMessage] = Field(default_factory=list)
 
     # summarised version of context so far

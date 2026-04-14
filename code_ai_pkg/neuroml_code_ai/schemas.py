@@ -31,7 +31,8 @@ class CodeSchema(BaseModel):
 class StepSchema(BaseModel):
     step_number: int = 1
     description: str = ""
-    suggested_tool: str | None = None
+    suggested_tools: list[str] = Field(default_factory=list)
+    depends_on: list[int] = []
     status: Literal["pending", "done", "failed"] = Field(default="pending")
 
 
@@ -52,7 +53,23 @@ class ArtefactSchema(BaseModel):
     id_: str = ""
     type_: str = ""
     content: Any
+    # mtime!
     metadata: dict[str, Any] = {}
+
+
+class TokenUsage(BaseModel):
+    input_tokens: int = 0
+    output_tokens: int = 0
+    context_size: int = 0
+
+
+class Discovery(BaseModel):
+    # when it was created
+    timestamp: int = 0
+    # TODO
+    # general: files, scripts
+    # NeuroML specific: files, semantic info (ions/parameters)
+    pass
 
 
 class CodeAIState(BaseModel):
@@ -60,6 +77,8 @@ class CodeAIState(BaseModel):
 
     query: str = ""
     messages: List[AnyMessage] = Field(default_factory=list)
+    guard_decision: str = "safe"
+    usage_metrics: TokenUsage
 
     # code string if any
     code: CodeSchema = CodeSchema()
@@ -67,11 +86,12 @@ class CodeAIState(BaseModel):
     # planning related
     goal: GoalSchema = GoalSchema()
     plan: PlanSchema = PlanSchema()
-
-    # current tool call
-    tool_call: ToolCallSchema | None = None
-    # keep history of responses for context
-    tool_responses: list[CallToolResult] = Field(default_factory=list)
+    step_outputs: Dict[int, list[CallToolResult]] = Field(default_factory=dict)
+    # global project discovery information
+    # only to be updated if files change
+    discovery_persistent: Discovery = Discovery()
+    # per step cache
+    discovery_per_step: Discovery = Discovery()
 
     # { id -> artefact }
     artefacts: Dict[str, ArtefactSchema] = Field(default_factory=dict)

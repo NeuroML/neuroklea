@@ -49,7 +49,8 @@ class Planner(BaseLLMNode[PlanSchema]):
             "step_list": state.plan.step_list,
             "current_step_index": state.plan.current_step_index,
             "artefacts": state.artefacts,
-            "observations": state.tool_responses,
+            "discovery": state.discovery_persistent,
+            "observations": state.step_outputs,
             "tools_description": self._tools_description,
         }
 

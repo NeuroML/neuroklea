@@ -3,4 +3,3 @@
 -e ./rag_pkg[dev]
 -e ./code_ai_pkg[dev]
 -e ./mcp_pkg[dev]
--e ./neuroml_ai[dev]

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Tool caller node
+Tools caller node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/tool_caller.py
+File: code_ai_pkg/neuroml_code_ai/nodes/tools_caller.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -18,11 +18,11 @@ from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 from neuroml_code_ai.schemas import CodeAIState
 
 
-class ToolCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
-    """Node that calls the selected tool."""
+class ToolsCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
+    """Node that calls the selected tools."""
 
     def __init__(self, logger: logging.Logger, mcp_client: Client):
-        """Initialise the tool picker node.
+        """Initialise the tools caller node.
 
         :param logger: Logger instance
         :param mpc_client: MCP client instance

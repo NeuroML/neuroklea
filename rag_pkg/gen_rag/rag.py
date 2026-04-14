@@ -12,11 +12,13 @@ import logging
 from typing import final, override
 
 from langgraph.graph import END, START, StateGraph
-from neuroml_ai_utils.graph import BaseLangGraph
+from neuroml_ai_utils.graph.base import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm
 from neuroml_ai_utils.nodes.answer_from_context import AnswerFromContext
 from neuroml_ai_utils.nodes.answer_general import AnswerGeneral
 from neuroml_ai_utils.nodes.fixed_answer import FixedAnswer
+from neuroml_ai_utils.nodes.guard import GuardNode
+from neuroml_ai_utils.nodes.guard_router import GuardRouterNode
 from neuroml_ai_utils.nodes.summarise_memory import SummariseMemoryNode
 
 from .config import AppConfig
@@ -51,6 +53,8 @@ class RAG(BaseLangGraph):
         """Initialise"""
         super().__init__(logging_level=logging_level, memory=memory)
 
+        self.g_model = None
+
         # total number of reference documents
         self.num_refs_max = 10
 
@@ -58,6 +62,7 @@ class RAG(BaseLangGraph):
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
         self.c_model = setup_llm(self.config.chat_model, self.logger)
+        self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     async def get_graph(self):
         """Setup and get compiled graph"""
@@ -79,6 +84,27 @@ class RAG(BaseLangGraph):
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(RAGState)
+
+        # Guard nodes
+        self._guard_node = GuardNode(
+            logger=self.logger,
+            model=self.g_model,
+            temperature=0.3,
+            memory=self.memory,
+        )
+        self.workflow.add_node("guard", self._guard_node.execute)
+
+        self._guard_router_node = GuardRouterNode(logger=self.logger)
+
+        self._decline_to_answer_node = FixedAnswer(
+            logger=self.logger,
+            state_attr="message_for_user",
+            message="I cannot respond to this query. Please try another.",
+        )
+        self.workflow.add_node(
+            "decline_to_answer", self._decline_to_answer_node.execute
+        )
+
         self._init_rag_state_node = InitRAGState(logger=self.logger)
         self.workflow.add_node("init_rag_state", self._init_rag_state_node.execute)
         self._classify_question_node = ClassifyQuestion(
@@ -174,7 +200,15 @@ class RAG(BaseLangGraph):
             )
 
         self.workflow.add_edge(START, "init_rag_state")
-        self.workflow.add_edge("init_rag_state", "classify_question_domain")
+        self.workflow.add_edge("init_rag_state", "guard")
+        self.workflow.add_conditional_edges(
+            "guard",
+            self._guard_router_node.execute,
+            {
+                "safe": "classify_question_domain",
+                "unsafe": "decline_to_answer",
+            },
+        )
 
         self.workflow.add_conditional_edges(
             "classify_question_domain",
@@ -206,11 +240,13 @@ class RAG(BaseLangGraph):
             self.workflow.add_edge("give_domain_answer_to_user", "summarise_history")
             self.workflow.add_edge("ask_user_for_clarification", "summarise_history")
             self.workflow.add_edge("answer_general_question", "summarise_history")
+            self.workflow.add_edge("decline_to_answer", "summarise_history")
             self.workflow.add_edge("summarise_history", END)
         else:
             self.workflow.add_edge("give_domain_answer_to_user", END)
             self.workflow.add_edge("ask_user_for_clarification", END)
             self.workflow.add_edge("answer_general_question", END)
+            self.workflow.add_edge("decline_to_answer", END)
 
         if self.checkpointer:
             self.graph = self.workflow.compile(checkpointer=self.checkpointer)

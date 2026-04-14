@@ -15,11 +15,13 @@ from typing import Any, Dict
 from neuroml_mcp.tools.sandbox.sandbox import RunCommand
 
 # set the implementation for development
+from ..utils import ToolInfo, tool_meta
 from .sandbox import nml_mcp_sandbox
 
 sbox = nml_mcp_sandbox
 
 
+@tool_meta(ToolInfo(tags={"testing", "neuroml"}))
 async def dummy_tool(astring: str) -> str:
     """Return the input string in a sentence (testing tool only).
 
@@ -41,6 +43,7 @@ async def dummy_tool(astring: str) -> str:
     return f"I got {astring}"
 
 
+@tool_meta(ToolInfo(tags={"testing", "neuroml"}))
 def create_new_NeuroML_model_tool(model_name: str = "NeuroMLModel") -> str:
     """Create a new blank NeuroML model template.
 
@@ -104,6 +107,7 @@ def create_new_NeuroML_model_tool(model_name: str = "NeuroMLModel") -> str:
     return model_str
 
 
+@tool_meta(ToolInfo(tags={"testing", "neuroml"}))
 async def run_lems_simulation(lems_file: str) -> Dict[str, Any]:
     """Execute a LEMS simulation using pynml and jLEMS simulator.
 

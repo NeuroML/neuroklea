@@ -16,6 +16,9 @@ from typing import final
 from langgraph.graph import END, START, StateGraph
 from neuroml_ai_utils.graph.base import BaseLangGraph
 from neuroml_ai_utils.llm import setup_llm
+from neuroml_ai_utils.nodes.fixed_answer import FixedAnswer
+from neuroml_ai_utils.nodes.guard import GuardNode
+from neuroml_ai_utils.nodes.guard_router import GuardRouterNode
 
 from neuroml_code_ai.nodes.answer_user import AnswerUser
 from neuroml_code_ai.nodes.evaluator import Evaluator
@@ -52,6 +55,7 @@ class CodeAI(BaseLangGraph):
         super().__init__(logging_level=logging_level, memory=memory)
 
         self.r_model = None
+        self.g_model = None
 
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
@@ -63,6 +67,7 @@ class CodeAI(BaseLangGraph):
             )
         else:
             self.r_model = setup_llm(self.config.reasoning_model, self.logger)
+        self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     @cached_property
     def tool_description(self):
@@ -105,9 +110,29 @@ class CodeAI(BaseLangGraph):
     async def _create_graph(self):
         """Create the LangGraph"""
         self.workflow = StateGraph(CodeAIState)
+
         self._init_graph_state_node = InitGraphState(logger=self.logger)
         self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
-        # self.workflow.add_node("summarise_history", self._summarise_history_node)
+
+        # Guard nodes
+        self._guard_node = GuardNode(
+            logger=self.logger,
+            model=self.g_model,
+            temperature=0.3,
+            memory=self.memory,
+        )
+        self.workflow.add_node("guard", self._guard_node.execute)
+
+        self._guard_router_node = GuardRouterNode(logger=self.logger)
+
+        self._decline_to_answer_node = FixedAnswer(
+            logger=self.logger,
+            state_attr="message_for_user",
+            message="I cannot respond to this query. Please try another.",
+        )
+        self.workflow.add_node(
+            "decline_to_answer", self._decline_to_answer_node.execute
+        )
 
         self._goal_setter_node = GoalSetter(
             logger=self.logger,
@@ -152,7 +177,15 @@ class CodeAI(BaseLangGraph):
         self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
 
         self.workflow.add_edge(START, "init_graph_state")
-        self.workflow.add_edge("init_graph_state", "goal_setter")
+        self.workflow.add_edge("init_graph_state", "guard")
+        self.workflow.add_conditional_edges(
+            "guard",
+            self._guard_router_node.execute,
+            {
+                "safe": "goal_setter",
+                "unsafe": "decline_to_answer",
+            },
+        )
         self.workflow.add_edge("goal_setter", "explore_planner")
         self.workflow.add_edge("explore_planner", "tools_picker")
         self.workflow.add_edge("planner", "tools_picker")
@@ -188,6 +221,7 @@ class CodeAI(BaseLangGraph):
             },
         )
         self.workflow.add_edge("give_answer_to_user", END)
+        self.workflow.add_edge("decline_to_answer", END)
 
         if self.checkpointer:
             self.graph = self.workflow.compile(checkpointer=self.checkpointer)

@@ -77,6 +77,7 @@ class CodeAIState(BaseModel):
 
     query: str = ""
     messages: List[AnyMessage] = Field(default_factory=list)
+    guard_decision: str = "safe"
     usage_metrics: TokenUsage
 
     # code string if any

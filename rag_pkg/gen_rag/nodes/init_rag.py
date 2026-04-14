@@ -26,6 +26,7 @@ class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     async def execute(self, state: RAGState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""
         return {
+            "guard_decision": "unsafe",
             "query_domain": "undefined",
             "text_response_eval": EvaluateAnswerSchema(),
             "message_for_user": "",

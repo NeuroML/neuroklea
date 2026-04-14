@@ -56,7 +56,7 @@ jobs:
         nml-ai --help
 
     - name: Setup Ollama
-      uses: ai-action/setup-ollama@v1
+      uses: ai-action/setup-ollama@v2
 
     - name: Pull default models
       run: |

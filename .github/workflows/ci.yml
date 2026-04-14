@@ -57,7 +57,9 @@ jobs:
 
     - name: Run simple test
       run: |
-        nml-ai --help
+        nml-gen-rag --help
+        nml-code  --help
+        nml-mcp --help
 
     - name: Setup Ollama
       uses: ai-action/setup-ollama@v1

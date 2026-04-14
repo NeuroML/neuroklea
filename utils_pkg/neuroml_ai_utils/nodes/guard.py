@@ -11,6 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
+from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
 from .base import BaseLLMNode
@@ -53,11 +54,11 @@ class GuardNode(BaseLLMNode):
         return {"query": state.query}  # type: ignore
 
     @override
-    def _update_state(self, result: str, state: BaseModel) -> Dict[str, Any]:
+    def _update_state(self, result: AIMessage, state: BaseModel) -> Dict[str, Any]:
         """Check result for safety and return routing decision."""
         self.logger.debug(f"{result = }")
 
-        if "unsafe" in result:
+        if "unsafe" in result.content:
             return {"guard_decision": "unsafe"}
         return {"guard_decision": "safe"}
 

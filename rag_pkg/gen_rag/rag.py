@@ -240,13 +240,14 @@ class RAG(BaseLangGraph):
             self.workflow.add_edge("give_domain_answer_to_user", "summarise_history")
             self.workflow.add_edge("ask_user_for_clarification", "summarise_history")
             self.workflow.add_edge("answer_general_question", "summarise_history")
-            self.workflow.add_edge("decline_to_answer", "summarise_history")
             self.workflow.add_edge("summarise_history", END)
         else:
             self.workflow.add_edge("give_domain_answer_to_user", END)
             self.workflow.add_edge("ask_user_for_clarification", END)
             self.workflow.add_edge("answer_general_question", END)
-            self.workflow.add_edge("decline_to_answer", END)
+
+        self.workflow.add_edge("decline_to_answer", END)
+        self.workflow.add_edge("refuse_to_answer", END)
 
         if self.checkpointer:
             self.graph = self.workflow.compile(checkpointer=self.checkpointer)

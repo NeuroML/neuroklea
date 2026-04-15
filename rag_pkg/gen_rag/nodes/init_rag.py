@@ -30,7 +30,9 @@ class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
             "query_domain": "undefined",
             "text_response_eval": EvaluateAnswerSchema(),
             "message_for_user": "",
-            "reference_material": {},
             "query_modified": False,
             "retrieval_query": "",
+            "tool_calls": [],
+            "tool_results": {},
+            "reference_material": {},
         }

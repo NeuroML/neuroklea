@@ -24,6 +24,7 @@ class ToolsPicker(BaseLLMNode[RAGState]):
         logger: logging.Logger,
         model: Any,
         temperature: float = 0.01,
+        tools_description: str | None = None,
     ):
         """Initialise the tools picker node.
 
@@ -38,11 +39,19 @@ class ToolsPicker(BaseLLMNode[RAGState]):
             output_schema=ToolCallsSchema,
             memory=False,
         )
-        self._tools_description = ""
+        self._tools_description = tools_description
 
-    def set_tools_description(self, description: str) -> None:
-        """Set tool descriptions (called by orchestrator after construction)."""
-        self._tools_description = description
+    @override
+    def _pre_exec(self, state: RAGState) -> bool:
+        """Pre-execution check.
+
+        If no tools description is set, no tools are available, and we skip the
+        node.
+
+        """
+        if not self._tools_description:
+            return False
+        return True
 
     @override
     def _get_human_prompt(self, state: RAGState) -> str:

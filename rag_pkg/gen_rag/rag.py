@@ -30,6 +30,7 @@ from .nodes.init_rag import InitRAGState
 from .nodes.retrieve_info import RetrieveInfoNode
 from .nodes.route_evaluator import RouteEvaluator
 from .nodes.route_query import RouteQuery
+from .nodes.tools_caller import ToolsCaller
 from .nodes.tools_picker import ToolsPicker
 from .schemas import RAGState
 
@@ -80,6 +81,9 @@ class RAG(BaseLangGraph):
 
         # for clarification node
         self.clarification_message = "Apologies. I could not answer that question. Can you please ask another one or try to reword it and I will try again?"
+
+    def _splitter_node(self, state: RAGState):
+        return {}
 
     @override
     async def _create_graph(self):
@@ -136,11 +140,15 @@ class RAG(BaseLangGraph):
             logger=self.logger,
             model=self.c_model,
             temperature=0.01,
+            tools_description=self.tools_description,
         )
         self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
 
-        if self.mcp_tools:
-            self._tools_picker_node.set_tools_description(self.tool_description)
+        self._tools_caller_node = ToolsCaller(
+            logger=self.logger,
+            mcp_client=self.mcp_client,
+        )
+        self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
 
         self._answer_general_node = AnswerGeneral(
             logger=self.logger,
@@ -221,9 +229,6 @@ class RAG(BaseLangGraph):
             },
         )
 
-        def _splitter_node(self, state: RAGState):
-            return {}
-
         self.workflow.add_node("splitter", self._splitter_node)
 
         self.workflow.add_conditional_edges(
@@ -236,9 +241,11 @@ class RAG(BaseLangGraph):
             },
         )
         self.workflow.add_edge("splitter", "generate_retrieval_query")
-        self.workflow.add_edge("splitter", "tool_picker")
+        self.workflow.add_edge("splitter", "tools_picker")
+        self.workflow.add_edge("tools_picker", "tools_caller")
         self.workflow.add_edge("generate_retrieval_query", "retrieve_info")
         self.workflow.add_edge("retrieve_info", "generate_answer_from_context")
+        self.workflow.add_edge("tools_caller", "generate_answer_from_context")
         self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")
 
         self.workflow.add_conditional_edges(

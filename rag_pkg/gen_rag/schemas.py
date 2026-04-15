@@ -8,9 +8,10 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+from typing import Any, Dict, List, Literal, Tuple
+
 from langchain_core.messages import AnyMessage
 from pydantic import BaseModel, Field
-from typing_extensions import Dict, List, Literal, Tuple
 
 
 class EvaluateAnswerSchema(BaseModel):
@@ -28,6 +29,19 @@ class EvaluateAnswerSchema(BaseModel):
     summary: str = ""
 
 
+class ToolCallSchema(BaseModel):
+    """Schema for tool call response."""
+
+    tool: str = ""
+    args: Dict[str, Any] = Field(default_factory=dict)
+    reason: str = ""
+
+
+# For Tool Picker
+class ToolCallsSchema(BaseModel):
+    tool_calls: list[ToolCallSchema] = Field(default_factory=list)
+
+
 class RAGState(BaseModel):
     """The state of the graph"""
 
@@ -43,6 +57,9 @@ class RAGState(BaseModel):
     # index till which summarised
     summarised_till: int = 0
     message_for_user: str = ""
+
+    # tool calls
+    tool_calls: list[ToolCallSchema] = Field(default_factory=list)
 
     # reference material from retrievals
     reference_material: Dict[str, List[Tuple]] = Field(default_factory=dict)

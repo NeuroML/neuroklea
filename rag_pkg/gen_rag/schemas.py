@@ -10,6 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from typing import Any, Dict, List, Literal, Tuple
 
+from fastmcp.client.client import CallToolResult
 from langchain_core.messages import AnyMessage
 from pydantic import BaseModel, Field
 
@@ -60,6 +61,7 @@ class RAGState(BaseModel):
 
     # tool calls
     tool_calls: list[ToolCallSchema] = Field(default_factory=list)
+    tool_results: Dict[str, list[CallToolResult]] = Field(default_factory=dict)
 
     # reference material from retrievals
     reference_material: Dict[str, List[Tuple]] = Field(default_factory=dict)

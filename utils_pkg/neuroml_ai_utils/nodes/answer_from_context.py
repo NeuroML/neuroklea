@@ -25,6 +25,7 @@ class AnswerSchema(BaseModel):
     references: list[str] = Field(default_factory=list)
 
 
+# TODO: can I use generics here to enable subclassing without AnswerSchema?
 class AnswerFromContext(BaseLLMNode[AnswerSchema]):
     """Generate an answer from the provided context"""
 

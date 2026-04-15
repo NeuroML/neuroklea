@@ -8,6 +8,7 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import asyncio
 import logging
 from typing import Any, override
 
@@ -41,17 +42,18 @@ class ToolsCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
         current_step = plan.step_list[plan.current_step_index]
         tool_responses = state.tool_responses
 
-        # call tool if it is in the current state
-        if state.tool_call:
-            # TODO: retry X times if fails before marking as failed
-            tool_call = state.tool_call
-
-            async with self.mcp_client:
-                tool_result = await self.mcp_client.call_tool(
-                    name=tool_call.tool, arguments=tool_call.args, raise_on_error=False
-                )
-        else:
+        if not state.tool_call:
             return {}
+
+        tool_call = state.tool_call
+        async with self.mcp_client:
+            task = self.mcp_client.call_tool(
+                name=tool_call.tool,
+                arguments=tool_call.args,
+                raise_on_error=False,
+            )
+            results = await asyncio.gather(task)
+            tool_result = results[0]
 
         tool_responses.append(tool_result)
 

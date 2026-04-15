@@ -12,6 +12,6 @@ For the rewritten query:
 - limit yourself to 3-8 words
 - no sentences
 - no explanations
-- ignore sentency fluency, only use keywords
+- ignore sentence fluency, only use keywords
 
 Only return the rewritten query.

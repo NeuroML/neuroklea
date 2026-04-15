@@ -20,6 +20,7 @@ from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.state import CompiledStateGraph
+from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
 from neuroml_ai_utils.stores import VectorStores
@@ -66,7 +67,7 @@ class BaseLangGraph(ABC):
         :param memory: Whether to enable checkpoint-based session memory
         """
         self.c_model = None
-        self.mcp_client: Client
+        self.mcp_client: Client | None = None
 
         self.memory = memory
         self.checkpointer: InMemorySaver | None = InMemorySaver() if memory else None
@@ -80,7 +81,7 @@ class BaseLangGraph(ABC):
         self.logger.setLevel(logging_level)
         self.logger.propagate = False
 
-        self.mcp_tools = None
+        self.mcp_tools: list[Tool] | None = None
         self.stores: VectorStores | None = None
         self.QueryDomainSchema: Type[BaseModel] | None = None
 
@@ -128,7 +129,7 @@ class BaseLangGraph(ABC):
     def _create_mcp_client(self) -> None:
         """Create MCP client from the JSON config file.
 
-        Reads the MCP server configuration from ``self.config.mcp_config_file``
+        Reads the MCP server configurations from ``self.config.mcp_config_file``
         and creates a ``fastmcp.Client`` instance.
         """
         if self.config.mcp_config_file:  # type: ignore

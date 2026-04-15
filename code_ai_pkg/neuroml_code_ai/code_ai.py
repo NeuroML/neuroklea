@@ -9,8 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from functools import cached_property
-from textwrap import dedent
 from typing import final
 
 from langgraph.graph import END, START, StateGraph
@@ -69,40 +67,6 @@ class CodeAI(BaseLangGraph):
             self.r_model = setup_llm(self.config.reasoning_model, self.logger)
         self.g_model = setup_llm(self.config.guard_model, self.logger)
 
-    @cached_property
-    def tool_description(self):
-        """Get the tool description"""
-        if self.mcp_client:
-            ctr = 0
-            description = ""
-            for t in self.mcp_tools:
-                if "dummy" in t.name:
-                    continue
-                ctr += 1
-                description += dedent(
-                    f"""
-                    ## {ctr}.  {t.name}
-
-                    ### Description
-
-                    {t.description}
-
-                    """
-                )
-                if t.inputSchema:
-                    description += dedent(
-                        f"""
-                        ### Parameters
-
-                        {t.inputSchema.get("properties")}
-
-                        """
-                    )
-
-            return description
-        else:
-            return ""
-
     # TODO: replace with class
     async def _step_router_node(self, state: CodeAIState) -> str:
         return state.plan.status
@@ -151,11 +115,11 @@ class CodeAI(BaseLangGraph):
         self._planner_node = Planner(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
-        self._planner_node.set_tools_description(self.tool_description)
+        self._planner_node.set_tools_description(self.tools_description)
         self._tools_picker_node = ToolsPicker(
             logger=self.logger, model=self.r_model, temperature=0.01
         )
-        self._tools_picker_node.set_tools_description(self.tool_description)
+        self._tools_picker_node.set_tools_description(self.tools_description)
         self._tools_caller_node = ToolsCaller(
             logger=self.logger, mcp_client=self.mcp_client
         )

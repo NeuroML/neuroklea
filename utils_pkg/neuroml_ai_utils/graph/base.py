@@ -13,7 +13,9 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
+from functools import cached_property
 from pathlib import Path
+from textwrap import dedent
 from typing import Any, Literal, Type, final
 
 from fastmcp import Client
@@ -190,6 +192,41 @@ class BaseLangGraph(ABC):
         except BaseException as e:
             self.logger.error("Something went wrong generating lang graph png")
             self.logger.error(e)
+
+    @cached_property
+    def tools_description(self) -> str:
+        """Get formatted descriptions of available MCP tools.
+
+        :returns: Formatted string with tool names, descriptions, and parameters
+        """
+        if not self.mcp_tools:
+            return ""
+        description = ""
+        ctr = 0
+        for t in self.mcp_tools:
+            if "dummy" in t.name:
+                continue
+            ctr += 1
+            description += dedent(
+                f"""
+                ## {ctr}.  {t.name}
+
+                ### Description
+
+                {t.description}
+
+                """
+            )
+            if t.inputSchema:
+                description += dedent(
+                    f"""
+                    ### Parameters
+
+                    {t.inputSchema.get("properties")}
+
+                    """
+                )
+        return description
 
     # ------------------------------------------------------------------
     # Abstract methods -- subclasses must implement these

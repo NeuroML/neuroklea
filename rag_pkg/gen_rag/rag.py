@@ -30,6 +30,7 @@ from .nodes.init_rag import InitRAGState
 from .nodes.retrieve_info import RetrieveInfoNode
 from .nodes.route_evaluator import RouteEvaluator
 from .nodes.route_query import RouteQuery
+from .nodes.tools_picker import ToolsPicker
 from .schemas import RAGState
 
 logging.basicConfig()
@@ -131,6 +132,16 @@ class RAG(BaseLangGraph):
         self.workflow.add_node(
             "generate_retrieval_query", self._generate_retrieval_query_node.execute
         )
+        self._tools_picker_node = ToolsPicker(
+            logger=self.logger,
+            model=self.c_model,
+            temperature=0.01,
+        )
+        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
+
+        if self.mcp_tools:
+            self._tools_picker_node.set_tools_description(self.tool_description)
+
         self._answer_general_node = AnswerGeneral(
             logger=self.logger,
             model=self.c_model,
@@ -210,15 +221,22 @@ class RAG(BaseLangGraph):
             },
         )
 
+        def _splitter_node(self, state: RAGState):
+            return {}
+
+        self.workflow.add_node("splitter", self._splitter_node)
+
         self.workflow.add_conditional_edges(
             "classify_question_domain",
             self._route_query_domain_node.execute,
             {
-                "domain_query": "generate_retrieval_query",
+                "domain_query": "splitter",
                 "non_domain_query": "answer_general_question",
                 "non_domain_refuse": "refuse_to_answer",
             },
         )
+        self.workflow.add_edge("splitter", "generate_retrieval_query")
+        self.workflow.add_edge("splitter", "tool_picker")
         self.workflow.add_edge("generate_retrieval_query", "retrieve_info")
         self.workflow.add_edge("retrieve_info", "generate_answer_from_context")
         self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")

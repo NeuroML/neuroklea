@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, override
 
 from langchain.messages import AIMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from neuroml_ai_utils.llm import split_output_by_section
 from neuroml_ai_utils.stores import serialize_reference
@@ -20,7 +20,12 @@ from neuroml_ai_utils.stores import serialize_reference
 from .base import BaseLLMNode
 
 
-class AnswerFromContext[TSchema: BaseModel](BaseLLMNode[TSchema]):
+class AnswerSchema(BaseModel):
+    answer: str = ""
+    references: list[str] = Field(default_factory=list)
+
+
+class AnswerFromContext(BaseLLMNode[AnswerSchema]):
     """Generate an answer from the provided context"""
 
     def __init__(
@@ -41,7 +46,7 @@ class AnswerFromContext[TSchema: BaseModel](BaseLLMNode[TSchema]):
             logger=logger,
             model=model,
             temperature=temperature,
-            output_schema=None,
+            output_schema=AnswerSchema,
             memory=memory,
         )
 
@@ -56,32 +61,24 @@ class AnswerFromContext[TSchema: BaseModel](BaseLLMNode[TSchema]):
         }
 
     @override
-    def _update_state(self, result: Any, state: BaseModel) -> Dict[str, Any]:
+    def _update_state(self, result: AnswerSchema, state: BaseModel) -> Dict[str, Any]:
         """Update state with the generated answer and formatted references."""
-        assert isinstance(result, AIMessage)
-        assert isinstance(result.content, str)
+        thought, answer = split_output_by_section(result.answer, "<think>", "</think>")
+        refs = result.references
 
-        thought, answer = split_output_by_section(result.content, "<think>", "</think>")
-
-        # Extract and deduplicate references
-        answer_text = ""
-        if not answer_text:
-            answer_text = answer
-
-        answer_text = self._update_reference_list(answer_text)
-
-        result.content = answer_text
-        self.logger.debug(result.pretty_repr())
+        full_answer = self._update_reference_list(answer, refs)
+        res_message = AIMessage(content=full_answer)
+        self.logger.debug(res_message.pretty_repr())
 
         messages = state.messages  # type: ignore
-        messages.append(result)
+        messages.append(res_message)
 
         return {
             "messages": messages,
             "reference_material": state.reference_material,  # type: ignore
         }
 
-    def _update_reference_list(self, answer: str) -> str:
+    def _update_reference_list(self, answer: str, references: list[str]) -> str:
         """Update answer with reference list
 
         Override with ``pass`` to skip reference listing entirely,
@@ -93,22 +90,17 @@ class AnswerFromContext[TSchema: BaseModel](BaseLLMNode[TSchema]):
         :param answer: The answer returned from the LLM, with references
         :returns: answer text with formatted references if available
         """
-        ref_list = []
-        answer_text = ""
-        for rf in ["\nreference", "\nReference", "\nReferences", "\nreferences"]:
-            if rf in answer:
-                answer_text, references = split_output_by_section(answer, rf)
-                ref_list = references.split()
-                # remove whitespaces, make unique, restore in list
-                ref_list = list(set(map(str.strip, ref_list)))
-                break
+        full_answer = f"{answer}"
+        newrefs = list(set([r.strip() for r in references]))
 
-        if ref_list:
-            answer_text += "\nReferences:" + "\n- ".join(ref_list)
+        if len(newrefs):
+            full_answer += "\n\nReferences:\n"
+            for r in newrefs:
+                full_answer += f"- {r}\n"
         else:
-            self.logger.warning("No reference list found in answer.")
+            self.logger.debug("No references included.")
 
-        return answer_text
+        return full_answer
 
     @override
     def _get_default_error_result(self) -> Any:

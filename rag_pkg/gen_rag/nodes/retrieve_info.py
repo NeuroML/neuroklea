@@ -66,6 +66,9 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         reference_material.update(new_ref)
         self.logger.debug(f"{reference_material =}")
 
-        # tool calls
+        # TODO: implement tool calls?
+        # Not currently needed. The RAG is for the docs only.
+        # The coding agent will have tools to pull examples from GitHub and so
+        # on.
 
         return {"reference_material": reference_material}

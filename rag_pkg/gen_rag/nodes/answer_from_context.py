@@ -2,7 +2,7 @@
 """
 Generate an answer from provided reference material
 
-File: utils_pkg/neuroml_ai_utils/nodes/answer_from_context.py
+File: rag_pkg/gen_rag/nodes/answer_from_context.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -12,12 +12,10 @@ import logging
 from typing import Any, Dict, override
 
 from langchain.messages import AIMessage
-from pydantic import BaseModel, Field
-
 from neuroml_ai_utils.llm import split_output_by_section
+from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_ai_utils.stores import serialize_reference
-
-from .base import BaseLLMNode
+from pydantic import BaseModel, Field
 
 
 class AnswerSchema(BaseModel):
@@ -25,7 +23,6 @@ class AnswerSchema(BaseModel):
     references: list[str] = Field(default_factory=list)
 
 
-# TODO: can I use generics here to enable subclassing without AnswerSchema?
 class AnswerFromContext(BaseLLMNode[AnswerSchema]):
     """Generate an answer from the provided context"""
 

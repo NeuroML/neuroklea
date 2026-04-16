@@ -21,11 +21,11 @@ from gen_rag.schemas import RAGState
 
 # Type is calculated at runtime in orchestrator
 class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
-    """Classify a user query into a domain category.
+    """Classify a user query into domain categories.
 
-    Uses an LLM to determine which domain the query belongs to, based on
-    configured vector store domains. Appends conversation history to the
-    system prompt when memory is enabled.
+    Uses an LLM to determine which domains the query belongs to, based on
+    configured vector store domains. Appends conversation history to the system
+    prompt when memory is enabled.
     """
 
     def __init__(
@@ -97,7 +97,8 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         messages.append(HumanMessage(content=state.query))
 
         return {
-            "query_domain": result.query_domain,
+            "query_domains": result.query_domains,
+            "current_domain": result.query_domains[0],
             "messages": messages,
         }
 

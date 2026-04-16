@@ -21,9 +21,10 @@ from gen_rag.schemas import RAGState
 class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Retrieve reference material from vector stores.
 
-    Queries the vector stores for a given domain and query, ranks results by
-    relevance score, and keeps the top N references. Optionally increments k
-    when asked to retrieve more info.
+    Queries the vector stores for all domains in the query_domains list using
+    the same retrieval query, ranks results by relevance score, and keeps the
+    top N references for each domain. Optionally increments k when asked to
+    retrieve more info.
     """
 
     def __init__(
@@ -56,19 +57,20 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         if state.text_response_eval.next_step == "retrieve_more_info":
             self.stores.inc_k()
 
-        # Retrieve from vector stores
-        res = self.stores.retrieve(domain_name=state.query_domain, query=cleaned_query)
+        # Retrieve from vector stores for all domains
+        for domain_name in state.query_domains:
+            # Skip undefined domain
+            if domain_name == "undefined":
+                continue
 
-        # Rank by relevance score, keep top N
-        sorted_res = sorted(res, key=lambda tup: tup[1], reverse=True)
-        new_ref = {state.query_domain: sorted_res[: self.num_refs_max]}
+            res = self.stores.retrieve(domain_name=domain_name, query=cleaned_query)
 
-        reference_material.update(new_ref)
+            # Rank by relevance score, keep top N
+            sorted_res = sorted(res, key=lambda tup: tup[1], reverse=True)
+            new_ref = {domain_name: sorted_res[: self.num_refs_max]}
+
+            reference_material.update(new_ref)
+
         self.logger.debug(f"{reference_material =}")
-
-        # TODO: implement tool calls?
-        # Not currently needed. The RAG is for the docs only.
-        # The coding agent will have tools to pull examples from GitHub and so
-        # on.
 
         return {"reference_material": reference_material}

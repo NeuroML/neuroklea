@@ -49,7 +49,6 @@ class RAGState(BaseModel):
     query: str = ""
     # schema for this is computed at run time for the classifier node
     query_domains: list[str] = ["undefined"]
-    current_domain: str = "undefined"
     text_response_eval: EvaluateAnswerSchema = EvaluateAnswerSchema()
     guard_decision: str = "unsafe"
     messages: List[AnyMessage] = Field(default_factory=list)

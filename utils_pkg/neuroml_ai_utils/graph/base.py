@@ -16,7 +16,7 @@ from abc import ABC, abstractmethod
 from functools import cached_property
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Literal, Type, final
+from typing import Any, List, Literal, Type, final
 
 from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
@@ -172,7 +172,7 @@ class BaseLangGraph(ABC):
 
             self.QueryDomainSchema = create_model(
                 "QueryDomainSchema",
-                query_domain=(list[Literal[tuple(all_domains)]], "undefined"),
+                query_domain=(List[Literal[tuple(all_domains)]], "undefined"),
             )
         else:
             self.logger.warning("No vector stores configured.")

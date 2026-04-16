@@ -54,5 +54,5 @@ class ToolsCaller(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
             results = await asyncio.gather(*tasks)
 
         self.logger.debug(f"{results =}")
-        # Replace because we want fresh results at every call
-        return {"tool_results": {state.query_domain: results}}
+        # Replace because we want fresh results at RAG loop
+        return {"tool_results": results}

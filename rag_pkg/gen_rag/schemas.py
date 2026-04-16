@@ -62,7 +62,7 @@ class RAGState(BaseModel):
 
     # tool calls
     tool_calls: list[ToolCallSchema] = Field(default_factory=list)
-    tool_results: Dict[str, list[CallToolResult]] = Field(default_factory=dict)
+    tool_results: list[CallToolResult] = Field(default_factory=list)
 
     # reference material from retrievals
     reference_material: Dict[str, List[Tuple]] = Field(default_factory=dict)

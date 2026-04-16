@@ -14,7 +14,8 @@ from typing import Any, Dict, override
 from langchain.messages import AIMessage
 from neuroml_ai_utils.llm import split_output_by_section
 from neuroml_ai_utils.nodes.base import BaseLLMNode
-from neuroml_ai_utils.stores import serialize_reference
+from neuroml_ai_utils.stores import serialize_vs_retrieval
+from neuroml_ai_utils.tools import serialize_tool_results
 from pydantic import BaseModel, Field
 
 
@@ -52,7 +53,12 @@ class AnswerFromContext(BaseLLMNode[AnswerSchema]):
     def _get_prompt_variables(self, state: BaseModel) -> dict:
         """Format prompt with question and serialized reference material."""
         reference_material = state.reference_material  # type: ignore
-        reference_material_text = serialize_reference(reference_material)
+        reference_material_text = serialize_vs_retrieval(reference_material)
+
+        # Add tool results to the reference material
+        if hasattr(state, "tool_results") and state.tool_results:  # type: ignore
+            reference_material_text += "\n" + serialize_tool_results(state.tool_results)  # type: ignore
+
         return {
             "query": state.query,  # type: ignore
             "reference_material": reference_material_text,

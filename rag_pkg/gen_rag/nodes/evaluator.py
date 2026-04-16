@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base import BaseLLMNode
-from neuroml_ai_utils.stores import serialize_reference
+from neuroml_ai_utils.stores import serialize_vs_retrieval
 
 from gen_rag.schemas import EvaluateAnswerSchema, RAGState
 
@@ -39,7 +39,7 @@ class Evaluator(BaseLLMNode[EvaluateAnswerSchema]):
     def _get_prompt_variables(self, state: RAGState) -> dict:
         """Format prompt with question, context, and answer."""
         question = state.query
-        context = serialize_reference(state.reference_material)
+        context = serialize_vs_retrieval(state.reference_material)
         answer = state.messages[-1].content
 
         return {

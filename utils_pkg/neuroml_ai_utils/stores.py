@@ -21,10 +21,10 @@ from pydantic import BaseModel
 from .llm import setup_embedding
 
 
-def serialize_reference(
+def serialize_vs_retrieval(
     reference_material: Dict[str, List[Tuple[Document, float]]],
 ) -> str:
-    """Serialize reference material into text for use in prompt context.
+    """Serialize vector store retrieval results into text for use in prompt context.
 
     Documents are sorted by relevance score within each group.
 

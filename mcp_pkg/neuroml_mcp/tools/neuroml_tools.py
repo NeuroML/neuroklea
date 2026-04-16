@@ -12,6 +12,8 @@ from dataclasses import asdict
 from textwrap import dedent
 from typing import Any, Dict
 
+import requests
+
 from neuroml_mcp.tools.sandbox.sandbox import RunCommand
 
 # set the implementation for development
@@ -187,3 +189,38 @@ async def run_lems_simulation(lems_file: str) -> Dict[str, Any]:
     async with sbox(".") as f:
         result = await f.run(request)
     return asdict(result)
+
+
+@tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
+async def get_models_from_neuromldb(
+    search_query: str, num: int = 5, download: bool = True
+) -> list[str]:
+    """Use this tool to search and optionally obtain models from the NeuroML model database, NeuroML-DB.
+
+    Common use cases:
+    - Finding example models
+    - Downloading models for use
+
+    Args:
+        search_query: search term for querying NeuroML-DB
+        num: number of search results to get
+        download: set to true to also download the models
+
+    Returns:
+        List of model information with metadata and model content
+
+    Examples:
+        # Run a basic simulation
+        cerebellar_models = get_models_from_neuromldb(search_query="cerebellum", download=True)
+    """
+
+    nml_db_search_url = "https://neuroml-db.org/api/search"
+    res = requests.get(nml_db_search_url, params={"q": search_query})
+
+    if res.ok:
+        print(res)
+        return [res]
+    else:
+        print("LOL")
+
+    return []

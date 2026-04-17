@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+@pytest.mark.skip(reason="NeuroML-DB is currently down. Reported.")
 @pytest.mark.asyncio
 async def test_get_models_from_neuromldb():
     res = await get_models_from_neuromldb(

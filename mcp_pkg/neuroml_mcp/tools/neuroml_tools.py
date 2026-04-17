@@ -8,11 +8,19 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import logging
+import sys
 from dataclasses import asdict
 from textwrap import dedent
 from typing import Any, Dict
 
 import requests
+from neuroml_ai_utils.logging import (
+    LoggerInfoFilter,
+    LoggerNotInfoFilter,
+    logger_formatter_info,
+    logger_formatter_other,
+)
 
 from neuroml_mcp.tools.sandbox.sandbox import RunCommand
 
@@ -21,6 +29,22 @@ from ..utils import ToolInfo, tool_meta
 from .sandbox import nml_mcp_sandbox
 
 sbox = nml_mcp_sandbox
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.propagate = False
+
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+stdout_handler.addFilter(LoggerInfoFilter())
+stdout_handler.setFormatter(logger_formatter_info)
+logger.addHandler(stdout_handler)
+
+stderr_handler = logging.StreamHandler(sys.stderr)
+stderr_handler.setLevel(logging.DEBUG)
+stderr_handler.addFilter(LoggerNotInfoFilter())
+stderr_handler.setFormatter(logger_formatter_other)
+logger.addHandler(stderr_handler)
 
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml"}))
@@ -194,12 +218,13 @@ async def run_lems_simulation(lems_file: str) -> Dict[str, Any]:
 @tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
 async def get_models_from_neuromldb(
     search_query: str, num: int = 5, download: bool = True
-) -> list[str]:
-    """Use this tool to search and optionally obtain models from the NeuroML model database, NeuroML-DB.
+) -> dict[str, Any]:
+    """Use this tool to search and optionally obtain cell and ion channel
+    models from the NeuroML model database, NeuroML-DB.
 
     Common use cases:
-    - Finding example models
-    - Downloading models for use
+    - Finding example cell and channel models
+    - Downloading cell and channel models for use
 
     Args:
         search_query: search term for querying NeuroML-DB
@@ -207,20 +232,36 @@ async def get_models_from_neuromldb(
         download: set to true to also download the models
 
     Returns:
-        List of model information with metadata and model content
+        Dictionary of model information with metadata and model content
 
     Examples:
-        # Run a basic simulation
+        # Find and download cerebellar models
         cerebellar_models = get_models_from_neuromldb(search_query="cerebellum", download=True)
     """
 
+    # Reference: https://docs.neuroml.org/Userdocs/NML2_examples/NeuroML-DB.html
+    # WIP: NeuroML-DB search is down, so cannot test this out
+
     nml_db_search_url = "https://neuroml-db.org/api/search"
+    nml_db_model_xml_url = "https://neuroml-db.org/render_xml_file"
+    models: dict[str, Any] = {}
+
     res = requests.get(nml_db_search_url, params={"q": search_query})
-
+    # propagate exceptions: we will handle them
     if res.ok:
-        print(res)
-        return [res]
+        data = res.json()
+        for m in data:
+            mcopy = m.copy()
+            res2 = requests.get(nml_db_model_xml_url, params={"modelID": m["Model_ID"]})
+            if res2.ok:
+                mcopy["xml"] = res2.text()
+            else:
+                logger.error(f"Could not get model xml for {m['Model_ID']}")
+                mcopy["xml"] = ""
+            models[m["Model_ID"]] = mcopy
     else:
-        print("LOL")
+        error_text = f"Error running tool call: {res.content}"
+        logger.error(error_text)
+        return {"Error": error_text}
 
-    return []
+    return models

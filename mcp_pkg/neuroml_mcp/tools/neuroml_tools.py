@@ -8,6 +8,7 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import asyncio
 import logging
 import sys
 from dataclasses import asdict
@@ -21,6 +22,12 @@ from neuroml_ai_utils.logging import (
     LoggerNotInfoFilter,
     logger_formatter_info,
     logger_formatter_other,
+)
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_random_exponential,
 )
 
 from neuroml_mcp.tools.sandbox.sandbox import RunCommand
@@ -46,6 +53,42 @@ stderr_handler.setLevel(logging.DEBUG)
 stderr_handler.addFilter(LoggerNotInfoFilter())
 stderr_handler.setFormatter(logger_formatter_other)
 logger.addHandler(stderr_handler)
+
+
+MAX_RESULTS = 20
+SEARCH_TIMEOUT = aiohttp.ClientTimeout(total=30)
+XML_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
+
+
+@retry(
+    wait=wait_random_exponential(multiplier=1, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+    reraise=True,
+)
+async def _search_neuromldb(session, url, query):
+    """Search NeuroML-DB with retry logic."""
+    async with session.get(
+        url, params={"q": query}, timeout=SEARCH_TIMEOUT, ssl=False
+    ) as r:
+        r.raise_for_status()
+        return await r.json(content_type=None)
+
+
+@retry(
+    wait=wait_random_exponential(multiplier=1, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+    reraise=True,
+)
+async def _download_model_xml(session, url, model_id):
+    """Download model XML with retry logic."""
+    async with session.get(
+        url, params={"modelID": model_id}, timeout=XML_DOWNLOAD_TIMEOUT, ssl=False
+    ) as r:
+        if r.ok:
+            return await r.text()
+        return None
 
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml"}))
@@ -228,8 +271,8 @@ async def get_models_from_neuromldb(
     - Downloading cell and channel models for use
 
     Args:
-        search_query: search term for querying NeuroML-DB
-        num: number of search results to get
+        search_query: search term for querying NeuroML-DB. Must be non-empty.
+        num: number of search results to get (clamped to 1-20).
         download: set to true to also download the models
 
     Returns:
@@ -239,43 +282,51 @@ async def get_models_from_neuromldb(
         # Find and download cerebellar models
         cerebellar_models = get_models_from_neuromldb(search_query="cerebellum", download=True)
     """
+    if not search_query or not search_query.strip():
+        return {"Error": "search_query must be a non-empty string"}
+
+    num = max(1, min(num, MAX_RESULTS))
 
     session: aiohttp.ClientSession = ctx.get_state("neuromldb_session")  # type: ignore
+    if session is None:
+        return {"Error": "NeuroML-DB session not initialized"}
 
     nml_db_search_url = "http://neuroml-db.org/api/search"
     nml_db_model_xml_url = "https://neuroml-db.org/render_xml_file"
     models: dict[str, Any] = {}
 
-    print(f"{search_query = }")
-    async with session.get(
-        nml_db_search_url, params={"q": search_query}, ssl=False
-    ) as r:
-        res = await r.json(content_type=None)
+    logger.debug(f"Searching NeuroML-DB with query: {search_query}")
 
-    # propagate exceptions: we will handle them
-    ctr = 0
-    if r.ok:
-        for m in res:
-            if ctr >= num:
-                break
-            mcopy = m.copy()
-            if download:
-                async with session.get(
-                    nml_db_model_xml_url, params={"modelID": m["Model_ID"]}, ssl=False
-                ) as r2:
-                    res2 = await r2.text()
-                if r2.ok:
-                    mcopy["xml"] = res2
-                else:
-                    logger.error(f"Could not get model xml for {m['Model_ID']}")
-                    mcopy["xml"] = ""
-            else:
-                mcopy["xml"] = ""
-            models[m["Model_ID"]] = mcopy
-            ctr += 1
-    else:
-        error_text = f"Error running tool call: {res.content}"
+    try:
+        res = await _search_neuromldb(session, nml_db_search_url, search_query)
+    except Exception as e:
+        error_text = f"Error searching NeuroML-DB: {e.__class__.__name__}: {e}"
         logger.error(error_text)
         return {"Error": error_text}
+
+    # Process up to num results
+    for i, m in enumerate(res[:num]):
+        # Rate limit: sleep between requests (but not before the first)
+        if i > 0:
+            await asyncio.sleep(1)
+
+        mcopy = m.copy()
+        if download:
+            model_id = m.get("Model_ID", f"unknown_{i}")
+            try:
+                xml_content = await _download_model_xml(
+                    session, nml_db_model_xml_url, model_id
+                )
+                if xml_content is not None:
+                    mcopy["xml"] = xml_content
+                else:
+                    logger.error(f"Could not get model xml for {model_id}")
+                    mcopy["xml"] = ""
+            except Exception as e:
+                logger.error(f"Error downloading xml for {model_id}: {e}")
+                mcopy["xml"] = ""
+        else:
+            mcopy["xml"] = ""
+        models[m.get("Model_ID", f"unknown_{i}")] = mcopy
 
     return models

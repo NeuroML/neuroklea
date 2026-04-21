@@ -71,8 +71,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        pushd utils_pkg && pytest -v -n auto && popd
-        pushd mcp_pkg && pytest -v && popd
+        { pushd utils_pkg && pytest -v -n auto && popd; } && { pushd mcp_pkg && pytest -v && popd; }
       env:
         GEN_RAG_VS_CONFIG: "vector-stores-tests.json"
 

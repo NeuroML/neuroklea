@@ -14,7 +14,8 @@ from dataclasses import asdict
 from textwrap import dedent
 from typing import Any, Dict
 
-import requests
+import aiohttp
+from fastmcp import Context
 from neuroml_ai_utils.logging import (
     LoggerInfoFilter,
     LoggerNotInfoFilter,
@@ -217,7 +218,7 @@ async def run_lems_simulation(lems_file: str) -> Dict[str, Any]:
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
 async def get_models_from_neuromldb(
-    search_query: str, num: int = 5, download: bool = True
+    ctx: Context, search_query: str, num: int = 3, download: bool = True
 ) -> dict[str, Any]:
     """Use this tool to search and optionally obtain cell and ion channel
     models from the NeuroML model database, NeuroML-DB.
@@ -239,26 +240,39 @@ async def get_models_from_neuromldb(
         cerebellar_models = get_models_from_neuromldb(search_query="cerebellum", download=True)
     """
 
-    # Reference: https://docs.neuroml.org/Userdocs/NML2_examples/NeuroML-DB.html
-    # WIP: NeuroML-DB search is down, so cannot test this out
+    session: aiohttp.ClientSession = ctx.get_state("neuromldb_session")  # type: ignore
 
-    nml_db_search_url = "https://neuroml-db.org/api/search"
+    nml_db_search_url = "http://neuroml-db.org/api/search"
     nml_db_model_xml_url = "https://neuroml-db.org/render_xml_file"
     models: dict[str, Any] = {}
 
-    res = requests.get(nml_db_search_url, params={"q": search_query})
+    print(f"{search_query = }")
+    async with session.get(
+        nml_db_search_url, params={"q": search_query}, ssl=False
+    ) as r:
+        res = await r.json(content_type=None)
+
     # propagate exceptions: we will handle them
-    if res.ok:
-        data = res.json()
-        for m in data:
+    ctr = 0
+    if r.ok:
+        for m in res:
+            if ctr >= num:
+                break
             mcopy = m.copy()
-            res2 = requests.get(nml_db_model_xml_url, params={"modelID": m["Model_ID"]})
-            if res2.ok:
-                mcopy["xml"] = res2.text()
+            if download:
+                async with session.get(
+                    nml_db_model_xml_url, params={"modelID": m["Model_ID"]}, ssl=False
+                ) as r2:
+                    res2 = await r2.text()
+                if r2.ok:
+                    mcopy["xml"] = res2
+                else:
+                    logger.error(f"Could not get model xml for {m['Model_ID']}")
+                    mcopy["xml"] = ""
             else:
-                logger.error(f"Could not get model xml for {m['Model_ID']}")
                 mcopy["xml"] = ""
             models[m["Model_ID"]] = mcopy
+            ctr += 1
     else:
         error_text = f"Error running tool call: {res.content}"
         logger.error(error_text)

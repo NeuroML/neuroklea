@@ -9,6 +9,7 @@ ignore = ["F403", "F405"]
 
 [tool.pytest.ini_options]
 markers = [
-    "localonly", # test to not be run on GH actions: they require an LLM.
+    "localonly", # test to not be run on GH actions
 ]
 asyncio_mode = "auto"
+addopts = "-n 1"  # mcp tools use asyncio, so do not run in parallel

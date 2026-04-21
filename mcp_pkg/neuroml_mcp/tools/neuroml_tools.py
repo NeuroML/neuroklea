@@ -16,6 +16,7 @@ from textwrap import dedent
 from typing import Any, Dict
 
 import aiohttp
+from cachetools import TTLCache
 from fastmcp import Context
 from neuroml_ai_utils.logging import (
     LoggerInfoFilter,
@@ -58,6 +59,12 @@ logger.addHandler(stderr_handler)
 MAX_RESULTS = 20
 SEARCH_TIMEOUT = aiohttp.ClientTimeout(total=30)
 XML_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
+
+# Cache for search results (2 hour TTL, max 100 entries)
+SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
+
+# Cache for XML downloads (2 hour TTL, max 100 entries)
+XML_CACHE = TTLCache(maxsize=100, ttl=7200)
 
 
 @retry(
@@ -297,12 +304,17 @@ async def get_models_from_neuromldb(
 
     logger.debug(f"Searching NeuroML-DB with query: {search_query}")
 
-    try:
-        res = await _search_neuromldb(session, nml_db_search_url, search_query)
-    except Exception as e:
-        error_text = f"Error searching NeuroML-DB: {e.__class__.__name__}: {e}"
-        logger.error(error_text)
-        return {"Error": error_text}
+    if search_query in SEARCH_CACHE:
+        logger.debug(f"Cache hit for search: {search_query}")
+        res = SEARCH_CACHE[search_query]
+    else:
+        try:
+            res = await _search_neuromldb(session, nml_db_search_url, search_query)
+            SEARCH_CACHE[search_query] = res
+        except Exception as e:
+            error_text = f"Error searching NeuroML-DB: {e.__class__.__name__}: {e}"
+            logger.error(error_text)
+            return {"Error": error_text}
 
     # Process up to num results
     for i, m in enumerate(res[:num]):
@@ -313,18 +325,24 @@ async def get_models_from_neuromldb(
         mcopy = m.copy()
         if download:
             model_id = m.get("Model_ID", f"unknown_{i}")
-            try:
-                xml_content = await _download_model_xml(
-                    session, nml_db_model_xml_url, model_id
-                )
-                if xml_content is not None:
-                    mcopy["xml"] = xml_content
-                else:
-                    logger.error(f"Could not get model xml for {model_id}")
+
+            if model_id in XML_CACHE:
+                logger.debug(f"Cache hit for XML: {model_id}")
+                mcopy["xml"] = XML_CACHE[model_id]
+            else:
+                try:
+                    xml_content = await _download_model_xml(
+                        session, nml_db_model_xml_url, model_id
+                    )
+                    if xml_content is not None:
+                        XML_CACHE[model_id] = xml_content
+                        mcopy["xml"] = xml_content
+                    else:
+                        logger.error(f"Could not get model xml for {model_id}")
+                        mcopy["xml"] = ""
+                except Exception as e:
+                    logger.error(f"Error downloading xml for {model_id}: {e}")
                     mcopy["xml"] = ""
-            except Exception as e:
-                logger.error(f"Error downloading xml for {model_id}: {e}")
-                mcopy["xml"] = ""
         else:
             mcopy["xml"] = ""
         models[m.get("Model_ID", f"unknown_{i}")] = mcopy

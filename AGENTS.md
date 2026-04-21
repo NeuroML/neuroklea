@@ -8,7 +8,6 @@ The project contains multiple Python packages:
 
 - [code_ai_pkg/AGENTS.md](code_ai_pkg/AGENTS.md) - AI assisted coding for NeuroML
 - [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML
-- [neuroml_ai/AGENTS.md](neuroml_ai/AGENTS.md) - Main AI assistant application
 - [rag_pkg/AGENTS.md](rag_pkg/AGENTS.md) - Generic RAG implementation
 - [utils_pkg/AGENTS.md](utils_pkg/AGENTS.md) - Shared utilities
 

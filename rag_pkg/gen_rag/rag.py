@@ -126,7 +126,6 @@ class RAG(BaseLangGraph):
 
         self._route_query_domain_node = RouteQuery(
             logger=self.logger,
-            stores=self.stores,
             non_domain_chat=self.config.non_domain_chat,
         )
 

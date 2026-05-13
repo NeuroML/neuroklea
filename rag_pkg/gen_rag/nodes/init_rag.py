@@ -27,12 +27,11 @@ class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         """Reset state fields to their initial values."""
         return {
             "guard_decision": "unsafe",
-            "query_domain": "undefined",
             "text_response_eval": EvaluateAnswerSchema(),
             "message_for_user": "",
             "query_modified": False,
             "retrieval_query": "",
             "tool_calls": [],
-            "tool_results": {},
+            "tool_results": [],
             "reference_material": {},
         }

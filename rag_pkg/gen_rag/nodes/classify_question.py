@@ -70,7 +70,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
                 desc = f"if the question is about {desc}"
             domain_str += f"\n- {d}: {desc}"
 
-        domain_str += "\n- undefined: otherwise"
+        domain_str += "\n- undefined: otherwise (if no other category)"
         return domain_str
 
     @override
@@ -96,9 +96,25 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         messages = list(state.messages)
         messages.append(HumanMessage(content=state.query))
 
+        domains = result.query_domains
+
+        # limit domains to valid ones
+        valid_domains = []
+        for d in domains:
+            if d in self.stores.domains:
+                valid_domains.append(d)
+
+        # if no valid domains, default to "undefined"
+        if len(valid_domains) == 0:
+            valid_domains.append("undefined")
+
+        # if there are multiple domains, but "undefined" is also included,
+        # remove it: we assume that the other domains are valid domains
+        if len(valid_domains) > 1 and "undefined" in valid_domains:
+            valid_domains.remove("undefined")
+
         return {
-            "query_domains": result.query_domains,
-            "current_domain": result.query_domains[0],
+            "query_domains": valid_domains,
             "messages": messages,
         }
 

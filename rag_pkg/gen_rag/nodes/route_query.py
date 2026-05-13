@@ -11,7 +11,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 
 from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
-from neuroml_ai_utils.stores import VectorStores
 
 from gen_rag.schemas import RAGState
 
@@ -22,7 +21,6 @@ class RouteQuery(AbstractRouterNode):
     def __init__(
         self,
         logger: logging.Logger,
-        stores: VectorStores,
         non_domain_chat: bool = False,
     ):
         """Initialise the node.
@@ -34,20 +32,21 @@ class RouteQuery(AbstractRouterNode):
         super().__init__(
             logger=logger,
         )
-        self.stores = stores
         self.non_domain_chat = non_domain_chat
 
     def execute(self, state: RAGState):
-        """Route based on query domain, set by query classifier node."""
+        """Route based on query domains, set by query classifier node."""
         self.logger.debug(f"{state =}")
-        query_domain = state.query_domain
+        query_domains = state.query_domains
 
-        if query_domain in self.stores.domains and query_domain != "undefined":
-            res = "domain_query"
-        else:
+        # ["undefined"]
+        if len(query_domains) == 1 and "undefined" in query_domains:
             if self.non_domain_chat:
                 res = "non_domain_query"
             else:
                 res = "non_domain_refuse"
+        else:
+            res = "domain_query"
+
         self.logger.debug(f"{res = }")
         return res

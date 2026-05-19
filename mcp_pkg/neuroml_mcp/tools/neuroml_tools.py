@@ -61,10 +61,13 @@ SEARCH_TIMEOUT = aiohttp.ClientTimeout(total=30)
 XML_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Cache for search results (2 hour TTL, max 100 entries)
-SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
+NML_DB_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
 
 # Cache for XML downloads (2 hour TTL, max 100 entries)
-XML_CACHE = TTLCache(maxsize=100, ttl=7200)
+NML_DB_XML_CACHE = TTLCache(maxsize=100, ttl=7200)
+
+# OSBv2 cache
+OSBv2_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
 
 
 @retry(
@@ -96,6 +99,30 @@ async def _download_model_xml(session, url, model_id):
         if r.ok:
             return await r.text()
         return None
+
+
+@retry(
+    wait=wait_random_exponential(multiplier=1, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
+    reraise=True,
+)
+async def _search_osbv2_repos(session, url, query, content_types, user_id, max_num):
+    """Search NeuroML-DB with retry logic."""
+    async with session.get(
+        url,
+        params={
+            "q": query,
+            "types": content_types,
+            "user_id": user_id,
+            "page": 1,
+            "per_page": max_num,
+        },
+        timeout=SEARCH_TIMEOUT,
+        ssl=False,
+    ) as r:
+        r.raise_for_status()
+        return await r.json(content_type=None)
 
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml"}))
@@ -304,13 +331,13 @@ async def get_models_from_neuromldb(
 
     logger.debug(f"Searching NeuroML-DB with query: {search_query}")
 
-    if search_query in SEARCH_CACHE:
+    if search_query in NML_DB_SEARCH_CACHE:
         logger.debug(f"Cache hit for search: {search_query}")
-        res = SEARCH_CACHE[search_query]
+        res = NML_DB_SEARCH_CACHE[search_query]
     else:
         try:
             res = await _search_neuromldb(session, nml_db_search_url, search_query)
-            SEARCH_CACHE[search_query] = res
+            NML_DB_SEARCH_CACHE[search_query] = res
         except Exception as e:
             error_text = f"Error searching NeuroML-DB: {e.__class__.__name__}: {e}"
             logger.error(error_text)
@@ -327,16 +354,16 @@ async def get_models_from_neuromldb(
 
             model_id = m.get("Model_ID", f"unknown_{i}")
 
-            if model_id in XML_CACHE:
+            if model_id in NML_DB_XML_CACHE:
                 logger.debug(f"Cache hit for XML: {model_id}")
-                mcopy["xml"] = XML_CACHE[model_id]
+                mcopy["xml"] = NML_DB_XML_CACHE[model_id]
             else:
                 try:
                     xml_content = await _download_model_xml(
                         session, nml_db_model_xml_url, model_id
                     )
                     if xml_content is not None:
-                        XML_CACHE[model_id] = xml_content
+                        NML_DB_XML_CACHE[model_id] = xml_content
                         mcopy["xml"] = xml_content
                     else:
                         logger.error(f"Could not get model xml for {model_id}")
@@ -349,3 +376,105 @@ async def get_models_from_neuromldb(
         models[m.get("Model_ID", f"unknown_{i}")] = mcopy
 
     return models
+
+
+@tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
+async def get_repositories_from_open_source_brain(
+    ctx: Context,
+    search_query: str,
+    search_data: bool = True,
+    search_models: bool = True,
+    num: int = 5,
+) -> dict[str, Any]:
+    """Use this tool to search the Open Source Brain (v2) neuroscience platform
+    (https://v2.opensourcebrain.org) for model and data sources.
+
+    Open Source Brain repositories are an index of a curated set of data and
+    code from selected archival platforms (like GitHub, DANDI Archive,
+    FigShare). These repositories contain metadata about the data and models,
+    including the URL to the storage location. The URL can be passed to other
+    tools to download the files.
+
+    Common use cases:
+    - Finding neuroscience data and model repositories
+
+    Args:
+        search_query: search term for querying Open Source Brain. Must be non-empty.
+        search_data: true if data related repositories should be searched
+        search_models: true if modelling related repositories should be searched
+        num: number of search results to get (clamped to 1-20).
+
+    Returns:
+        Dictionary of repository information
+
+    Examples:
+        # Find cerebellar models on Open Source Brain
+        cerebellar_models = get_repositories_from_open_source_brain(search_query="cerebellum", search_models=True, search_data=False)
+        # Find mouse data on Open Source Brain
+        mouse_data = get_repositories_from_open_source_brain(search_query="mouse", search_data=True, search_models=False)
+        # Find data and models related to the cortex on Open Source Brain
+        cortical_repositories = get_repositories_from_open_source_brain(search_query="cortex", search_data=True, search_models=True)
+    """
+    if not search_query or not search_query.strip():
+        return {"Error": "search_query must be a non-empty string"}
+
+    num = max(1, min(num, MAX_RESULTS))
+
+    session: aiohttp.ClientSession = ctx.get_state("osbv2_session")  # type: ignore
+    if session is None:
+        return {"Error": "OSB session not initialized"}
+
+    # swagger-dev: https://workspaces.v2dev.opensourcebrain.org/api/ui/
+    # swagger: https://workspaces.v2.opensourcebrain.org/api/ui/
+    osb_repo_search_url = (
+        "https://v2.opensourcebrain.org/proxy/workspaces/api/osbrepository"
+    )
+
+    # OSB Admin user id: we limit the search to repositories added by the Admin only
+    user_id = "7aafb661-2f39-4683-8f35-528de0752dd7"
+
+    content_types = ""
+    if search_data and search_models:
+        content_types = "experimental+modeling"
+    elif search_data:
+        content_types = "experimental"
+    else:
+        content_types = "modeling"
+
+    repositories: dict[str, Any] = {}
+
+    logger.debug(f"Searching OSBv2 repositories with query: {search_query}")
+
+    cache_key = f"{search_query}+{content_types}"
+
+    if search_query in OSBv2_SEARCH_CACHE:
+        logger.debug(f"Cache hit for search: {cache_key}")
+        res = OSBv2_SEARCH_CACHE[cache_key]
+    else:
+        try:
+            res = await _search_osbv2_repos(
+                session,
+                osb_repo_search_url,
+                search_query,
+                content_types,
+                user_id,
+                max_num=num,
+            )
+            OSBv2_SEARCH_CACHE[cache_key] = res
+        except Exception as e:
+            error_text = f"Error searching OSBv2: {e.__class__.__name__}: {e}"
+            logger.error(error_text)
+            return {"Error": error_text}
+
+    # Process up to num results
+    results = res["osbrepositories"]
+
+    for i, m in enumerate(results[:num]):
+        mcopy = m.copy()
+
+        # remove user information
+        del mcopy["user"]
+
+        repositories[m.get("id", f"unknown_{i}")] = mcopy
+
+    return repositories

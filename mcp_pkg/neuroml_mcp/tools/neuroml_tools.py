@@ -121,6 +121,7 @@ async def _search_osbv2_repos(session, url, query, content_types, user_id, max_n
         timeout=SEARCH_TIMEOUT,
         ssl=False,
     ) as r:
+        logger.debug(f"{r.request_info = }")
         r.raise_for_status()
         return await r.json(content_type=None)
 
@@ -432,6 +433,7 @@ async def get_repositories_from_open_source_brain(
 
     # OSB Admin user id: we limit the search to repositories added by the Admin only
     user_id = "7aafb661-2f39-4683-8f35-528de0752dd7"
+    query = f"name={search_query}+summary__like=%{search_query}%"
 
     content_types = ""
     if search_data and search_models:
@@ -443,7 +445,7 @@ async def get_repositories_from_open_source_brain(
 
     repositories: dict[str, Any] = {}
 
-    logger.debug(f"Searching OSBv2 repositories with query: {search_query}")
+    logger.debug(f"Searching OSBv2 repositories with query: {query}")
 
     cache_key = f"{search_query}+{content_types}"
 
@@ -455,7 +457,7 @@ async def get_repositories_from_open_source_brain(
             res = await _search_osbv2_repos(
                 session,
                 osb_repo_search_url,
-                search_query,
+                query,
                 content_types,
                 user_id,
                 max_num=num,
@@ -467,6 +469,7 @@ async def get_repositories_from_open_source_brain(
             return {"Error": error_text}
 
     # Process up to num results
+    logger.debug(f"{res =}")
     results = res["osbrepositories"]
 
     for i, m in enumerate(results[:num]):

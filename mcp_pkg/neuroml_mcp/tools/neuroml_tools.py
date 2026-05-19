@@ -318,12 +318,13 @@ async def get_models_from_neuromldb(
 
     # Process up to num results
     for i, m in enumerate(res[:num]):
-        # Rate limit: sleep between requests (but not before the first)
-        if i > 0:
-            await asyncio.sleep(1)
-
         mcopy = m.copy()
+
         if download:
+            # Rate limit: sleep between requests (but not before the first)
+            if i > 0:
+                await asyncio.sleep(1)
+
             model_id = m.get("Model_ID", f"unknown_{i}")
 
             if model_id in XML_CACHE:

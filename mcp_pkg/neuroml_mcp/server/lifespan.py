@@ -22,7 +22,7 @@ logger.setLevel(logging.DEBUG)
 
 
 @lifespan
-async def app_lifespan(serverself):
+async def app_lifespan(server):
     """Life span for server"""
     logger.info("Server starting up")
 

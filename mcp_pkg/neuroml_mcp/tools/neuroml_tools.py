@@ -78,10 +78,14 @@ OSBv2_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
 )
 async def _search_neuromldb(session, url, query):
     """Search NeuroML-DB with retry logic."""
-    async with session.get(
-        url, params={"q": query}, timeout=SEARCH_TIMEOUT, ssl=False
-    ) as r:
-        r.raise_for_status()
+    r = await session.get(
+        url,
+        params={"q": query},
+        timeout=SEARCH_TIMEOUT,
+        ssl=False,
+        raise_for_status=True,
+    )
+    async with r:
         return await r.json(content_type=None)
 
 
@@ -93,12 +97,13 @@ async def _search_neuromldb(session, url, query):
 )
 async def _download_model_xml(session, url, model_id):
     """Download model XML with retry logic."""
-    async with session.get(
+    r = await session.get(
         url, params={"modelID": model_id}, timeout=XML_DOWNLOAD_TIMEOUT, ssl=False
-    ) as r:
+    )
+    async with r:
         if r.ok:
             return await r.text()
-        return None
+    return None
 
 
 @retry(
@@ -109,7 +114,7 @@ async def _download_model_xml(session, url, model_id):
 )
 async def _search_osbv2_repos(session, url, query, content_types, user_id, max_num):
     """Search NeuroML-DB with retry logic."""
-    async with session.get(
+    r = await session.get(
         url,
         params={
             "q": query,
@@ -120,9 +125,10 @@ async def _search_osbv2_repos(session, url, query, content_types, user_id, max_n
         },
         timeout=SEARCH_TIMEOUT,
         ssl=False,
-    ) as r:
-        logger.debug(f"{r.request_info = }")
-        r.raise_for_status()
+        raise_for_status=True,
+    )
+    logger.debug(f"{r.request_info = }")
+    async with r:
         return await r.json(content_type=None)
 
 
@@ -295,8 +301,8 @@ async def run_lems_simulation(lems_file: str) -> Dict[str, Any]:
 
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
-async def get_models_from_neuromldb(
-    ctx: Context, search_query: str, num: int = 3, download: bool = True
+async def get_models_from_neuromldb_tool(
+    ctx: Context, search_query: str, num: int = 3, download: bool = False
 ) -> dict[str, Any]:
     """Use this tool to search and optionally obtain cell and ion channel
     models from the NeuroML model database, NeuroML-DB.
@@ -322,7 +328,9 @@ async def get_models_from_neuromldb(
 
     num = max(1, min(num, MAX_RESULTS))
 
-    session: aiohttp.ClientSession = ctx.get_state("neuromldb_session")  # type: ignore
+    session: aiohttp.ClientSession = ctx.lifespan_context["neuromldb_session"]
+    logger.debug(f"{session = }")
+
     if session is None:
         return {"Error": "NeuroML-DB session not initialized"}
 
@@ -380,7 +388,7 @@ async def get_models_from_neuromldb(
 
 
 @tool_meta(ToolInfo(tags={"testing", "neuroml", "neuroml-db"}))
-async def get_repositories_from_open_source_brain(
+async def get_repositories_from_open_source_brain_tool(
     ctx: Context,
     search_query: str,
     search_data: bool = True,
@@ -421,7 +429,7 @@ async def get_repositories_from_open_source_brain(
 
     num = max(1, min(num, MAX_RESULTS))
 
-    session: aiohttp.ClientSession = ctx.get_state("osbv2_session")  # type: ignore
+    session: aiohttp.ClientSession = ctx.lifespan_context["osbv2_session"]
     if session is None:
         return {"Error": "OSB session not initialized"}
 

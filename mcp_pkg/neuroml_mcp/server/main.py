@@ -17,7 +17,7 @@ from fastmcp_docs import FastMCPDocs
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse
 
-from neuroml_mcp.tools import code_tools
+from neuroml_mcp.tools import code_tools, neuroml_tools
 from neuroml_mcp.utils import register_tools
 
 from .lifespan import app_lifespan
@@ -34,7 +34,7 @@ async def create_server(port: int = 8542):
         """
     )
     mcp = FastMCP("neuroml_MCP", instructions=usage, lifespan=app_lifespan)
-    register_tools(mcp, [code_tools])
+    register_tools(mcp, [code_tools, neuroml_tools])
 
     @mcp.custom_route("/health", methods=["GET"])
     async def health_check(request: Request) -> PlainTextResponse:

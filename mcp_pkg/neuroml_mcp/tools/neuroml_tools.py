@@ -18,7 +18,7 @@ from typing import Any, Dict
 import aiohttp
 from cachetools import TTLCache
 from fastmcp import Context
-from neuroml_ai_utils.logging import (
+from neuroml_ai_utils.plogging import (
     LoggerInfoFilter,
     LoggerNotInfoFilter,
     logger_formatter_info,
@@ -31,11 +31,12 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from neuroml_mcp.tools.sandbox.sandbox import RunCommand
+from ..utils import ToolInfo
 
 # set the implementation for development
-from ..utils import ToolInfo, tool_meta
 from .sandbox import nml_mcp_sandbox
+from .sandbox.sandbox import RunCommand
+from .web_tools import _download_file_by_content
 
 sbox = nml_mcp_sandbox
 
@@ -87,23 +88,6 @@ async def _search_neuromldb(session, url, query):
     )
     async with r:
         return await r.json(content_type=None)
-
-
-@retry(
-    wait=wait_random_exponential(multiplier=1, max=10),
-    stop=stop_after_attempt(3),
-    retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
-    reraise=True,
-)
-async def _download_neuromldb_model_xml(session, url, model_id):
-    """Download model XML with retry logic."""
-    r = await session.get(
-        url, params={"modelID": model_id}, timeout=XML_DOWNLOAD_TIMEOUT, ssl=False
-    )
-    async with r:
-        if r.ok:
-            return await r.text()
-    return None
 
 
 @retry(
@@ -368,8 +352,12 @@ async def get_models_from_neuromldb_tool(
                 mcopy["xml"] = NEUROMLDB_XML_CACHE[model_id]
             else:
                 try:
-                    xml_content = await _download_neuromldb_model_xml(
-                        session, neuromldb_model_xml_url, model_id
+                    xml_content = await _download_file_by_content(
+                        session,
+                        neuromldb_model_xml_url,
+                        model_id,
+                        timeout=XML_DOWNLOAD_TIMEOUT,
+                        disk_file_name=f"{model_id}.xml",
                     )
                     if xml_content is not None:
                         NEUROMLDB_XML_CACHE[model_id] = xml_content

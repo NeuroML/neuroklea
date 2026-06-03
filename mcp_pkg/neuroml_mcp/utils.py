@@ -11,7 +11,10 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import inspect
 from typing import Any
 
+from platformdirs import PlatformDirs
 from pydantic import BaseModel
+
+MCP_DIRS = PlatformDirs("nml_mcp")
 
 
 class ToolInfo(BaseModel):

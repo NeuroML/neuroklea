@@ -48,7 +48,7 @@ neuroml_ai_utils/
 ├── errors.py    # Custom exception classes
 ├── graph.py     # BaseLangGraph abstract class
 ├── llm.py       # LLM utilities
-├── logging.py   # Logging configuration
+├── plogging.py   # Logging configuration
 ├── nodes.py     # Shared LangGraph nodes
 └── stores.py    # Vector stores management (ChromaDB)
 ```
@@ -78,7 +78,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 import httpx
 
 # 3. Local imports
-from neuroml_ai_utils.logging import setup_logging
+from neuroml_ai_utils.plogging import setup_logging
 from neuroml_ai_utils.llm import get_default_model
 ```
 

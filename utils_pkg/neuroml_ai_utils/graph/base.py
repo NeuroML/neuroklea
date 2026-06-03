@@ -94,7 +94,7 @@ class BaseLangGraph(ABC):
 
         :param level: Logging level for stderr handler
         """
-        from neuroml_ai_utils.logging import (
+        from neuroml_ai_utils.plogging import (
             LoggerInfoFilter,
             LoggerNotInfoFilter,
             logger_formatter_info,

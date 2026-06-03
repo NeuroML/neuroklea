@@ -61,10 +61,10 @@ SEARCH_TIMEOUT = aiohttp.ClientTimeout(total=30)
 XML_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Cache for search results (2 hour TTL, max 100 entries)
-NML_DB_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
+NEUROMLDB_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
 
 # Cache for XML downloads (2 hour TTL, max 100 entries)
-NML_DB_XML_CACHE = TTLCache(maxsize=100, ttl=7200)
+NEUROMLDB_XML_CACHE = TTLCache(maxsize=100, ttl=7200)
 
 # OSBv2 cache
 OSBv2_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
@@ -95,7 +95,7 @@ async def _search_neuromldb(session, url, query):
     retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
     reraise=True,
 )
-async def _download_model_xml(session, url, model_id):
+async def _download_neuromldb_model_xml(session, url, model_id):
     """Download model XML with retry logic."""
     r = await session.get(
         url, params={"modelID": model_id}, timeout=XML_DOWNLOAD_TIMEOUT, ssl=False
@@ -334,19 +334,19 @@ async def get_models_from_neuromldb_tool(
     if session is None:
         return {"Error": "NeuroML-DB session not initialized"}
 
-    nml_db_search_url = "http://neuroml-db.org/api/search"
-    nml_db_model_xml_url = "https://neuroml-db.org/render_xml_file"
+    neuromldb_search_url = "http://neuroml-db.org/api/search"
+    neuromldb_model_xml_url = "https://neuroml-db.org/render_xml_file"
     models: dict[str, Any] = {}
 
     logger.debug(f"Searching NeuroML-DB with query: {search_query}")
 
-    if search_query in NML_DB_SEARCH_CACHE:
+    if search_query in NEUROMLDB_SEARCH_CACHE:
         logger.debug(f"Cache hit for search: {search_query}")
-        res = NML_DB_SEARCH_CACHE[search_query]
+        res = NEUROMLDB_SEARCH_CACHE[search_query]
     else:
         try:
-            res = await _search_neuromldb(session, nml_db_search_url, search_query)
-            NML_DB_SEARCH_CACHE[search_query] = res
+            res = await _search_neuromldb(session, neuromldb_search_url, search_query)
+            NEUROMLDB_SEARCH_CACHE[search_query] = res
         except Exception as e:
             error_text = f"Error searching NeuroML-DB: {e.__class__.__name__}: {e}"
             logger.error(error_text)
@@ -363,16 +363,16 @@ async def get_models_from_neuromldb_tool(
 
             model_id = m.get("Model_ID", f"unknown_{i}")
 
-            if model_id in NML_DB_XML_CACHE:
+            if model_id in NEUROMLDB_XML_CACHE:
                 logger.debug(f"Cache hit for XML: {model_id}")
-                mcopy["xml"] = NML_DB_XML_CACHE[model_id]
+                mcopy["xml"] = NEUROMLDB_XML_CACHE[model_id]
             else:
                 try:
-                    xml_content = await _download_model_xml(
-                        session, nml_db_model_xml_url, model_id
+                    xml_content = await _download_neuromldb_model_xml(
+                        session, neuromldb_model_xml_url, model_id
                     )
                     if xml_content is not None:
-                        NML_DB_XML_CACHE[model_id] = xml_content
+                        NEUROMLDB_XML_CACHE[model_id] = xml_content
                         mcopy["xml"] = xml_content
                     else:
                         logger.error(f"Could not get model xml for {model_id}")

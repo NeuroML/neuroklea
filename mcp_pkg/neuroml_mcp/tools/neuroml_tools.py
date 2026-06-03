@@ -352,16 +352,16 @@ async def get_models_from_neuromldb_tool(
                 mcopy["xml"] = NEUROMLDB_XML_CACHE[model_id]
             else:
                 try:
-                    xml_content = await _download_file_to_cache_by_content(
+                    xml_path = await _download_file_to_cache_by_content(
                         session,
                         neuromldb_model_xml_url,
                         params={"modelID": model_id},
                         timeout=XML_DOWNLOAD_TIMEOUT,
                         disk_file_name=f"{model_id}.xml",
                     )
-                    if xml_content is not None:
-                        NEUROMLDB_XML_CACHE[model_id] = xml_content
-                        mcopy["xml"] = xml_content
+                    if xml_path is not None:
+                        NEUROMLDB_XML_CACHE[model_id] = xml_path
+                        mcopy["xml"] = xml_path
                     else:
                         logger.error(f"Could not get model xml for {model_id}")
                         mcopy["xml"] = ""

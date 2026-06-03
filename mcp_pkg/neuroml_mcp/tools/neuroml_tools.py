@@ -31,12 +31,12 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from ..utils import ToolInfo
+from ..utils import ToolInfo, tool_meta
 
 # set the implementation for development
 from .sandbox import nml_mcp_sandbox
 from .sandbox.sandbox import RunCommand
-from .web_tools import _download_file_by_content
+from .web_tools import _download_file_to_cache_by_content
 
 sbox = nml_mcp_sandbox
 
@@ -62,13 +62,13 @@ SEARCH_TIMEOUT = aiohttp.ClientTimeout(total=30)
 XML_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60)
 
 # Cache for search results (2 hour TTL, max 100 entries)
-NEUROMLDB_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
+NEUROMLDB_SEARCH_CACHE: TTLCache[str, Any] = TTLCache(maxsize=100, ttl=7200)
 
 # Cache for XML downloads (2 hour TTL, max 100 entries)
-NEUROMLDB_XML_CACHE = TTLCache(maxsize=100, ttl=7200)
+NEUROMLDB_XML_CACHE: TTLCache[str, Any] = TTLCache(maxsize=100, ttl=7200)
 
 # OSBv2 cache
-OSBv2_SEARCH_CACHE = TTLCache(maxsize=100, ttl=7200)
+OSBv2_SEARCH_CACHE: TTLCache[str, Any] = TTLCache(maxsize=100, ttl=7200)
 
 
 @retry(
@@ -352,10 +352,10 @@ async def get_models_from_neuromldb_tool(
                 mcopy["xml"] = NEUROMLDB_XML_CACHE[model_id]
             else:
                 try:
-                    xml_content = await _download_file_by_content(
+                    xml_content = await _download_file_to_cache_by_content(
                         session,
                         neuromldb_model_xml_url,
-                        model_id,
+                        params={"modelID": model_id},
                         timeout=XML_DOWNLOAD_TIMEOUT,
                         disk_file_name=f"{model_id}.xml",
                     )

@@ -1,0 +1,7 @@
+[environment]
+extra-paths = [
+    "./utils_pkg",
+    "./code_ai_pkg",
+    "./rag_pkg",
+    "./mcp_pkg",
+]

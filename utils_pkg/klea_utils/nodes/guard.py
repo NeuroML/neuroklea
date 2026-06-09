@@ -2,7 +2,7 @@
 """
 Guard node for safety checking
 
-File: neuroml_ai_utils/nodes/guard.py
+File: klea_utils/nodes/guard.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

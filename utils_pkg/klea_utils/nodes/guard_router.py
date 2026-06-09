@@ -2,7 +2,7 @@
 """
 Guard router node for routing based on guard decision
 
-File: neuroml_ai_utils/nodes/guard_router.py
+File: klea_utils/nodes/guard_router.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

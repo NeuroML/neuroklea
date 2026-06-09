@@ -2,7 +2,7 @@
 """
 Tool-related utilities for NeuroML AI
 
-File: neuroml_ai_utils/tools.py
+File: klea_utils/tools.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

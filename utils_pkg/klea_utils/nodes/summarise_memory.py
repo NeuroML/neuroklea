@@ -2,7 +2,7 @@
 """
 Summarise conversation history node
 
-File: neuroml_ai_utils/nodes/summarise_memory.py
+File: klea_utils/nodes/summarise_memory.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

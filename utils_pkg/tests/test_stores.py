@@ -15,7 +15,7 @@ import unittest
 import pytest
 from ollama import ResponseError
 
-from neuroml_ai_utils.stores import VectorStores
+from klea_utils.stores import VectorStores
 
 
 class TestStores(unittest.TestCase):

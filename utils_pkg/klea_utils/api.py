@@ -2,7 +2,7 @@
 """
 API related common utils
 
-File: neuroml_ai_utils/api.py
+File: klea_utils/api.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

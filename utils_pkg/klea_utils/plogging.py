@@ -2,7 +2,7 @@
 """
 Logging related utils
 
-File: neuroml_ai_utils/logging.py
+File: klea_utils/logging.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

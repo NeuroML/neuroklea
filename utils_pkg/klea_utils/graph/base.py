@@ -2,7 +2,7 @@
 """
 Base class for LangGraph-based orchestrators
 
-File: neuroml_ai_utils/graph/base.py
+File: klea_utils/graph/base.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -25,7 +25,7 @@ from langgraph.graph.state import CompiledStateGraph
 from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
-from neuroml_ai_utils.stores import VectorStores
+from klea_utils.stores import VectorStores
 
 
 class BaseLangGraph(ABC):
@@ -94,7 +94,7 @@ class BaseLangGraph(ABC):
 
         :param level: Logging level for stderr handler
         """
-        from neuroml_ai_utils.plogging import (
+        from klea_utils.plogging import (
             LoggerInfoFilter,
             LoggerNotInfoFilter,
             logger_formatter_info,

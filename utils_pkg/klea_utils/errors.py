@@ -2,7 +2,7 @@
 """
 Custom errors
 
-File: utils_pkg/neuroml_ai_utils/errors.py
+File: utils_pkg/klea_utils/errors.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

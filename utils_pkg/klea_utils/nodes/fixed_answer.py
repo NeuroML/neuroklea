@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 from gen_rag.schemas import RAGState
 from pydantic import BaseModel
 
-from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
+from klea_utils.nodes.abstract import AbstractLangGraphNode
 
 
 class FixedAnswer(AbstractLangGraphNode[BaseModel, Dict[str, Any]]):

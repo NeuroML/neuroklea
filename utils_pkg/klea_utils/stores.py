@@ -2,7 +2,7 @@
 """
 Vector stores management for RAG systems
 
-File: neuroml_ai_utils/stores.py
+File: klea_utils/stores.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

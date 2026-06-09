@@ -2,7 +2,7 @@
 """
 Abstract node classes for LangGraph processing nodes
 
-File: neuroml_ai_utils/nodes/abstract.py
+File: klea_utils/nodes/abstract.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

@@ -2,7 +2,7 @@
 """
 Answer general question node
 
-File: neuroml_ai_utils/nodes/answer_general.py
+File: klea_utils/nodes/answer_general.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

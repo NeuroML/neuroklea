@@ -2,7 +2,7 @@
 """
 Base node classes for LangGraph processing nodes
 
-File: neuroml_ai_utils/nodes/base.py
+File: klea_utils/nodes/base.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

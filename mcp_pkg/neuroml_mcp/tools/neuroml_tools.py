@@ -349,7 +349,7 @@ async def get_models_from_neuromldb_tool(
 
             if model_id in NEUROMLDB_XML_CACHE:
                 logger.debug(f"Cache hit for XML: {model_id}")
-                mcopy["xml"] = NEUROMLDB_XML_CACHE[model_id]
+                mcopy["resource"] = NEUROMLDB_XML_CACHE[model_id]
             else:
                 try:
                     xml_path = await _download_file_to_cache_by_content(
@@ -361,15 +361,15 @@ async def get_models_from_neuromldb_tool(
                     )
                     if xml_path is not None:
                         NEUROMLDB_XML_CACHE[model_id] = xml_path
-                        mcopy["xml"] = xml_path
+                        mcopy["resource"] = xml_path
                     else:
                         logger.error(f"Could not get model xml for {model_id}")
-                        mcopy["xml"] = ""
+                        mcopy["resource"] = ""
                 except Exception as e:
                     logger.error(f"Error downloading xml for {model_id}: {e}")
-                    mcopy["xml"] = None
+                    mcopy["resource"] = None
         else:
-            mcopy["xml"] = None
+            mcopy["resource"] = None
         models[m.get("Model_ID", f"unknown_{i}")] = mcopy
 
     return models

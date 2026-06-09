@@ -61,7 +61,7 @@ async def test_get_models_from_neuromldb_download(neuromldb_ctx):
     assert model in list(res.keys())
 
     m = res[model]
-    assert m["xml"].exists()
+    assert m["resource"].exists()
     assert m["Type"] == "Cell"
     assert m["Publication_Year"] == 2015
 
@@ -78,7 +78,7 @@ async def test_get_models_from_neuromldb_nodownload(neuromldb_ctx):
     assert model in list(res.keys())
 
     m = res[model]
-    assert m["xml"] is None
+    assert m["resource"] is None
     assert m["Type"] == "Cell"
     assert m["Publication_Year"] == 2015
 

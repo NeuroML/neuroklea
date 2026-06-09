@@ -30,8 +30,8 @@ fastapi dev klea_rag/api/main.py --port 8005
 
 The following environment variables need to be set:
 
-- `GEN_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
-- `GEN_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
+- `KLEA_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
+- `KLEA_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
 
 ### Supported models
 

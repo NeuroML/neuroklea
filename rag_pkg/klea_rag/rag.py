@@ -43,7 +43,7 @@ class RAG(BaseLangGraph):
     """General RAG implementation"""
 
     config_class = AppConfig
-    config_env_var = "GEN_RAG_CONFIG_FILE"
+    config_env_var = "KLEA_RAG_CONFIG_FILE"
     config_file_default = "rag.env"
     logger_name = "RAG"
 

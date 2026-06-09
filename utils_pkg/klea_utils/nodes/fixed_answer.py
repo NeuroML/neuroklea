@@ -2,7 +2,7 @@
 """
 Provide a fixed answer.
 
-File: rag_pkg/gen_rag/nodes/fixed_answer.py
+File: rag_pkg/klea_rag/nodes/fixed_answer.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 from pydantic import BaseModel
 
 from klea_utils.nodes.abstract import AbstractLangGraphNode

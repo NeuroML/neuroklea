@@ -44,7 +44,7 @@ pytest -v
 
 ### Package Structure
 ```
-neuroml_code_ai/
+klea_code/
 ├── api/         # API endpoints
 ├── nodes/       # LangGraph nodes
 ├── prompts/     # Prompt templates
@@ -79,8 +79,8 @@ from fastmcp import Context
 from pydantic import BaseModel
 
 # 3. Local imports
-from neuroml_code_ai.schemas import CodeGenRequest
-from neuroml_code_ai.nodes import generate_code_node
+from klea_code.schemas import CodeGenRequest
+from klea_code.nodes import generate_code_node
 ```
 
 ### Naming Conventions

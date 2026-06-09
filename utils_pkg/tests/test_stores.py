@@ -24,7 +24,7 @@ class TestStores(unittest.TestCase):
     def test_retrieval(self):
         """Test retrieval"""
         try:
-            vs_config_file = os.environ.get("GEN_RAG_VS_CONFIG", None)
+            vs_config_file = os.environ.get("KLEA_RAG_VS_CONFIG", None)
             logger = logging.getLogger("test_stores")
             stores = VectorStores(vs_config_file=vs_config_file, logger=logger)
             stores.setup()

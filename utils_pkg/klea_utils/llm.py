@@ -2,7 +2,7 @@
 """
 LLM related utils
 
-File: gen_rag/llm.py
+File: klea_rag/llm.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

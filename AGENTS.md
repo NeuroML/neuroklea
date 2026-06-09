@@ -1,4 +1,4 @@
-# AGENTS.md - Neuroml-ai Project
+# AGENTS.md - Klea Project
 
 This file contains common guidelines for all coding agents working on the neuroml-ai project.
 
@@ -6,8 +6,8 @@ This file contains common guidelines for all coding agents working on the neurom
 
 The project contains multiple Python packages:
 
-- [code_ai_pkg/AGENTS.md](code_ai_pkg/AGENTS.md) - AI assisted coding for NeuroML
-- [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML
+- [code_pkg/AGENTS.md](code_ai_pkg/AGENTS.md) - AI assisted coding framework
+- [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML/OSB
 - [rag_pkg/AGENTS.md](rag_pkg/AGENTS.md) - Generic RAG implementation
 - [utils_pkg/AGENTS.md](utils_pkg/AGENTS.md) - Shared utilities
 

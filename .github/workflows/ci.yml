@@ -75,7 +75,7 @@ jobs:
 
     - name: Run unit tests
       run: |
-        sh ./scripts/run_tests.sh
+        bash ./scripts/run_tests.sh
       env:
         GEN_RAG_VS_CONFIG: "vector-stores-tests.json"
 

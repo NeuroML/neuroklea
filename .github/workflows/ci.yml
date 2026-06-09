@@ -69,6 +69,10 @@ jobs:
         ollama pull qwen3:0.6b
         ollama pull bge-m3
 
+    - name: Create cache dir
+      run: |
+        mkdir -p ~/.cache/nml_mcp/
+
     - name: Run unit tests
       run: |
         { pushd utils_pkg && pytest -v -n auto && popd; } && { pushd mcp_pkg && pytest -v && popd; }

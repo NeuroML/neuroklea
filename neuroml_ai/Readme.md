@@ -1,10 +1,10 @@
 ---
-title: NeuroML-AI
+title: NeuroML AI Assistant Framework
 sdk: docker
 app_port: 7860
 ---
 
-# NeuroML-AI
+# NeuroML AI Assistant Framework
 
 AI assistant for helping with NeuroML queries and model generation.
 

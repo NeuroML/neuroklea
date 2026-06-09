@@ -1,4 +1,4 @@
-# NeuroML AI assistant
+# NeuroML AI Assistant Framework
 
 [![GitHub CI](https://github.com/NeuroML/neuroml-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/NeuroML/neuroml-ai/actions/workflows/ci.yml)
 [![GitHub](https://img.shields.io/github/license/NeuroML/neuroml-ai)](https://github.com/NeuroML/neuroml-ai/blob/main/neuroml_ai/LICENSE)

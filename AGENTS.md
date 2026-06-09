@@ -19,8 +19,14 @@ Consult the relevant package's AGENTS.md for package-specific commands and archi
 
 At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Use the template in `.agents/README.md`.
 
+### Tooling
+- **uv** is used as the package manager (not pip directly). Use `uv pip install`, `uv run`, etc.
+- **ruff** is used for linting and formatting
+- **ty** is used for type checking
+
 ### Pre-commit Requirements
 - All code must pass ruff linting and formatting
+- All code must pass ty type checking
 - Import sorting is mandatory
 - No trailing whitespace or large files
 - Line endings must be Unix format

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 import aiohttp
-from neuroml_ai_utils.plogging import (
+from klea_utils.plogging import (
     LoggerInfoFilter,
     LoggerNotInfoFilter,
     logger_formatter_info,

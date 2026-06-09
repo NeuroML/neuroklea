@@ -11,8 +11,8 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.base import BaseLLMNode
-from neuroml_ai_utils.stores import serialize_vs_retrieval
+from klea_utils.nodes.base import BaseLLMNode
+from klea_utils.stores import serialize_vs_retrieval
 
 from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 

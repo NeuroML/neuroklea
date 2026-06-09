@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 
 from fastmcp import Client
 from fastmcp.client.client import CallToolResult
-from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
+from klea_utils.nodes.abstract import AbstractLangGraphNode
 
 from klea_rag.schemas import RAGState
 

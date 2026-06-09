@@ -11,9 +11,9 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, Type, override
 
+from klea_utils.nodes.base import BaseLLMNode
+from klea_utils.stores import VectorStores
 from langchain_core.messages import AIMessage, HumanMessage
-from neuroml_ai_utils.nodes.base import BaseLLMNode
-from neuroml_ai_utils.stores import VectorStores
 from pydantic import BaseModel
 
 from klea_rag.schemas import RAGState

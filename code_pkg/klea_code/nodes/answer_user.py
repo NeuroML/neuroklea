@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict, override
 
-from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
+from klea_utils.nodes.abstract import AbstractLangGraphNode
 
 from klea_code.schemas import KleaCodeState
 

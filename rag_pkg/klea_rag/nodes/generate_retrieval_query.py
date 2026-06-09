@@ -12,9 +12,9 @@ import logging
 from textwrap import dedent
 from typing import Any, Dict, override
 
+from klea_utils.nodes.base import BaseLLMNode
 from langchain_core.messages import AIMessage
 from langchain_core.runnables.utils import Output
-from neuroml_ai_utils.nodes.base import BaseLLMNode
 
 from klea_rag.schemas import RAGState
 

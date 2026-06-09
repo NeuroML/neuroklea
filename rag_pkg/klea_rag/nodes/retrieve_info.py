@@ -12,8 +12,8 @@ import logging
 from typing import Any, Dict, override
 
 from fastmcp import Client
-from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
-from neuroml_ai_utils.stores import VectorStores
+from klea_utils.nodes.abstract import AbstractLangGraphNode
+from klea_utils.stores import VectorStores
 
 from klea_rag.schemas import RAGState
 

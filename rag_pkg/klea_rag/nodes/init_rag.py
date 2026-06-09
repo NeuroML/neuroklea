@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import Any, Dict
 
-from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
+from klea_utils.nodes.abstract import AbstractLangGraphNode
 
 from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 

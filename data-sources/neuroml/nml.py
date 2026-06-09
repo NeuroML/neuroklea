@@ -16,12 +16,12 @@ from hashlib import sha256
 from pathlib import Path
 
 import chromadb
+from klea_utils.llm import setup_embedding
 from langchain_chroma import Chroma
 from langchain_text_splitters import (
     MarkdownHeaderTextSplitter,
     RecursiveCharacterTextSplitter,
 )
-from neuroml_ai_utils.llm import setup_embedding
 
 logging.basicConfig(level=logging.WARNING)
 

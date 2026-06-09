@@ -10,8 +10,8 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import logging
 
-from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
-from neuroml_ai_utils.stores import VectorStores
+from klea_utils.nodes.abstract import AbstractRouterNode
+from klea_utils.stores import VectorStores
 
 from klea_rag.schemas import RAGState
 

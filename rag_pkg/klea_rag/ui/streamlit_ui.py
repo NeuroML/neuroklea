@@ -13,7 +13,7 @@ import uuid
 
 import httpx
 import streamlit as st
-from neuroml_ai_utils.api import check_api_is_ready
+from klea_utils.api import check_api_is_ready
 
 
 def runner():

@@ -18,7 +18,7 @@ from typing import Any, Dict
 import aiohttp
 from cachetools import TTLCache
 from fastmcp import Context
-from neuroml_ai_utils.plogging import (
+from klea_utils.plogging import (
     LoggerInfoFilter,
     LoggerNotInfoFilter,
     logger_formatter_info,

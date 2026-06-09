@@ -367,9 +367,9 @@ async def get_models_from_neuromldb_tool(
                         mcopy["xml"] = ""
                 except Exception as e:
                     logger.error(f"Error downloading xml for {model_id}: {e}")
-                    mcopy["xml"] = ""
+                    mcopy["xml"] = None
         else:
-            mcopy["xml"] = ""
+            mcopy["xml"] = None
         models[m.get("Model_ID", f"unknown_{i}")] = mcopy
 
     return models
@@ -431,7 +431,6 @@ async def get_repositories_from_open_source_brain_tool(
     user_id = "7aafb661-2f39-4683-8f35-528de0752dd7"
     query = f"name={search_query}+summary__like=%{search_query}%"
 
-    content_types = ""
     if search_data and search_models:
         content_types = "experimental+modeling"
     elif search_data:

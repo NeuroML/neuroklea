@@ -58,27 +58,27 @@ async def test_get_models_from_neuromldb_download(neuromldb_ctx):
     assert len(res) == 1
 
     # Should download model
-    assert model in res.keys()
+    assert model in list(res.keys())
 
     m = res[model]
-    assert len(m["xml"]) != 0
+    assert m["xml"].exists()
     assert m["Type"] == "Cell"
     assert m["Publication_Year"] == 2015
 
 
 @pytest.mark.asyncio
 async def test_get_models_from_neuromldb_nodownload(neuromldb_ctx):
-    model = "NMLCL000804"
+    model = "NMLCL000595"
     res = await get_models_from_neuromldb_tool(
         ctx=neuromldb_ctx, search_query=model, num=1, download=False
     )
     logger.debug(f"{res = }")
     assert len(res) == 1
 
-    assert model in res.keys()
+    assert model in list(res.keys())
 
     m = res[model]
-    assert len(m["xml"]) == 0
+    assert m["xml"] is None
     assert m["Type"] == "Cell"
     assert m["Publication_Year"] == 2015
 

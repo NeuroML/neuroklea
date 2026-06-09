@@ -52,7 +52,9 @@ logger.addHandler(stderr_handler)
     retry=retry_if_exception_type((aiohttp.ClientError, asyncio.TimeoutError)),
     reraise=True,
 )
-async def _download_file_by_content(session, url, params, timeout, file_path):
+async def _download_file_by_content(
+    session, url: str, params: dict, timeout, file_path: Path
+) -> Path | None:
     """Download a file content and save to provided file path with overwriting.
 
     Note that since this overwrites, this should not be exposed directly as a tool.
@@ -70,8 +72,8 @@ async def _download_file_by_content(session, url, params, timeout, file_path):
 
 
 async def _download_file_to_cache_by_content(
-    session, url, params, timeout, disk_file_name
-):
+    session, url: str, params: dict, timeout, disk_file_name: str
+) -> Path | None:
     """Wrapper to download file to the cache, by content"""
     file_path = MCP_DIRS.user_cache_dir / Path(disk_file_name)
     return await _download_file_by_content(session, url, params, timeout, file_path)

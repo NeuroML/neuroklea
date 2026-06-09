@@ -2,7 +2,7 @@
 """
 Generate retrieval query node
 
-File: rag_pkg/gen_rag/nodes/generate_retrieval_query.py
+File: rag_pkg/klea_rag/nodes/generate_retrieval_query.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -16,7 +16,7 @@ from langchain_core.messages import AIMessage
 from langchain_core.runnables.utils import Output
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 class GenerateRetrievalQuery(BaseLLMNode[RAGState]):

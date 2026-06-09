@@ -2,7 +2,7 @@
 """
 Config schema for the app
 
-File: rag_pkg/gen_rag/config.py
+File: rag_pkg/klea_rag/config.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

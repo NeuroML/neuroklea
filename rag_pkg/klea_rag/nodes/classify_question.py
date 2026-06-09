@@ -2,7 +2,7 @@
 """
 Classify question domain node
 
-File: rag_pkg/gen_rag/nodes/classify_question.py
+File: rag_pkg/klea_rag/nodes/classify_question.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -16,7 +16,7 @@ from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_ai_utils.stores import VectorStores
 from pydantic import BaseModel
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 # Type is calculated at runtime in orchestrator

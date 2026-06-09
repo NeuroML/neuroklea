@@ -18,14 +18,14 @@ Install the package and dependencies using `pip` or `uv pip` from the GitHub rep
 # in the `utils_pkg` folder:
 pip install .
 
-# in the `gen_rag` folder:
+# in the `klea_rag` folder:
 pip install .
 ```
 
 Start the API server:
 
 ```
-fastapi dev gen_rag/api/main.py --port 8005
+fastapi dev klea_rag/api/main.py --port 8005
 ```
 
 The following environment variables need to be set:

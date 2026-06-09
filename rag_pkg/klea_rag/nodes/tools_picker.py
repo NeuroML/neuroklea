@@ -2,7 +2,7 @@
 """
 Tools picker node for RAG
 
-File: rag_pkg/gen_rag/nodes/tools_picker.py
+File: rag_pkg/klea_rag/nodes/tools_picker.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,7 +13,7 @@ from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 
-from gen_rag.schemas import RAGState, ToolCallsSchema
+from klea_rag.schemas import RAGState, ToolCallsSchema
 
 
 class ToolsPicker(BaseLLMNode[RAGState]):

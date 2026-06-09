@@ -2,7 +2,7 @@
 """
 Health check end points
 
-File: rag_pkg/gen_rag/api/health.py
+File: rag_pkg/klea_rag/api/health.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

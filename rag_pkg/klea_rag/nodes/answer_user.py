@@ -2,7 +2,7 @@
 """
 Answer user node
 
-File: rag_pkg/gen_rag/nodes/answer_user.py
+File: rag_pkg/klea_rag/nodes/answer_user.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,7 +13,7 @@ from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 class AnswerUser(AbstractLangGraphNode[RAGState, Dict[str, Any]]):

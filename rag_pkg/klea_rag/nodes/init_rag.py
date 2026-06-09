@@ -2,7 +2,7 @@
 """
 Initialise RAG state node
 
-File: rag_pkg/gen_rag/nodes/init_rag.py
+File: rag_pkg/klea_rag/nodes/init_rag.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,7 +13,7 @@ from typing import Any, Dict
 
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from gen_rag.schemas import EvaluateAnswerSchema, RAGState
+from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 
 
 class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):

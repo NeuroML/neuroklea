@@ -2,7 +2,7 @@
 """
 Route evaluator node
 
-File: rag_pkg/gen_rag/nodes/route_evaluator.py
+File: rag_pkg/klea_rag/nodes/route_evaluator.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,7 +13,7 @@ import logging
 from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
 from neuroml_ai_utils.stores import VectorStores
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 class RouteEvaluator(AbstractRouterNode):

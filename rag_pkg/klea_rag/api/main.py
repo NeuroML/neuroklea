@@ -2,7 +2,7 @@
 """
 Main API script
 
-File: rag_pkg/gen_rag/api/main.py
+File: rag_pkg/klea_rag/api/main.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,9 +13,9 @@ from contextlib import asynccontextmanager
 from cachetools import TTLCache
 from fastapi import FastAPI
 
-from gen_rag.api.chat import chat_router
-from gen_rag.api.health import health_router
-from gen_rag.rag import RAG
+from klea_rag.api.chat import chat_router
+from klea_rag.api.health import health_router
+from klea_rag.rag import RAG
 
 
 @asynccontextmanager

@@ -4,7 +4,7 @@ Generic RAG (Retrieval Augmented Generation) implementation for NeuroML.
 
 ## Package Overview
 
-Package: `gen_rag`
+Package: `klea_rag`
 CLI entry: `nml-gen-rag`
 
 ## Development Commands
@@ -44,7 +44,7 @@ pytest -v
 
 ### Package Structure
 ```
-gen_rag/
+klea_rag/
 ├── api/         # API endpoints
 ├── config.py    # Configuration
 ├── data/        # Data loading and processing
@@ -82,8 +82,8 @@ from langchain_chroma import Chroma
 from pydantic import BaseModel
 
 # 3. Local imports
-from gen_rag.schemas import RAGRequest
-from gen_rag.nodes import retrieve_node
+from klea_rag.schemas import RAGRequest
+from klea_rag.nodes import retrieve_node
 ```
 
 ### Naming Conventions

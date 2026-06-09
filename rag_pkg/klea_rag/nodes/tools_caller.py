@@ -2,7 +2,7 @@
 """
 Tools caller node for RAG
 
-File: rag_pkg/gen_rag/nodes/tools_caller.py
+File: rag_pkg/klea_rag/nodes/tools_caller.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -16,7 +16,7 @@ from fastmcp import Client
 from fastmcp.client.client import CallToolResult
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 class ToolsCaller(AbstractLangGraphNode[RAGState, Dict[str, Any]]):

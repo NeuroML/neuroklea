@@ -1,4 +1,4 @@
 include Readme.md
 include LICENSE*
-recursive-include gen_rag/data *
-recursive-include gen_rag/nodes/prompts *
+recursive-include klea_rag/data *
+recursive-include klea_rag/nodes/prompts *

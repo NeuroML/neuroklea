@@ -2,7 +2,7 @@
 """
 Retrieve information node
 
-File: rag_pkg/gen_rag/nodes/retrieve_info.py
+File: rag_pkg/klea_rag/nodes/retrieve_info.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -15,7 +15,7 @@ from fastmcp import Client
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 from neuroml_ai_utils.stores import VectorStores
 
-from gen_rag.schemas import RAGState
+from klea_rag.schemas import RAGState
 
 
 class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):

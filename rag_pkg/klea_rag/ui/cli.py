@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cli for gen_rag.
+Cli for klea_rag.
 
-File: gen_rag/ui/cli.py
+File: klea_rag/ui/cli.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

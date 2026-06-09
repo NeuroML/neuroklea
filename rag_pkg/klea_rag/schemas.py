@@ -2,7 +2,7 @@
 """
 Schemas used in the RAG
 
-File: gen_rag/schemas.py
+File: klea_rag/schemas.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

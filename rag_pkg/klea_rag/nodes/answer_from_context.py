@@ -2,7 +2,7 @@
 """
 Generate an answer from provided reference material
 
-File: rag_pkg/gen_rag/nodes/answer_from_context.py
+File: rag_pkg/klea_rag/nodes/answer_from_context.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

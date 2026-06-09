@@ -2,7 +2,7 @@
 """
 Evaluator node for RAG
 
-File: rag_pkg/gen_rag/nodes/evaluator.py
+File: rag_pkg/klea_rag/nodes/evaluator.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 from neuroml_ai_utils.stores import serialize_vs_retrieval
 
-from gen_rag.schemas import EvaluateAnswerSchema, RAGState
+from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 
 
 class Evaluator(BaseLLMNode[EvaluateAnswerSchema]):

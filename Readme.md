@@ -1,4 +1,6 @@
-# NeuroML AI assistant
+# Neuro-Klea
+
+Knowledge vaLidated Expert AI Assistant for Neuroscience.
 
 [![GitHub CI](https://github.com/NeuroML/neuroml-ai/actions/workflows/ci.yml/badge.svg)](https://github.com/NeuroML/neuroml-ai/actions/workflows/ci.yml)
 [![GitHub](https://img.shields.io/github/license/NeuroML/neuroml-ai)](https://github.com/NeuroML/neuroml-ai/blob/main/neuroml_ai/LICENSE)
@@ -9,14 +11,13 @@
 [![Gitter](https://badges.gitter.im/NeuroML/community.svg)](https://gitter.im/NeuroML/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 
-This repository contains multiple packages that together make up the NeuroML AI Assistant.
+This repository contains multiple packages that together make up the AI assistant, Klea.
 This is currently in active development.
 
 The packages included, one in each folder are:
 
-- neuroml_ai: top level application that makes use of the RAG and code assistant
 - rag_pkg: a generic RAG implementation
-- code_ai_pkg: NeuroML specific AI code assistant
+- code_pkg: generic coding assistant
 - mcp_pkg: MCP server for NeuroML
 - utils_pkg: common utility functions used by other packages
 

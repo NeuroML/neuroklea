@@ -1,6 +1,6 @@
 # AGENTS.md - Klea Project
 
-This file contains common guidelines for all coding agents working on the neuroml-ai project.
+This file contains common guidelines for all coding agents working on the project.
 
 ## Project Structure
 

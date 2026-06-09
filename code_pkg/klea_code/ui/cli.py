@@ -48,7 +48,7 @@ def code_gen_cli(
                 response = await check_api_is_ready(f"{url}/health/ready")
 
             if len(single_query):
-                print(f"NeuroML-AI (USER) >>> {single_query}\n\n")
+                print(f"Klea-Code (USER) >>> {single_query}\n\n")
                 if single_query.lower() == "quit":
                     pass
                 else:
@@ -60,10 +60,10 @@ def code_gen_cli(
                                 timeout=None,
                             )
                             response_result = response.json().get("result")
-                            print(f"NeuroML-AI (AI) >>> {response_result}\n\n")
+                            print(f"Klea-Code (AI) >>> {response_result}\n\n")
 
             else:
-                while (query := input("NeuroML-AI (USER) >>> ")) != "quit":
+                while (query := input("Klea-Code (USER) >>> ")) != "quit":
                     # we use checkpoints, so we don't need to store and reload the
                     # state ourselves
                     with yaspin(text="Working ..."):
@@ -74,7 +74,7 @@ def code_gen_cli(
                                 timeout=None,
                             )
                             response_result = response.json().get("result")
-                            print(f"NeuroML-AI (AI) >>> {response_result}\n\n")
+                            print(f"Klea-Code (AI) >>> {response_result}\n\n")
 
         try:
             asyncio.run(cli_main())
@@ -87,7 +87,7 @@ def code_gen_cli(
         with chdir(cwd):
             subprocess.run("streamlit run streamlit_ui.py".split())
 
-    print("NeuroML-AI >>> Bye!")
+    print("Klea-Code >>> Bye!")
 
 
 if __name__ == "__main__":

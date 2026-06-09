@@ -57,8 +57,8 @@ jobs:
 
     - name: Run simple test
       run: |
-        nml-gen-rag --help
-        nml-code  --help
+        klea-rag --help
+        klea-code  --help
         nml-mcp --help
 
     - name: Setup Ollama

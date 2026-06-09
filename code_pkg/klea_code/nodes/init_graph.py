@@ -2,7 +2,7 @@
 """
 Initialise graph state node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/init_graph.py
+File: code_pkg/klea_code/nodes/init_graph.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,10 +13,10 @@ from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from neuroml_code_ai.schemas import CodeAIState, GoalSchema, PlanSchema
+from klea_code.schemas import GoalSchema, KleaCodeState, PlanSchema
 
 
-class InitGraphState(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
+class InitGraphState(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
     """Initialise/reset graph state before each iteration."""
 
     def __init__(self, logger: logging.Logger):
@@ -24,7 +24,7 @@ class InitGraphState(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
         super().__init__(logger)
 
     @override
-    async def execute(self, state: CodeAIState) -> Dict[str, Any]:
+    async def execute(self, state: KleaCodeState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""
         return {
             "message_for_user": "",

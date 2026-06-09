@@ -2,7 +2,7 @@
 """
 Configurations for the API server
 
-File: code_ai_pkg/neuroml_code_ai/api/conf.py
+File: code_pkg/klea_code/api/conf.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

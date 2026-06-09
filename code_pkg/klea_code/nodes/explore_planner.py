@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Explore planner node for CodeAI
+Explore planner node for KleaCode
 
-File: code_ai_pkg/neuroml_code_ai/nodes/explore_planner.py
+File: code_pkg/klea_code/nodes/explore_planner.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -12,8 +12,8 @@ from typing import Any, Dict, override
 
 from pydantic import BaseModel
 
-from neuroml_code_ai.nodes.planner import Planner
-from neuroml_code_ai.schemas import CodeAIState, PlanSchema
+from klea_code.nodes.planner import Planner
+from klea_code.schemas import KleaCodeState, PlanSchema
 
 
 class ExplorePlanner(Planner):
@@ -35,7 +35,7 @@ class ExplorePlanner(Planner):
         self.prompt_prefix = "ExplorePlanner"
 
     @override
-    def _get_prompt_variables(self, state: CodeAIState) -> dict:
+    def _get_prompt_variables(self, state: KleaCodeState) -> dict:
         """Format prompt with current state."""
         # TODO: limit to required state field
         return {

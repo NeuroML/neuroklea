@@ -2,7 +2,7 @@
 """
 Answer user node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/answer_user.py
+File: code_pkg/klea_code/nodes/answer_user.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,10 +13,10 @@ from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from neuroml_code_ai.schemas import CodeAIState
+from klea_code.schemas import KleaCodeState
 
 
-class AnswerUser(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
+class AnswerUser(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
     """Node that returns the final message to the user."""
 
     def __init__(self, logger: logging.Logger):
@@ -27,7 +27,7 @@ class AnswerUser(AbstractLangGraphNode[CodeAIState, Dict[str, Any]]):
         super().__init__(logger)
 
     @override
-    async def execute(self, state: CodeAIState) -> Dict[str, Any]:
+    async def execute(self, state: KleaCodeState) -> Dict[str, Any]:
         """Return the message for the user.
 
         :param state: Current graph state

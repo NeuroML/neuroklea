@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Planner node for CodeAI
+Planner node for KleaCode
 
-File: code_ai_pkg/neuroml_code_ai/nodes/planner.py
+File: code_pkg/klea_code/nodes/planner.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 from pydantic import BaseModel
 
-from neuroml_code_ai.schemas import CodeAIState, PlanSchema
+from klea_code.schemas import KleaCodeState, PlanSchema
 
 
 class Planner(BaseLLMNode[PlanSchema]):
@@ -41,7 +41,7 @@ class Planner(BaseLLMNode[PlanSchema]):
         self._tools_description = description
 
     @override
-    def _get_prompt_variables(self, state: CodeAIState) -> dict:
+    def _get_prompt_variables(self, state: KleaCodeState) -> dict:
         """Format prompt with current plan state."""
         return {
             "query": state.query,

@@ -4,8 +4,8 @@ AI assisted coding for NeuroML using LangChain/LangGraph.
 
 ## Package Overview
 
-Package: `neuroml_code_ai`
-CLI entry: `nml-code`
+Package: `klea_code`
+CLI entry: `klea-code`
 
 ## Development Commands
 

@@ -2,7 +2,7 @@
 """
 Tools picker node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/tools_picker.py
+File: code_pkg/klea_code/nodes/tools_picker.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,10 +13,10 @@ from typing import Any, Dict, override
 
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 
-from neuroml_code_ai.schemas import CodeAIState, ToolCallSchema
+from klea_code.schemas import KleaCodeState, ToolCallSchema
 
 
-class ToolsPicker(BaseLLMNode[CodeAIState]):
+class ToolsPicker(BaseLLMNode[KleaCodeState]):
     """Node that selects the best tools for the current step."""
 
     def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
@@ -40,12 +40,12 @@ class ToolsPicker(BaseLLMNode[CodeAIState]):
         self._tools_description = description
 
     @override
-    def _get_human_prompt(self, state: CodeAIState) -> str:
+    def _get_human_prompt(self, state: KleaCodeState) -> str:
         """Return empty string  ---  this node only uses a system prompt."""
         return ""
 
     @override
-    def _get_prompt_variables(self, state: CodeAIState) -> dict:
+    def _get_prompt_variables(self, state: KleaCodeState) -> dict:
         """Format prompt with current step state."""
         current_step_index = state.plan.current_step_index
         current_step = state.plan.step_list[current_step_index]
@@ -59,7 +59,7 @@ class ToolsPicker(BaseLLMNode[CodeAIState]):
 
     @override
     def _update_state(
-        self, result: ToolCallSchema, state: CodeAIState
+        self, result: ToolCallSchema, state: KleaCodeState
     ) -> Dict[str, Any]:
         """Update state with the selected tool call."""
         return {"tool_call": result}

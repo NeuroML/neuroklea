@@ -72,7 +72,7 @@ class Discovery(BaseModel):
     pass
 
 
-class CodeAIState(BaseModel):
+class KleaCodeState(BaseModel):
     """The state of the graph"""
 
     query: str = ""

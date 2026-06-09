@@ -2,7 +2,7 @@
 """
 Tools caller node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/tools_caller.py
+File: code_pkg/klea_code/nodes/tools_caller.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -16,10 +16,10 @@ from fastmcp import Client
 from fastmcp.client.client import CallToolResult
 from neuroml_ai_utils.nodes.abstract import AbstractLangGraphNode
 
-from neuroml_code_ai.schemas import CodeAIState
+from klea_code.schemas import KleaCodeState
 
 
-class ToolsCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
+class ToolsCaller(AbstractLangGraphNode[KleaCodeState, CallToolResult]):
     """Node that calls the selected tools."""
 
     def __init__(self, logger: logging.Logger, mcp_client: Client):
@@ -34,7 +34,7 @@ class ToolsCaller(AbstractLangGraphNode[CodeAIState, CallToolResult]):
         self._mcp_client = mcp_client
 
     @override
-    async def execute(self, state: CodeAIState) -> dict[str, Any]:
+    async def execute(self, state: KleaCodeState) -> dict[str, Any]:
         self.logger.debug(f"{state =}")
         result: dict[str, Any] = {}
 

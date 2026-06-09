@@ -1,10 +1,9 @@
-# NeuroML Code AI
+# Klea Code
 
-AI assisted coding for NeuroML using LangChain/LangGraph.
+AI assisted workflows.
 
 ## Features
 
-- AI-powered code generation for NeuroML models
 - Integration with MCP for tool access
 - CLI and API interfaces
 - LangGraph-based agent orchestration
@@ -19,5 +18,5 @@ pip install -e .[dev]  # with development dependencies
 ## Usage
 
 ```bash
-nml-code
+klea-code
 ```

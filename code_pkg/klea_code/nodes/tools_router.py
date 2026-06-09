@@ -2,7 +2,7 @@
 """
 Tools router node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/tools_router.py
+File: code_pkg/klea_code/nodes/tools_router.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -13,10 +13,10 @@ from typing import override
 
 from neuroml_ai_utils.nodes.abstract import AbstractRouterNode
 
-from neuroml_code_ai.schemas import CodeAIState
+from klea_code.schemas import KleaCodeState
 
 
-class ToolsRouter(AbstractRouterNode[CodeAIState]):
+class ToolsRouter(AbstractRouterNode[KleaCodeState]):
     """Route based on tool call outputs."""
 
     def __init__(self, logger: logging.Logger):
@@ -27,7 +27,7 @@ class ToolsRouter(AbstractRouterNode[CodeAIState]):
         super().__init__(logger=logger)
 
     @override
-    async def execute(self, state: CodeAIState) -> str:
+    async def execute(self, state: KleaCodeState) -> str:
         """Route based on tool call outputs.
 
         :param state: The current state

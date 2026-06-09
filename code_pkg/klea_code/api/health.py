@@ -2,7 +2,7 @@
 """
 Health check end points
 
-File: code_ai_pkg/neuroml_code_ai/api/health.py
+File: code_pkg/klea_code/api/health.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

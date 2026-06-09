@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-NeuroML CodeAI implementation
+Klea code framework implementation
 
-File: code_ai.py
+File: klea_code.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -18,31 +18,31 @@ from neuroml_ai_utils.nodes.fixed_answer import FixedAnswer
 from neuroml_ai_utils.nodes.guard import GuardNode
 from neuroml_ai_utils.nodes.guard_router import GuardRouterNode
 
-from neuroml_code_ai.nodes.answer_user import AnswerUser
-from neuroml_code_ai.nodes.evaluator import Evaluator
-from neuroml_code_ai.nodes.explore_planner import ExplorePlanner
-from neuroml_code_ai.nodes.goal_setter import GoalSetter
-from neuroml_code_ai.nodes.init_graph import InitGraphState
-from neuroml_code_ai.nodes.planner import Planner
-from neuroml_code_ai.nodes.tools_caller import ToolsCaller
-from neuroml_code_ai.nodes.tools_picker import ToolsPicker
-from neuroml_code_ai.nodes.tools_router import ToolsRouter
+from klea_code.nodes.answer_user import AnswerUser
+from klea_code.nodes.evaluator import Evaluator
+from klea_code.nodes.explore_planner import ExplorePlanner
+from klea_code.nodes.goal_setter import GoalSetter
+from klea_code.nodes.init_graph import InitGraphState
+from klea_code.nodes.planner import Planner
+from klea_code.nodes.tools_caller import ToolsCaller
+from klea_code.nodes.tools_picker import ToolsPicker
+from klea_code.nodes.tools_router import ToolsRouter
 
 from .config import AppConfig
-from .schemas import CodeAIState, GoalSchema
+from .schemas import GoalSchema, KleaCodeState
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
 
 
 @final
-class CodeAI(BaseLangGraph):
-    """NeuroML CodeAI implementation"""
+class KleaCode(BaseLangGraph):
+    """Klea Code implementation"""
 
     config_class = AppConfig
     config_env_var = "CODE_AI_CONFIG_FILE"
-    config_file_default = "code_ai.env"
-    logger_name = "NeuroML-AI-codegen"
+    config_file_default = "klea_code.env"
+    logger_name = "KleaCode"
 
     def __init__(
         self,
@@ -68,12 +68,12 @@ class CodeAI(BaseLangGraph):
         self.g_model = setup_llm(self.config.guard_model, self.logger)
 
     # TODO: replace with class
-    async def _step_router_node(self, state: CodeAIState) -> str:
+    async def _step_router_node(self, state: KleaCodeState) -> str:
         return state.plan.status
 
     async def _create_graph(self):
         """Create the LangGraph"""
-        self.workflow = StateGraph(CodeAIState)
+        self.workflow = StateGraph(KleaCodeState)
 
         self._init_graph_state_node = InitGraphState(logger=self.logger)
         self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)

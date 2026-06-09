@@ -2,7 +2,7 @@
 """
 Chat end points
 
-File: code_ai_pkg/neuroml_code_ai/api/chat.py
+File: code_pkg/klea_code/api/chat.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -33,13 +33,13 @@ class ChatPayload(BaseModel):
 async def query(request: Request, payload: ChatPayload):
     thread_id = payload.session_id
     sessions = request.app.state.sessions
-    code_ai = request.app.state.code_ai
+    klea_code = request.app.state.klea_code
 
     if thread_id not in sessions:
         sessions[thread_id] = True
 
     try:
-        result = await code_ai.run_graph_invoke(payload.query, thread_id)
+        result = await klea_code.run_graph_invoke(payload.query, thread_id)
     except Exception as e:
         detail = f"{e}\n{traceback.format_exc()}"
         result = HTTPException(status_code=500, detail=detail)

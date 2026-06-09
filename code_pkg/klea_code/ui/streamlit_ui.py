@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Streamlit chat app interface for code_ai
+Streamlit chat app interface for klea_code
 
-File: neuroml_code_ai/ui/streamlit_ui.py
+File: klea_code/ui/streamlit_ui.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

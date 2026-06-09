@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cli for code_ai.
+Cli for klea_code.
 
-File: neuroml_code_ai/ui/cli.py
+File: klea_code/ui/cli.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>

@@ -2,7 +2,7 @@
 """
 Goal setter node
 
-File: code_ai_pkg/neuroml_code_ai/nodes/goal_setter.py
+File: code_pkg/klea_code/nodes/goal_setter.py
 
 Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 from neuroml_ai_utils.nodes.base import BaseLLMNode
 from pydantic import BaseModel
 
-from neuroml_code_ai.schemas import CodeAIState, GoalSchema
+from klea_code.schemas import GoalSchema, KleaCodeState
 
 
 class GoalSetter(BaseLLMNode[GoalSchema]):
@@ -45,7 +45,7 @@ class GoalSetter(BaseLLMNode[GoalSchema]):
         )
 
     @override
-    def _get_prompt_variables(self, state: CodeAIState) -> dict:
+    def _get_prompt_variables(self, state: KleaCodeState) -> dict:
         """Format prompt with state-specific parameters"""
         variables = {"query": state.query}
         self.logger.debug(f"{variables =}")

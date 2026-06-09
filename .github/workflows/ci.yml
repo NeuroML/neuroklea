@@ -76,8 +76,6 @@ jobs:
     - name: Run unit tests
       run: |
         bash ./scripts/run_tests.sh
-      env:
-        GEN_RAG_VS_CONFIG: "vector-stores-tests.json"
 
     - name: Lint with ruff
       run: |

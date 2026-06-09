@@ -9,6 +9,8 @@
 
 set -e
 
+GEN_RAG_VS_CONFIG="vector-stores-tests.json"
+
 echo ">> Unit tests"
 for d in *_pkg
 do

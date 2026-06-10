@@ -36,23 +36,20 @@ class MockContext(object):
     def set_state(self, key, val):
         self.lifespan_context[key] = val
 
-    def get_state(self, arg):
-        return self.lifespan_context.get(arg, None)
-
 
 @pytest_asyncio.fixture
-async def neuromldb_ctx():
+async def aiohttp_ctx():
     async with aiohttp.ClientSession() as ses:
         ctx = MockContext()
-        ctx.set_state("neuromldb_session", ses)
+        ctx.set_state("aiohttp_session", ses)
         yield ctx
 
 
 @pytest.mark.asyncio
-async def test_get_models_from_neuromldb_download(neuromldb_ctx):
+async def test_get_models_from_neuromldb_download(aiohttp_ctx):
     model = "NMLCL000595"
     res = await get_models_from_neuromldb_tool(
-        ctx=neuromldb_ctx, search_query=model, num=1, download=True
+        ctx=aiohttp_ctx, search_query=model, num=1, download=True
     )
     logger.debug(f"{res = }")
     assert len(res) == 1
@@ -67,10 +64,10 @@ async def test_get_models_from_neuromldb_download(neuromldb_ctx):
 
 
 @pytest.mark.asyncio
-async def test_get_models_from_neuromldb_nodownload(neuromldb_ctx):
+async def test_get_models_from_neuromldb_nodownload(aiohttp_ctx):
     model = "NMLCL000595"
     res = await get_models_from_neuromldb_tool(
-        ctx=neuromldb_ctx, search_query=model, num=1, download=False
+        ctx=aiohttp_ctx, search_query=model, num=1, download=False
     )
     logger.debug(f"{res = }")
     assert len(res) == 1
@@ -83,20 +80,12 @@ async def test_get_models_from_neuromldb_nodownload(neuromldb_ctx):
     assert m["Publication_Year"] == 2015
 
 
-@pytest_asyncio.fixture
-async def osbv2_ctx():
-    async with aiohttp.ClientSession() as ses:
-        ctx = MockContext()
-        ctx.set_state("osbv2_session", ses)
-        yield ctx
-
-
 @pytest.mark.asyncio
-async def test_get_repositories_from_open_source_brain(osbv2_ctx):
+async def test_get_repositories_from_open_source_brain(aiohttp_ctx):
     # Test basic functionality with a simple search
     search_term = "cerebellum"
     res = await get_repositories_from_open_source_brain_tool(
-        ctx=osbv2_ctx,
+        ctx=aiohttp_ctx,
         search_query=search_term,
         search_data=True,
         search_models=True,
@@ -113,11 +102,11 @@ async def test_get_repositories_from_open_source_brain(osbv2_ctx):
 
 
 @pytest.mark.asyncio
-async def test_get_repositories_from_open_source_brain_no_results(osbv2_ctx):
+async def test_get_repositories_from_open_source_brain_no_results(aiohttp_ctx):
     # Test with a search term that likely won't return results
     search_term = "nonexistent_search_term_12345"
     res = await get_repositories_from_open_source_brain_tool(
-        ctx=osbv2_ctx,
+        ctx=aiohttp_ctx,
         search_query=search_term,
         search_data=True,
         search_models=True,

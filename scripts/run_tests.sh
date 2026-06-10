@@ -9,7 +9,7 @@
 
 set -e
 
-export VS_TEST_CONFIG="vector-stores-test.json"
+export VS_TEST_CONFIG="vector-stores-tests.json"
 
 echo ">> Unit tests"
 for d in *_pkg

@@ -312,7 +312,7 @@ async def get_models_from_neuromldb_tool(
 
     num = max(1, min(num, MAX_RESULTS))
 
-    session: aiohttp.ClientSession = ctx.lifespan_context["neuromldb_session"]
+    session: aiohttp.ClientSession = ctx.lifespan_context["aiohttp_session"]
     logger.debug(f"{session = }")
 
     if session is None:
@@ -386,14 +386,18 @@ async def get_repositories_from_open_source_brain_tool(
     """Use this tool to search the Open Source Brain (v2) neuroscience platform
     (https://v2.opensourcebrain.org) for model and data sources.
 
-    Open Source Brain repositories are an index of a curated set of data and
-    code from selected archival platforms (like GitHub, DANDI Archive,
-    FigShare). These repositories contain metadata about the data and models,
-    including the URL to the storage location. The URL can be passed to other
-    tools to download the files.
+    These projects/repositories are indexed from selected archival platforms
+    (like GitHub, DANDI Archive, FigShare) and contain computational models
+    (implemented in NeuroML, NEURON, NetPyNE, Brian, and other simulators) and
+    experimental data (often electrophysiological experimental data stored in
+    the NeuroData Without Borders (NWB) format).
+
+    These repositories also contain the URLs to the file storage location for
+    the projects, and these can be passed to other tools to download files.
 
     Common use cases:
-    - Finding neuroscience data and model repositories
+    - Finding neuroscience data
+    - Finding neuroscience modelS
 
     Args:
         search_query: search term for querying Open Source Brain. Must be non-empty.
@@ -406,18 +410,20 @@ async def get_repositories_from_open_source_brain_tool(
 
     Examples:
         # Find cerebellar models on Open Source Brain
-        cerebellar_models = get_repositories_from_open_source_brain(search_query="cerebellum", search_models=True, search_data=False)
+        cerebellar_models = get_repositories_from_open_source_brain_tool(search_query="cerebellum", search_models=True, search_data=False)
         # Find mouse data on Open Source Brain
-        mouse_data = get_repositories_from_open_source_brain(search_query="mouse", search_data=True, search_models=False)
+        mouse_data = get_repositories_from_open_source_brain_tool(search_query="mouse", search_data=True, search_models=False)
         # Find data and models related to the cortex on Open Source Brain
-        cortical_repositories = get_repositories_from_open_source_brain(search_query="cortex", search_data=True, search_models=True)
+        cortical_repositories = get_repositories_from_open_source_brain_tool(search_query="cortex", search_data=True, search_models=True)
     """
-    if not search_query or not search_query.strip():
+    search_query = search_query.strip()
+    if not search_query:
         return {"Error": "search_query must be a non-empty string"}
+    logger.debug(f"{search_query = }")
 
     num = max(1, min(num, MAX_RESULTS))
 
-    session: aiohttp.ClientSession = ctx.lifespan_context["osbv2_session"]
+    session: aiohttp.ClientSession = ctx.lifespan_context["aiohttp_session"]
     if session is None:
         return {"Error": "OSB session not initialized"}
 

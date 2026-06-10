@@ -9,7 +9,7 @@
 
 set -e
 
-export KLEA_RAG_VS_CONFIG="vector-stores-tests.json"
+export VS_TEST_CONFIG="vector-stores-test.json"
 
 echo ">> Unit tests"
 for d in *_pkg

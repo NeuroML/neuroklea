@@ -11,16 +11,18 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 from typing import final, override
 
+from fastmcp.mcp_config import MCPConfig
 from klea_utils.graph.base import BaseLangGraph
 from klea_utils.llm import setup_llm
-from klea_utils.nodes.answer_general import AnswerGeneral
+from klea_utils.nodes.answer_general import AnswerGeneral, FallbackConfig
 from klea_utils.nodes.fixed_answer import FixedAnswer
 from klea_utils.nodes.guard import GuardNode
 from klea_utils.nodes.guard_router import GuardRouterNode
 from klea_utils.nodes.summarise_memory import SummariseMemoryNode
+from klea_utils.stores import VectorStoresConfig
 from langgraph.graph import END, START, StateGraph
 
-from .config import AppConfig
+from .config import AppConfig, AppEnv
 from .nodes.answer_from_context import AnswerFromContext
 from .nodes.answer_user import AnswerUser
 from .nodes.classify_question import ClassifyQuestion
@@ -42,9 +44,10 @@ logging.root.setLevel(logging.WARNING)
 class RAG(BaseLangGraph):
     """General RAG implementation"""
 
+    env_class = AppEnv
+    env_var = "KLEA_RAG_CONFIG_FILE"
+    env_file_default = "rag.env"
     config_class = AppConfig
-    config_env_var = "KLEA_RAG_CONFIG_FILE"
-    config_file_default = "rag.env"
     logger_name = "RAG"
 
     def __init__(
@@ -63,8 +66,8 @@ class RAG(BaseLangGraph):
     @override
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
-        self.c_model = setup_llm(self.config.chat_model, self.logger)
-        self.g_model = setup_llm(self.config.guard_model, self.logger)
+        self.c_model = setup_llm(self.app_env.chat_model, self.logger)
+        self.g_model = setup_llm(self.app_env.guard_model, self.logger)
 
     async def get_graph(self):
         """Setup and get compiled graph"""
@@ -84,6 +87,26 @@ class RAG(BaseLangGraph):
 
     def _splitter_node(self, state: RAGState):
         return {}
+
+    @override
+    def _configure_resources(self):
+        """Configure resources"""
+        assert self.app_config
+        general_settings = self.app_config.general.model_dump()
+        general_settings["embedding_model"] = self.app_env.embedding_model
+        domains = self.app_config.domains
+        domain_vs = {}
+        domain_ms = {}
+        for d, inf in domains.items():
+            domain_vs[d] = inf.model_dump(include={"vector_stores", "description"})
+
+            domain_ms.update(inf.model_dump(include={"mcp_servers"})["mcp_servers"])
+
+        self.logger.debug(f"{domain_vs = }")
+        self.logger.debug(f"{domain_ms = }")
+
+        self.stores_config = VectorStoresConfig(domains=domain_vs, **general_settings)
+        self.mcp_config = MCPConfig(mcpServers=domain_ms)
 
     @override
     async def _create_graph(self):
@@ -126,7 +149,7 @@ class RAG(BaseLangGraph):
 
         self._route_query_domain_node = RouteQuery(
             logger=self.logger,
-            non_domain_chat=self.config.non_domain_chat,
+            non_domain_chat=self.app_config.general.non_domain_chat,
         )
 
         self._generate_retrieval_query_node = GenerateRetrievalQuery(
@@ -154,7 +177,10 @@ class RAG(BaseLangGraph):
             model=self.c_model,
             temperature=0.3,
             memory=self.memory,
-            fallback_config=self.stores.vs_config.fallback_to_training_data,
+            fallback_config=FallbackConfig(
+                enabled=self.app_config.general.fallback_to_training_data,
+                warning=self.app_config.general.fallback_warning,
+            ),
         )
         self.workflow.add_node(
             "answer_general_question", self._answer_general_node.execute

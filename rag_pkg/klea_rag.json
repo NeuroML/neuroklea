@@ -1,0 +1,46 @@
+{
+    "general":
+    {
+        "default_k": 5,
+        "k_max": 10,
+        "non_domain_chat": false,
+        "pre_prompt": "",
+        "fallback_to_training_data": true,
+        "fallback_warning": "Note: information on the query could not be found in the vector stores; this answer is generated from the LLM's training data and should be verified."
+    },
+    "domains": {
+        "NeuroML": {
+            "description": "The NeuroML standard for computational modelling in neuroscience and the associated software ecosystem",
+            "vector_stores": [
+                {
+                    "name": "nml-docs",
+                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/klea/rag_pkg/klea_rag/data/vector-stores/nml-docs_bge-m3.db"
+                },
+                {
+                    "name": "nml-elife",
+                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/klea/rag_pkg/klea_rag/data/vector-stores/nml-elife_bge-m3.db"
+                },
+                {
+                    "name": "nml-schema-docs",
+                    "path": "/home/asinha/Documents/02_Code/00_mine/NeuroML/software/klea/rag_pkg/klea_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
+                }
+            ],
+            "mcp_servers": {
+                "NeuroML":
+                {
+                    "url": "http://127.0.0.1:8542/mcp"
+                }
+            }
+        },
+        "OpenSourceBrain": {
+            "description": "The Open Source Brain web platform for neuroscience provides an index of data and models. These are from well known community archives such as DANDI, FigShare, ModelDB, and also GitHub. These data and models are generally standardised in NeuroML or NeuroData Without Borders (NWB). The models are neuroscience models often implemented in NeuroML, Neuron, NetPyNE, Arbor, Brian, and other similar simulators.",
+            "vector_stores": [],
+            "mcp_servers": {
+                "OpenSourceBrain":
+                {
+                    "url": "http://127.0.0.1:8542/mcp"
+                }
+            }
+        }
+    }
+}

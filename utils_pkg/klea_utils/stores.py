@@ -55,13 +55,6 @@ def serialize_vs_retrieval(
     return reference_material_text
 
 
-class FallbackConfig(BaseModel):
-    """Configuration for fallback to training data."""
-
-    enabled: bool = False
-    warning: str = ""
-
-
 class VectorStoreInfo(BaseModel):
     """Information about a single vector store."""
 
@@ -85,7 +78,8 @@ class VectorStoresConfig(BaseModel):
     pre_prompt: str = ""
     embedding_model: str
     domains: Dict[str, PerDomainConfig]
-    fallback_to_training_data: FallbackConfig
+    fallback_to_training_data: bool = False
+    fallback_warning: str = ""
 
 
 class VectorStores:
@@ -95,14 +89,9 @@ class VectorStores:
     retrieval across multiple stores within a domain.
     """
 
-    def __init__(
-        self,
-        vs_config_file: str,
-        logger: logging.Logger,
-    ):
+    def __init__(self, vs_config: VectorStoresConfig, logger: logging.Logger):
         """Initialise vector stores manager.
 
-        :param vs_config_file: Path to the JSON configuration file
         :param logger: Logger instance (injected from orchestrator)
         """
         self.default_k = 5
@@ -110,8 +99,7 @@ class VectorStores:
         self.k = self.default_k
         self.sim_thresh = 0.15
         self.embeddings = None
-        self.vs_config_file = vs_config_file
-        self.vs_config: VectorStoresConfig
+        self.vs_config: VectorStoresConfig = vs_config
         self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
         self.embedding_model: str | None = None
 
@@ -121,6 +109,7 @@ class VectorStores:
         self.embeddings = setup_embedding(self.embedding_model, self.logger)
 
         # Extract model name for collection naming
+        assert self.embedding_model
         if self.embedding_model.lower().startswith("huggingface:"):
             self.embedding_model = (
                 self.embedding_model.replace("huggingface:", "")
@@ -134,10 +123,6 @@ class VectorStores:
 
     def _load_config(self) -> None:
         """Load domains from the configuration file."""
-        self.logger.debug(f"{self.vs_config_file =}")
-        with open(self.vs_config_file) as f:
-            domain_info = json.load(f)
-            self.vs_config = VectorStoresConfig(**domain_info)
         self.embedding_model = self.vs_config.embedding_model
         self.default_k = self.vs_config.default_k
         self.k_max = self.vs_config.k_max
@@ -185,7 +170,6 @@ class VectorStores:
         self.logger.debug(f"Got domain information: {domain}")
 
         stores = domain.vector_stores
-        assert stores
 
         for store in stores:
             store_name = store.name
@@ -241,7 +225,6 @@ class VectorStores:
         domain = self.vs_config.domains.get(domain_name, None)
         assert domain
         stores = domain.vector_stores
-        assert stores
 
         res = []
 

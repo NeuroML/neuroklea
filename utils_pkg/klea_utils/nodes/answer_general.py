@@ -16,8 +16,12 @@ from langchain_core.messages import AIMessage
 from pydantic import BaseModel
 
 from ..llm import split_output_by_section
-from ..stores import FallbackConfig
 from .base import BaseLLMNode
+
+
+class FallbackConfig(BaseModel):
+    enabled: bool = False
+    warning: str = ""
 
 
 class AnswerGeneral(BaseLLMNode):

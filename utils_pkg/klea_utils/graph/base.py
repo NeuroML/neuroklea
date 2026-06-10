@@ -25,7 +25,7 @@ from langgraph.graph.state import CompiledStateGraph
 from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
-from klea_utils.stores import VectorStores
+from klea_utils.stores import VectorStores, VectorStoresConfig
 
 
 class BaseLangGraph(ABC):
@@ -42,18 +42,22 @@ class BaseLangGraph(ABC):
     Subclasses must implement:
     - :meth:`_setup_models`: Create LLM model instances
     - :meth:`_create_graph`: Build and compile the LangGraph
-    - Set ``config_class`` to the appropriate Pydantic settings class
+    - Set ``env_class`` to the appropriate Pydantic settings class
     """
 
-    #: Pydantic BaseSettings class for configuration loading.
+    #: Pydantic BaseSettings class for env loading.
+    #: Subclasses must set this to their AppEnv class.
+    env_class: Type[BaseModel]
+
+    #: Pydantic BaseModel class for configuration loading.
     #: Subclasses must set this to their AppConfig class.
     config_class: Type[BaseModel]
 
     #: Name of the environment variable that controls the config file path.
-    config_env_var: str = "CONFIG_FILE"
+    env_var: str = "CONFIG_FILE"
 
     #: Default config file name if the environment variable is not set.
-    config_file_default: str = "config.env"
+    env_file_default: str = "config.env"
 
     #: Logger name for this orchestrator.
     logger_name: str = "BaseLangGraph"
@@ -68,25 +72,30 @@ class BaseLangGraph(ABC):
         :param logging_level: Logging level for the orchestrator
         :param memory: Whether to enable checkpoint-based session memory
         """
+        self.env_file = os.getenv(self.env_var, self.env_file_default)
+        self.app_env: BaseModel
+
         self.c_model = None
-        self.mcp_client: Client | None = None
 
         self.memory = memory
         self.checkpointer: InMemorySaver | None = InMemorySaver() if memory else None
 
-        self.config_file = os.getenv(self.config_env_var, self.config_file_default)
-        self.config: BaseModel
+        self.config_dict: dict[str, Any]
 
         self.graph: CompiledStateGraph | None = None
+
+        self.mcp_config: MCPConfig | None = None
+        self.mcp_client: Client | None = None
+        self.mcp_tools: list[Tool] | None = None
+
+        self.stores_config: VectorStoresConfig | None = None
+        self.stores: VectorStores | None = None
+
+        self.QueryDomainSchema: Type[BaseModel] | None = None
 
         self.logger = logging.getLogger(self.logger_name)
         self.logger.setLevel(logging_level)
         self.logger.propagate = False
-
-        self.mcp_tools: list[Tool] | None = None
-        self.stores: VectorStores | None = None
-        self.QueryDomainSchema: Type[BaseModel] | None = None
-
         self._setup_logging(logging_level)
 
     def _setup_logging(self, level: int) -> None:
@@ -113,43 +122,51 @@ class BaseLangGraph(ABC):
         stderr_handler.setFormatter(logger_formatter_other)
         self.logger.addHandler(stderr_handler)
 
-    def _load_config(self) -> None:
-        """Load configuration from the env file.
+    def _load_env(self) -> None:
+        """Load env file, and configuration
 
-        Uses ``self.config_class`` and ``self.config_file`` to locate and parse
+        Uses ``self.env_class`` and ``self.env_file`` to locate and parse
         the configuration file. Raises FileNotFoundError if the file does not exist.
         """
-        cfg_path = Path(self.config_file)
-        if not cfg_path.exists():
-            raise FileNotFoundError(f"Could not find config file: {self.config_file}")
+        env_file_path = Path(self.env_file)
+        if not env_file_path.exists():
+            raise FileNotFoundError(f"Could not find env file: {self.env_file}")
 
-        self.config = self.config_class(_env_file=self.config_file)
-        assert self.config
-        self.logger.debug(f"Config file: {self.config_file}")
-        self.logger.debug(f"Config: {self.config}")
+        self.app_env = self.env_class(_env_file=self.env_file)
+        assert self.app_env
+        self.logger.debug(f"env file: {self.env_file}")
+        self.logger.debug(f"env: {self.app_env}")
+
+        if "config_file" in self.env_class.model_fields:
+            config_file = Path(self.app_env.config_file)
+            if not config_file.exists():
+                raise FileNotFoundError(f"Could not find config file: {config_file}")
+            else:
+                with open(config_file, "r") as f:
+                    config_dict = json.load(f)
+                    self.logger.debug(f"{config_dict = }")
+                    self.app_config = self.config_class(**config_dict)
+                    self.logger.debug(f"{self.app_config = }")
+        else:
+            raise FileNotFoundError(
+                f"No config file provided. Please provide one in the env file ({self.env_file})."
+            )
 
     def _create_mcp_client(self) -> None:
         """Create MCP client from the JSON config file.
 
-        Reads the MCP server configurations from ``self.config.mcp_config_file``
+        Reads the MCP server configurations from ``self.app_env.mcp_config_file``
         and creates a ``fastmcp.Client`` instance.
         """
-        if self.config.mcp_config_file:  # type: ignore
-            mcp_config_text = ""
-            with open(self.config.mcp_config_file, "r") as f:
-                mcp_config_text = json.load(f)
-                self.logger.debug(f"{mcp_config_text = }")
-
-            self.mcp_config = MCPConfig(**mcp_config_text)
+        if self.mcp_config:
             self.logger.debug(f"{self.mcp_config = }")
             self.mcp_client = Client(self.mcp_config)
-            assert self.mcp_client
         else:
             self.logger.warning("No MCP server configured.")
             self.mcp_client = None
 
     async def _get_mcp_tools(self) -> None:
-        """List MCP tools and optionally set up vector stores."""
+        """Get MCP tools."""
         if self.mcp_client:
             async with self.mcp_client:
                 self.mcp_tools = await self.mcp_client.list_tools()
@@ -157,14 +174,10 @@ class BaseLangGraph(ABC):
 
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""
-        if self.config.vs_config_file:  # type: ignore
-            self.stores = VectorStores(
-                vs_config_file=self.config.vs_config_file, logger=self.logger
-            )
+        if self.stores_config:  # type: ignore
+            self.stores = VectorStores(vs_config=self.stores_config, logger=self.logger)
             self.stores.setup()
-            self.logger.info(
-                f"Vector stores loaded from {self.config.vs_config_file}: {self.stores.domains}"
-            )
+            self.logger.info(f"Vector stores loaded: {self.stores.domains}")
 
             # dynamically generate schema for domains
             all_domains = self.stores.domains.copy()
@@ -194,6 +207,7 @@ class BaseLangGraph(ABC):
             self.logger.error(e)
 
     @cached_property
+    # TODO: make domain aware
     def tools_description(self) -> str:
         """Get formatted descriptions of available MCP tools.
 
@@ -231,6 +245,16 @@ class BaseLangGraph(ABC):
     # ------------------------------------------------------------------
     # Abstract methods -- subclasses must implement these
     # ------------------------------------------------------------------
+
+    @abstractmethod
+    def _configure_resources(self) -> None:
+        """Configure vector stores and MCP servers
+
+        Subclasses should implement this to populate ``self.stores_config`` and
+        ``self.mcp_config``, which will be used to create the vector store
+        class and mcp client.
+        """
+        ...
 
     @abstractmethod
     def _setup_models(self) -> None:
@@ -288,7 +312,7 @@ class BaseLangGraph(ABC):
 
         Calls hooks and template methods in this order:
         1. ``_pre_setup()``
-        2. ``_load_config()``
+        2. ``_load_env()``
         3. ``_setup_models()``
         4. ``_create_mcp_client()``
         5. ``_pre_graph()``
@@ -296,7 +320,8 @@ class BaseLangGraph(ABC):
         7. ``_post_setup()``
         """
         self._pre_setup()
-        self._load_config()
+        self._load_env()
+        self._configure_resources()
         self._setup_models()
         self._create_mcp_client()
         await self._get_mcp_tools()

@@ -43,7 +43,7 @@ The following environment variables need to be set:
 Use the CLI to interact with the system:
 
 ```
-nml-gen-rag --help
+klea-rag --help
 ```
 
 The swagger UI provided by FastAPI can also be used directly.

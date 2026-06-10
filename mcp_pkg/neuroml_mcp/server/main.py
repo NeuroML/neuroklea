@@ -20,7 +20,7 @@ from starlette.responses import JSONResponse, PlainTextResponse
 from neuroml_mcp.tools import code_tools, neuroml_tools
 from neuroml_mcp.utils import register_tools
 
-from .lifespan import app_lifespan
+from .app_lifespan import app_lifespan
 
 mcp_app = typer.Typer()
 

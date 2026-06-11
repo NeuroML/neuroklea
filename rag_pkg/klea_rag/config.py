@@ -12,14 +12,16 @@ from typing import Any
 
 from klea_utils.stores import VectorStoreInfo
 from pydantic import BaseModel, Field
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppEnv(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="KLEA_RAG_")
+
     chat_model: str = "ollama:qwen2.5-coder:3b"
     guard_model: str = "ollama:llama-guard3:1b"
     embedding_model: str = "ollama:bge-m3:latest"
-    config_file: str = "klea_rag.json"
+    app_config_file: str = "klea_rag.json"
 
 
 class GeneralConfig(BaseModel):

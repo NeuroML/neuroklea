@@ -53,8 +53,8 @@ class BaseLangGraph(ABC):
     #: Subclasses must set this to their AppConfig class.
     config_class: Type[BaseModel]
 
-    #: Name of the environment variable that controls the config file path.
-    env_var: str = "CONFIG_FILE"
+    #: Name of the environment variable that controls the env file path.
+    env_var: str = "ENV_FILE"
 
     #: Default config file name if the environment variable is not set.
     env_file_default: str = "config.env"
@@ -137,8 +137,8 @@ class BaseLangGraph(ABC):
         self.logger.debug(f"env file: {self.env_file}")
         self.logger.debug(f"env: {self.app_env}")
 
-        if "config_file" in self.env_class.model_fields:
-            config_file = Path(self.app_env.config_file)
+        if "app_config_file" in self.env_class.model_fields:
+            config_file = Path(self.app_env.app_config_file)
             if not config_file.exists():
                 raise FileNotFoundError(f"Could not find config file: {config_file}")
             else:

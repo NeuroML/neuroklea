@@ -51,8 +51,7 @@ def serialize_vs_retrieval(
             serialized += r.page_content
             ctr += 1
 
-    reference_material_text = serialized.replace("{", "{{").replace("}", "}}")
-    return reference_material_text
+    return serialized
 
 
 class VectorStoreInfo(BaseModel):

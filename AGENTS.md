@@ -17,7 +17,7 @@ Consult the relevant package's AGENTS.md for package-specific commands and archi
 
 ### Session Logging
 
-At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Use the template in `.agents/README.md`.
+At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Read `.agents/README.md` for the session log format and follow it when writing logs — do not write logs from memory.
 
 ### Tooling
 - **uv** is used as the package manager (not pip directly). Use `uv pip install`, `uv run`, etc.

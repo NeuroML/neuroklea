@@ -317,7 +317,7 @@ def get_last_n_conversations(
             conversation += f": {msg.pretty_repr()}"
             ai_messages.append(msg)
 
-    print(f"{conversation = }")
+    logger.debug(f"{conversation = }")
 
     return (
         conversation.replace("{", "{{").replace("}", "}}"),

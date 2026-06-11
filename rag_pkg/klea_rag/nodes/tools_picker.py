@@ -24,13 +24,14 @@ class ToolsPicker(BaseLLMNode[RAGState]):
         logger: logging.Logger,
         model: Any,
         temperature: float = 0.01,
-        tools_description: str | None = None,
+        domain_tools_description: dict[str, str] | None = None,
     ):
         """Initialise the tools picker node.
 
         :param logger: Logger instance
         :param model: LLM model instance
         :param temperature: Sampling temperature
+        :param domain_tools_description: Per-domain tool descriptions
         """
         super().__init__(
             logger=logger,
@@ -39,17 +40,23 @@ class ToolsPicker(BaseLLMNode[RAGState]):
             output_schema=ToolCallsSchema,
             memory=False,
         )
-        self._tools_description = tools_description
+        self._domain_tools_description = domain_tools_description or {}
+
+    def _get_tool_descriptions(self, domains: list[str]) -> str:
+        """Get combined tool descriptions for the given domains."""
+        parts = []
+        for d in domains:
+            if d in self._domain_tools_description:
+                parts.append(self._domain_tools_description[d])
+        return "\n\n".join(parts)
 
     @override
     def _pre_exec(self, state: RAGState) -> bool:
         """Pre-execution check.
 
-        If no tools description is set, no tools are available, and we skip the
-        node.
-
+        If no tool description is available for the current domain, skip.
         """
-        if not self._tools_description:
+        if not self._get_tool_descriptions(state.query_domains):
             return False
         return True
 
@@ -63,7 +70,7 @@ class ToolsPicker(BaseLLMNode[RAGState]):
         """Format prompt with query and retrieval context."""
         return {
             "query": state.query,
-            "tools_description": self._tools_description,
+            "tools_description": self._get_tool_descriptions(state.query_domains),
         }
 
     @override

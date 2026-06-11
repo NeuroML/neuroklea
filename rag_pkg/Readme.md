@@ -52,8 +52,8 @@ Note that no authentication has currently been implemented.
 ## Configuration
 
 The RAG requires a JSON configuration file that sets up the domains and their vector stores.
-Each domain can have multiple vector stores.
-Please see the example `vector-stores.json` file provided.
+Each domain can have multiple vector stores, and multiple MCP servers.
+Please see the example `klea_rag.json` file provided.
 
 Note that the vector stores can be placed anywhere and the path provided.
 However, it is necessary that the same embedding model is used to populate the vector store, and then retrieve information from it.
@@ -62,4 +62,4 @@ This is provided in the JSON configuration file.
 
 ## LangGraph schematic
 
-![LangGraph schematic](lang-graph.png "LangGraph schematic")
+![LangGraph schematic](rag-lang-graph.png "LangGraph schematic")

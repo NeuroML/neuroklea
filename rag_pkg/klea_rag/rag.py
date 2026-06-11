@@ -100,13 +100,22 @@ class RAG(BaseLangGraph):
         for d, inf in domains.items():
             domain_vs[d] = inf.model_dump(include={"vector_stores", "description"})
 
+            # flat config for mcp client initialization
             domain_ms.update(inf.model_dump(include={"mcp_servers"})["mcp_servers"])
 
         self.logger.debug(f"{domain_vs = }")
         self.logger.debug(f"{domain_ms = }")
 
+        # set up configs
         self.stores_config = VectorStoresConfig(domains=domain_vs, **general_settings)
         self.mcp_config = MCPConfig(mcpServers=domain_ms)
+
+        # store per-domain MCP configs for domain-aware tool descriptions
+        self.domain_mcp_configs = {}
+        for d, inf in domains.items():
+            domain_ms = inf.model_dump(include={"mcp_servers"}).get("mcp_servers", {})
+            if domain_ms:
+                self.domain_mcp_configs[d] = MCPConfig(mcpServers=domain_ms)
 
     @override
     async def _create_graph(self):
@@ -162,7 +171,7 @@ class RAG(BaseLangGraph):
             logger=self.logger,
             model=self.c_model,
             temperature=0.01,
-            tools_description=self.tools_description,
+            domain_tools_description=self.tools_description,
         )
         self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
 

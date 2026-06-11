@@ -13,7 +13,6 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
-from functools import cached_property
 from pathlib import Path
 from textwrap import dedent
 from typing import Any, List, Literal, Type, final
@@ -78,6 +77,9 @@ class BaseLangGraph(ABC):
         self.c_model = None
 
         self.memory = memory
+
+        self.tools_description: dict[str, str] = {}
+        self.domain_mcp_configs: dict[str, MCPConfig] = {}
         self.checkpointer: InMemorySaver | None = InMemorySaver() if memory else None
 
         self.config_dict: dict[str, Any]
@@ -171,6 +173,45 @@ class BaseLangGraph(ABC):
             async with self.mcp_client:
                 self.mcp_tools = await self.mcp_client.list_tools()
             self.logger.debug(f"{self.mcp_tools =}")
+            self._build_tools_description()
+
+    def _build_tools_description(self) -> None:
+        """Build per-domain tool descriptions from fetched MCP tools."""
+        self.tools_description = {}
+        if not self.mcp_tools or not self.domain_mcp_configs:
+            return
+
+        # map server names to domains
+        domain_servers: dict[str, list[str]] = {}
+        for domain, config in self.domain_mcp_configs.items():
+            if config.mcpServers:
+                domain_servers[domain] = list(config.mcpServers.keys())
+
+        for domain, server_names in domain_servers.items():
+            desc = ""
+            ctr = 0
+            for t in self.mcp_tools:
+                if "dummy" in t.name:
+                    continue
+                if not any(t.name.startswith(s + "_") for s in server_names):
+                    continue
+                ctr += 1
+                desc += dedent(f"""
+                    ## {ctr}.  {t.name}
+
+                    ### Description
+
+                    {t.description}
+
+                    """)
+                if t.inputSchema:
+                    desc += dedent(f"""
+                        ### Parameters
+
+                        {t.inputSchema.get("properties")}
+
+                        """)
+            self.tools_description[domain] = desc
 
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""
@@ -206,42 +247,6 @@ class BaseLangGraph(ABC):
             self.logger.error("Something went wrong generating lang graph png")
             self.logger.error(e)
 
-    @cached_property
-    # TODO: make domain aware
-    def tools_description(self) -> str:
-        """Get formatted descriptions of available MCP tools.
-
-        :returns: Formatted string with tool names, descriptions, and parameters
-        """
-        if not self.mcp_tools:
-            return ""
-        description = ""
-        ctr = 0
-        for t in self.mcp_tools:
-            if "dummy" in t.name:
-                continue
-            ctr += 1
-            description += dedent(
-                f"""
-                ## {ctr}.  {t.name}
-
-                ### Description
-
-                {t.description}
-
-                """
-            )
-            if t.inputSchema:
-                description += dedent(
-                    f"""
-                    ### Parameters
-
-                    {t.inputSchema.get("properties")}
-
-                    """
-                )
-        return description
-
     # ------------------------------------------------------------------
     # Abstract methods -- subclasses must implement these
     # ------------------------------------------------------------------
@@ -250,9 +255,9 @@ class BaseLangGraph(ABC):
     def _configure_resources(self) -> None:
         """Configure vector stores and MCP servers
 
-        Subclasses should implement this to populate ``self.stores_config`` and
-        ``self.mcp_config``, which will be used to create the vector store
-        class and mcp client.
+        Subclasses should implement this to populate ``self.stores_config``,
+        ``self.mcp_config``, and ``self.domain_mcp_configs``, which will be used
+        to create the vector store class, mcp client, and per-domain tool descriptions.
         """
         ...
 

@@ -14,7 +14,7 @@ from typing import Any, Dict, override
 from klea_utils.llm import split_output_by_section
 from klea_utils.nodes.base import BaseLLMNode
 from klea_utils.stores import serialize_vs_retrieval
-from klea_utils.tools import serialize_tool_results
+from klea_utils.tools import textualize_tool_results
 from langchain.messages import AIMessage
 from pydantic import BaseModel, Field
 
@@ -57,7 +57,9 @@ class AnswerFromContext(BaseLLMNode[AnswerSchema]):
 
         # Add tool results to the reference material
         if hasattr(state, "tool_results") and state.tool_results:  # type: ignore
-            reference_material_text += "\n" + serialize_tool_results(state.tool_results)  # type: ignore
+            reference_material_text += "\n" + textualize_tool_results(
+                state.tool_results
+            )  # type: ignore
 
         return {
             "query": state.query,  # type: ignore

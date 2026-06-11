@@ -1,6 +1,6 @@
 # Klea Code
 
-AI assisted workflows.
+AI assisted coding/workflow system.
 
 ## Features
 

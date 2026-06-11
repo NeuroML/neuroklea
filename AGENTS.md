@@ -6,7 +6,7 @@ This file contains common guidelines for all coding agents working on the projec
 
 The project contains multiple Python packages:
 
-- [code_pkg/AGENTS.md](code_ai_pkg/AGENTS.md) - AI assisted coding framework
+- [code_pkg/AGENTS.md](code_pkg/AGENTS.md) - AI assisted coding/workflow system
 - [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML/OSB
 - [rag_pkg/AGENTS.md](rag_pkg/AGENTS.md) - Generic RAG implementation
 - [utils_pkg/AGENTS.md](utils_pkg/AGENTS.md) - Shared utilities

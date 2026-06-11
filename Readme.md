@@ -17,7 +17,7 @@ This is currently in active development.
 The packages included, one in each folder are:
 
 - rag_pkg: a generic RAG implementation
-- code_pkg: generic coding assistant
+- code_pkg: AI assisted coding/workflow system
 - mcp_pkg: MCP server for NeuroML
 - utils_pkg: common utility functions used by other packages
 

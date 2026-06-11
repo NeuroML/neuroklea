@@ -1,6 +1,6 @@
 # AGENTS.md - Code AI Package
 
-AI assisted coding for NeuroML using LangChain/LangGraph.
+AI assisted coding/workflow system using LangChain/LangGraph.
 
 ## Package Overview
 

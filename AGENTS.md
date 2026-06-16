@@ -1,13 +1,13 @@
-# AGENTS.md - Neuroml-ai Project
+# AGENTS.md - Klea Project
 
-This file contains common guidelines for all coding agents working on the neuroml-ai project.
+This file contains common guidelines for all coding agents working on the project.
 
 ## Project Structure
 
 The project contains multiple Python packages:
 
-- [code_ai_pkg/AGENTS.md](code_ai_pkg/AGENTS.md) - AI assisted coding for NeuroML
-- [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML
+- [code_pkg/AGENTS.md](code_pkg/AGENTS.md) - AI assisted coding/workflow system
+- [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML/OSB
 - [rag_pkg/AGENTS.md](rag_pkg/AGENTS.md) - Generic RAG implementation
 - [utils_pkg/AGENTS.md](utils_pkg/AGENTS.md) - Shared utilities
 
@@ -17,10 +17,16 @@ Consult the relevant package's AGENTS.md for package-specific commands and archi
 
 ### Session Logging
 
-At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Use the template in `.agents/README.md`.
+At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Read `.agents/README.md` for the session log format and follow it when writing logs — do not write logs from memory.
+
+### Tooling
+- **uv** is used as the package manager (not pip directly). Use `uv pip install`, `uv run`, etc.
+- **ruff** is used for linting and formatting
+- **ty** is used for type checking
 
 ### Pre-commit Requirements
 - All code must pass ruff linting and formatting
+- All code must pass ty type checking
 - Import sorting is mandatory
 - No trailing whitespace or large files
 - Line endings must be Unix format

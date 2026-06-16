@@ -57,8 +57,8 @@ jobs:
 
     - name: Run simple test
       run: |
-        nml-gen-rag --help
-        nml-code  --help
+        klea-rag --help
+        klea-code  --help
         nml-mcp --help
 
     - name: Setup Ollama
@@ -69,11 +69,13 @@ jobs:
         ollama pull qwen3:0.6b
         ollama pull bge-m3
 
+    - name: Create cache dir
+      run: |
+        mkdir -p ~/.cache/nml_mcp/
+
     - name: Run unit tests
       run: |
-        { pushd utils_pkg && pytest -v -n auto && popd; } && { pushd mcp_pkg && pytest -v && popd; }
-      env:
-        GEN_RAG_VS_CONFIG: "vector-stores-tests.json"
+        bash ./scripts/run_tests.sh
 
     - name: Lint with ruff
       run: |

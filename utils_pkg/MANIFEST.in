@@ -1,3 +1,3 @@
 include Readme.md
 include LICENSE*
-recursive-include neuroml_ai_utils/nodes/prompts *
+recursive-include klea_utils/nodes/prompts *

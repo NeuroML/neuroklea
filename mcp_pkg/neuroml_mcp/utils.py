@@ -9,9 +9,36 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import inspect
+import os
+import shutil
+from pathlib import Path
 from typing import Any
 
+from platformdirs import PlatformDirs
 from pydantic import BaseModel
+
+MCP_DIRS = PlatformDirs("nml_mcp")
+
+
+def init_cache_dir():
+    """Initialise cache directory if it doesn't exist."""
+    cache_dir = Path(MCP_DIRS.user_cache_dir)
+    # Create cache directory if it doesn't exist (parents should already exist)
+    cache_dir.mkdir(parents=False, exist_ok=True)
+
+
+def cleanup_cache_dir():
+    """Clean up the cache contents.
+
+    To be used at end of each session.
+    """
+    cache_dir = Path(MCP_DIRS.user_cache_dir)
+    # Remove all contents but keep the directory
+    for item in cache_dir.iterdir():
+        if item.is_file() or item.is_symlink():
+            item.unlink()
+        elif item.is_dir():
+            shutil.rmtree(item)
 
 
 class ToolInfo(BaseModel):

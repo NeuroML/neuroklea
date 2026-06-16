@@ -18,20 +18,20 @@ Install the package and dependencies using `pip` or `uv pip` from the GitHub rep
 # in the `utils_pkg` folder:
 pip install .
 
-# in the `gen_rag` folder:
+# in the `klea_rag` folder:
 pip install .
 ```
 
 Start the API server:
 
 ```
-fastapi dev gen_rag/api/main.py --port 8005
+fastapi dev klea_rag/api/main.py --port 8005
 ```
 
 The following environment variables need to be set:
 
-- `GEN_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
-- `GEN_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
+- `KLEA_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
+- `KLEA_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
 
 ### Supported models
 
@@ -43,7 +43,7 @@ The following environment variables need to be set:
 Use the CLI to interact with the system:
 
 ```
-nml-gen-rag --help
+klea-rag --help
 ```
 
 The swagger UI provided by FastAPI can also be used directly.
@@ -52,8 +52,8 @@ Note that no authentication has currently been implemented.
 ## Configuration
 
 The RAG requires a JSON configuration file that sets up the domains and their vector stores.
-Each domain can have multiple vector stores.
-Please see the example `vector-stores.json` file provided.
+Each domain can have multiple vector stores, and multiple MCP servers.
+Please see the example `klea_rag.json` file provided.
 
 Note that the vector stores can be placed anywhere and the path provided.
 However, it is necessary that the same embedding model is used to populate the vector store, and then retrieve information from it.
@@ -62,4 +62,4 @@ This is provided in the JSON configuration file.
 
 ## LangGraph schematic
 
-![LangGraph schematic](lang-graph.png "LangGraph schematic")
+![LangGraph schematic](rag-lang-graph.png "LangGraph schematic")

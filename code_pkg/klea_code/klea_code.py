@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+"""
+Klea code framework implementation
+
+File: klea_code.py
+
+Copyright 2026 Ankur Sinha
+Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
+"""
+
+import logging
+from typing import final
+
+from klea_utils.graph.base import BaseLangGraph
+from klea_utils.llm import setup_llm
+from klea_utils.nodes.fixed_answer import FixedAnswer
+from klea_utils.nodes.guard import GuardNode
+from klea_utils.nodes.guard_router import GuardRouterNode
+from langgraph.graph import END, START, StateGraph
+
+from klea_code.nodes.answer_user import AnswerUser
+from klea_code.nodes.evaluator import Evaluator
+from klea_code.nodes.explore_planner import ExplorePlanner
+from klea_code.nodes.goal_setter import GoalSetter
+from klea_code.nodes.init_graph import InitGraphState
+from klea_code.nodes.planner import Planner
+from klea_code.nodes.tools_caller import ToolsCaller
+from klea_code.nodes.tools_picker import ToolsPicker
+from klea_code.nodes.tools_router import ToolsRouter
+
+from .config import AppConfig
+from .schemas import GoalSchema, KleaCodeState
+
+logging.basicConfig()
+logging.root.setLevel(logging.WARNING)
+
+
+@final
+class KleaCode(BaseLangGraph):
+    """Klea Code implementation"""
+
+    config_class = AppConfig
+    config_env_var = "CODE_AI_CONFIG_FILE"
+    config_file_default = "klea_code.env"
+    logger_name = "KleaCode"
+
+    def __init__(
+        self,
+        logging_level: int = logging.DEBUG,
+        memory: bool = True,
+    ):
+        """Initialise"""
+        super().__init__(logging_level=logging_level, memory=memory)
+
+        self.r_model = None
+        self.g_model = None
+
+    def _setup_models(self) -> None:
+        """Set up the LLM chat model"""
+        self.c_model = setup_llm(self.config.code_model, self.logger)
+        if self.config.code_model == self.config.reasoning_model:
+            self.r_model = self.c_model
+            self.logger.info(
+                f"Same model used for both chat and reasoning: {self.config.code_model}"
+            )
+        else:
+            self.r_model = setup_llm(self.config.reasoning_model, self.logger)
+        self.g_model = setup_llm(self.config.guard_model, self.logger)
+
+    # TODO: replace with class
+    async def _step_router_node(self, state: KleaCodeState) -> str:
+        return state.plan.status
+
+    async def _create_graph(self):
+        """Create the LangGraph"""
+        self.workflow = StateGraph(KleaCodeState)
+
+        self._init_graph_state_node = InitGraphState(logger=self.logger)
+        self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
+
+        # Guard nodes
+        self._guard_node = GuardNode(
+            logger=self.logger,
+            model=self.g_model,
+            temperature=0.3,
+            memory=self.memory,
+        )
+        self.workflow.add_node("guard", self._guard_node.execute)
+
+        self._guard_router_node = GuardRouterNode(logger=self.logger)
+
+        self._decline_to_answer_node = FixedAnswer(
+            logger=self.logger,
+            state_attr="message_for_user",
+            message="I cannot respond to this query. Please try another.",
+        )
+        self.workflow.add_node(
+            "decline_to_answer", self._decline_to_answer_node.execute
+        )
+
+        self._goal_setter_node = GoalSetter(
+            logger=self.logger,
+            model=self.r_model,
+            temperature=0.01,
+            output_schema=GoalSchema,
+            memory=False,
+        )
+        self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
+
+        self._explore_planner_node = ExplorePlanner(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self.workflow.add_node("explore_planner", self._explore_planner_node.execute)
+
+        self._planner_node = Planner(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self._planner_node.set_tools_description(self.tools_description)
+        self._tools_picker_node = ToolsPicker(
+            logger=self.logger, model=self.r_model, temperature=0.01
+        )
+        self._tools_picker_node.set_tools_description(self.tools_description)
+        self._tools_caller_node = ToolsCaller(
+            logger=self.logger, mcp_client=self.mcp_client
+        )
+        self._tools_router_node = ToolsRouter(logger=self.logger)
+        self._evaluator_node = Evaluator(logger=self.logger)
+        self._answer_user_node = AnswerUser(logger=self.logger)
+        self.workflow.add_node("planner", self._planner_node.execute)
+        # TODO: modify to use a ToolOrchestrator that can call multiple tools
+        # in parallel asynchronously
+        # Note that this depends on how the agent is setup---if it's setup to
+        # run one call at a time, this isn't required, but ideally, it should
+        # be able to call multiple tools---but the prompts/state schema will
+        # need to updated for that
+        self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
+        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
+        # Evaluator: needs to handle failed tool calls and ask the planner to
+        # update the plan if required
+        self.workflow.add_node("evaluator", self._evaluator_node.execute)
+        self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
+
+        self.workflow.add_edge(START, "init_graph_state")
+        self.workflow.add_edge("init_graph_state", "guard")
+        self.workflow.add_conditional_edges(
+            "guard",
+            self._guard_router_node.execute,
+            {
+                "safe": "goal_setter",
+                "unsafe": "decline_to_answer",
+            },
+        )
+        self.workflow.add_edge("goal_setter", "explore_planner")
+        self.workflow.add_edge("explore_planner", "tools_picker")
+        self.workflow.add_edge("planner", "tools_picker")
+        self.workflow.add_edge("tools_picker", "tools_caller")
+        # TODO: we probably need a node here that takes tools output from
+        # picker and puts them in the right state field for exploration
+        # TODO: we also need some flag that decides whether the next step here
+        # should be planning or evaluation. If it's coming off exploration, it
+        # needs to go to planning. If it's in the plan, it needs to go to
+        # evaluation
+        self.workflow.add_conditional_edges(
+            "tools_caller",
+            self._tools_router_node.execute,
+            {
+                "failed": "tools_picker",
+                "explored": "planner",
+                "continue": "evaluator",
+            },
+        )
+
+        self.workflow.add_conditional_edges(
+            "evaluator",
+            self._step_router_node,
+            {
+                # should never be here
+                "not_started": "planner",
+                # next step
+                "in_progress": "tools_picker",
+                # plan isn't working
+                "failed": "planner",
+                "aborted": "give_answer_to_user",
+                "completed": "give_answer_to_user",
+            },
+        )
+        self.workflow.add_edge("give_answer_to_user", END)
+        self.workflow.add_edge("decline_to_answer", END)
+
+        if self.checkpointer:
+            self.graph = self.workflow.compile(checkpointer=self.checkpointer)
+        else:
+            self.graph = self.workflow.compile()
+
+        self._export_graph_png("code-ai-lang-graph.png")

@@ -12,7 +12,7 @@ import unittest
 
 import pytest
 
-from neuroml_ai_utils.llm import split_output_by_section
+from klea_utils.llm import split_output_by_section
 
 
 @pytest.mark.parametrize(

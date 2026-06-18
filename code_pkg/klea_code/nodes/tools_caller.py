@@ -22,7 +22,7 @@ from klea_code.schemas import KleaCodeState
 class ToolsCaller(AbstractLangGraphNode[KleaCodeState, CallToolResult]):
     """Node that calls the selected tools."""
 
-    def __init__(self, logger: logging.Logger, mcp_client: Client):
+    def __init__(self, logger: logging.Logger, mcp_client: Client | None):
         """Initialise the tools caller node.
 
         :param logger: Logger instance
@@ -45,15 +45,18 @@ class ToolsCaller(AbstractLangGraphNode[KleaCodeState, CallToolResult]):
         if not state.tool_call:
             return {}
 
+        if not self._mcp_client:
+            self.logger.warning("No MCP client available, skipping tool call")
+            return {}
+
         tool_call = state.tool_call
-        async with self.mcp_client:
-            task = self.mcp_client.call_tool(
+        async with self._mcp_client:
+            task = self._mcp_client.call_tool(
                 name=tool_call.tool,
                 arguments=tool_call.args,
                 raise_on_error=False,
             )
-            results = await asyncio.gather(task)
-            tool_result = results[0]
+            (tool_result,) = await asyncio.gather(task)
 
         tool_responses.append(tool_result)
 

@@ -183,9 +183,11 @@ class BaseLangGraph(ABC):
 
         # map server names to domains
         domain_servers: dict[str, list[str]] = {}
+        num_servers = 0
         for domain, config in self.domain_mcp_configs.items():
             if config.mcpServers:
                 domain_servers[domain] = list(config.mcpServers.keys())
+                num_servers += len(list(config.mcpServers.keys()))
 
         for domain, server_names in domain_servers.items():
             desc = ""
@@ -193,8 +195,11 @@ class BaseLangGraph(ABC):
             for t in self.mcp_tools:
                 if "dummy" in t.name:
                     continue
-                if not any(t.name.startswith(s + "_") for s in server_names):
-                    continue
+                # tools will be prefixed with server names
+                if num_servers > 1:
+                    if not any(t.name.startswith(s + "_") for s in server_names):
+                        continue
+                # otherwise, there's only one server
                 ctr += 1
                 desc += dedent(f"""
                     ## {ctr}.  {t.name}

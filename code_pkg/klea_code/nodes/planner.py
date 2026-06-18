@@ -36,9 +36,11 @@ class Planner(BaseLLMNode[PlanSchema]):
         )
         self._tools_description = ""
 
-    def set_tools_description(self, description: str) -> None:
+    def set_tools_description(self, description: dict[str, str]) -> None:
         """Set tool descriptions (called by orchestrator after construction)."""
-        self._tools_description = description
+        self._tools_description = (
+            "\n\n".join(description.values()) if description else ""
+        )
 
     @override
     def _get_prompt_variables(self, state: KleaCodeState) -> dict:

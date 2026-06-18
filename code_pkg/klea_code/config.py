@@ -8,12 +8,22 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
-from pydantic_settings import BaseSettings
+from typing import Any
+
+from pydantic import BaseModel, Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class AppConfig(BaseSettings):
-    mcp_config_file: str = "mcp.json"
-    code_model: str = "ollama:qwen3.5:0.8b"
+class AppEnv(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="KLEA_CODE_")
+
+    app_config_file: str = "klea_code.json"
+    chat_model: str = "ollama:qwen3.5:0.8b"
     reasoning_model: str = "ollama:qwen3.5:0.8b"
     guard_model: str = "ollama:llama-guard3:1b"
-    vs_config_file: str | None = None
+
+
+class AppConfig(BaseModel):
+    """Application configuration loaded from the JSON config file."""
+
+    mcp_servers: dict[str, Any] = Field(default_factory=dict)

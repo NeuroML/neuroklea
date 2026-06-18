@@ -9,8 +9,10 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from typing import final
+import sys
+from typing import Any, final, override
 
+from fastmcp.mcp_config import MCPConfig, StdioMCPServer
 from klea_utils.graph.base import BaseLangGraph
 from klea_utils.llm import setup_llm
 from klea_utils.nodes.fixed_answer import FixedAnswer
@@ -28,7 +30,7 @@ from klea_code.nodes.tools_caller import ToolsCaller
 from klea_code.nodes.tools_picker import ToolsPicker
 from klea_code.nodes.tools_router import ToolsRouter
 
-from .config import AppConfig
+from .config import AppConfig, AppEnv
 from .schemas import GoalSchema, KleaCodeState
 
 logging.basicConfig()
@@ -39,9 +41,10 @@ logging.root.setLevel(logging.WARNING)
 class KleaCode(BaseLangGraph):
     """Klea Code implementation"""
 
+    env_class = AppEnv
+    env_var = "KLEA_CODE_ENV_FILE"
+    env_file_default = "klea_code.env"
     config_class = AppConfig
-    config_env_var = "CODE_AI_CONFIG_FILE"
-    config_file_default = "klea_code.env"
     logger_name = "KleaCode"
 
     def __init__(
@@ -57,15 +60,36 @@ class KleaCode(BaseLangGraph):
 
     def _setup_models(self) -> None:
         """Set up the LLM chat model"""
-        self.c_model = setup_llm(self.config.code_model, self.logger)
-        if self.config.code_model == self.config.reasoning_model:
+        self.c_model = setup_llm(self.app_env.chat_model, self.logger)
+        if self.app_env.chat_model == self.app_env.reasoning_model:
             self.r_model = self.c_model
             self.logger.info(
-                f"Same model used for both chat and reasoning: {self.config.code_model}"
+                f"Same model used for both chat and reasoning: {self.app_env.chat_model}"
             )
         else:
-            self.r_model = setup_llm(self.config.reasoning_model, self.logger)
-        self.g_model = setup_llm(self.config.guard_model, self.logger)
+            self.r_model = setup_llm(self.app_env.reasoning_model, self.logger)
+        self.g_model = setup_llm(self.app_env.guard_model, self.logger)
+
+    @override
+    def _configure_resources(self) -> None:
+        """Configure MCP servers and a default domain.
+
+        Merges the external MCP server (if any) with the bundled tools server
+        into a single MCPConfig, and sets up a single domain that includes
+        both so tool descriptions are built correctly.
+        """
+        # Build bundled server config
+        bundle_server = StdioMCPServer(
+            command=sys.executable,
+            args=["-m", "klea_code.tools.bundled"],
+        )
+
+        # Merge external + bundled
+        ext_servers: dict[str, Any] = dict(self.app_config.mcp_servers)
+        all_servers = {**ext_servers, "bundled": bundle_server}
+
+        self.mcp_config = MCPConfig(mcpServers=all_servers)
+        self.domain_mcp_configs = {"code": MCPConfig(mcpServers=all_servers)}
 
     # TODO: replace with class
     async def _step_router_node(self, state: KleaCodeState) -> str:

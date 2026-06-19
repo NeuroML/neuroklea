@@ -9,6 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
+from textwrap import dedent
 from typing import Any, Dict, Type, override
 
 from klea_utils.nodes.base import BaseLLMNode
@@ -60,7 +61,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         domain_info = self.stores.vs_config.domains
 
         domain_str = self.stores.vs_config.pre_prompt
-        domain_str += "\n\nCategories:\n\n"
+        domain_str += "\n\Domains:\n\n"
 
         for d, info in domain_info.items():
             desc = info.description
@@ -70,17 +71,31 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
                 desc = f"if the question is about {desc}"
             domain_str += f"\n- {d}: {desc}"
 
-        domain_str += "\n- undefined: otherwise (if no other category)"
+        domain_str += "\n- undefined: otherwise (if no other domain)"
         return domain_str
 
     @override
     def _get_system_prompt(self, state: RAGState) -> str:
         """Load base prompt, append domains, then rules, then optional memory."""
         system_prompt = self._load_prompt_file(f"{self.prompt_prefix}_system")
+
+        # additional logic
         system_prompt += f"\n\n## Domains\n{self._build_domain_str()}\n\n"
 
         if self.memory:
-            system_prompt += self._get_memory_addition(state)
+            memory_addition = self._get_memory_addition(state)
+            system_prompt += memory_addition
+
+        if self.output_schema:
+            system_prompt += dedent(
+                f"""
+                ## Output schema (strict)
+
+                Respond in JSON following this schema:
+
+                {str(self.output_schema_json).replace("{", "{{").replace("}", "}}")}
+                """
+            )
 
         self.logger.debug(f"{system_prompt =}")
         return system_prompt

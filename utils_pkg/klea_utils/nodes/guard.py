@@ -54,6 +54,10 @@ class GuardNode(BaseLLMNode):
         return {"query": state.query}  # type: ignore
 
     @override
+    def _get_system_prompt(self, state: BaseModel) -> str:
+        return ""
+
+    @override
     def _update_state(self, result: AIMessage, state: BaseModel) -> Dict[str, Any]:
         """Check result for safety and return routing decision."""
         self.logger.debug(f"{result = }")

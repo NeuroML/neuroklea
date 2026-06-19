@@ -27,6 +27,7 @@ class AppEnv(BaseSettings):
 class GeneralConfig(BaseModel):
     default_k: int = 5
     k_max: int = 10
+    # TODO: unused---what is this for?
     pre_prompt: str = ""
     non_domain_chat: bool = True
     fallback_to_training_data: bool = True

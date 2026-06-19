@@ -33,6 +33,12 @@ The following environment variables need to be set:
 - `KLEA_RAG_CHAT_MODEL`: the name of the chat model to use. See below.
 - `KLEA_RAG_VS_CONFIG`: the path to the configuration file for the vector stores.
 
+Environment variables can be provided in an env file also.
+The path to this env file can be set using the `KLEA_RAG_ENV_FILE` environment variable.
+
+```
+KLEA_RAG_ENV_FILE=/path/to/file fastapi dev klea_rag/api/main.py --port 8005
+```
 ### Supported models
 
 - local Ollama models: include the `ollama:` prefix.

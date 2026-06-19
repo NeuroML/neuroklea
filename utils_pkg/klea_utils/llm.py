@@ -234,7 +234,7 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
         hf_token = os.environ.get("HF_TOKEN", None)
         assert hf_token
 
-        logger.debug("Got HuggingFace Token")
+        logger.debug(f"Got HuggingFace Token: {hf_token[:2]}...{hf_token[-2:]}")
 
         llm = HuggingFaceEndpoint(
             repo_id=f"{model_name}",

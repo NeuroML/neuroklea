@@ -194,6 +194,10 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
             system_prompt += memory_addition
 
         if self.output_schema:
+            # we pass this as part of the prompt because not all models/end
+            # points support passing schemas separately, or respect `with
+            # structured output`.  This is the safest, most general way of
+            # doing it.
             system_prompt += dedent(
                 f"""
                 ## Output schema (strict)

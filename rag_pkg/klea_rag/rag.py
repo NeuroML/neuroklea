@@ -235,7 +235,10 @@ class RAG(BaseLangGraph):
         self.workflow.add_node("evaluate_answer", self._evaluate_answer_node.execute)
 
         self._route_evaluator_node = RouteEvaluator(
-            logger=self.logger, stores=self.stores
+            logger=self.logger,
+            stores=self.stores,
+            max_retrieval_attempts=self.app_config.general.max_retrieval_attempts,
+            max_rewrite_attempts=self.app_config.general.max_rewrite_attempts,
         )
 
         self._answer_user_node = AnswerUser(logger=self.logger)

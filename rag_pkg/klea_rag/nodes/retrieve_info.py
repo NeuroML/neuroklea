@@ -30,14 +30,14 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     def __init__(
         self,
         logger: logging.Logger,
-        stores: VectorStores,
+        stores: VectorStores | None,
         mcp_client: Client | None = None,
         num_refs_max: int = 10,
     ):
         """Initialise the retrieval node.
 
         :param logger: Logger instance
-        :param stores: VectorStores instance for retrieval
+        :param stores: VectorStores instance for retrieval (None skips retrieval)
         :param num_refs_max: Maximum number of references to keep per domain
         """
         super().__init__(logger)
@@ -48,6 +48,10 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     @override
     async def execute(self, state: RAGState) -> Dict[str, Any]:
         """Retrieve and rank reference material."""
+        if self.stores is None:
+            self.logger.debug("No vector stores configured, skipping retrieval")
+            return {}
+
         reference_material = state.reference_material
         cleaned_query = state.retrieval_query
 

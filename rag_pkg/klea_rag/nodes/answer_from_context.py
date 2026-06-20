@@ -79,9 +79,13 @@ class AnswerFromContext(BaseLLMNode[AnswerSchema]):
         messages = state.messages  # type: ignore
         messages.append(res_message)
 
+        is_rewrite = state.text_response_eval.next_step == "rewrite_answer"  # type: ignore
         return {
             "messages": messages,
             "reference_material": state.reference_material,  # type: ignore
+            "rewrite_attempts": state.rewrite_attempts + 1  # type: ignore
+            if is_rewrite
+            else state.rewrite_attempts,  # type: ignore
         }
 
     def _update_reference_list(self, answer: str, references: list[str]) -> str:

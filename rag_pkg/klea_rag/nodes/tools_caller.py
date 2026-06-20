@@ -22,11 +22,11 @@ from klea_rag.schemas import RAGState
 class ToolsCaller(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Node that calls MCP tools based on tool_calls in state."""
 
-    def __init__(self, logger: logging.Logger, mcp_client: Client):
+    def __init__(self, logger: logging.Logger, mcp_client: Client | None):
         """Initialise the tools caller node.
 
         :param logger: Logger instance
-        :param mcp_client: MCP client instance
+        :param mcp_client: MCP client instance (None skips tool calls)
         """
         super().__init__(logger=logger)
         self._mcp_client = mcp_client

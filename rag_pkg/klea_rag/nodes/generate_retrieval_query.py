@@ -42,7 +42,7 @@ class GenerateRetrievalQuery(BaseLLMNode[RAGState]):
         """Load system prompt, optionally appending evaluator feedback."""
         system_prompt = super()._get_system_prompt(state)
 
-        if state.query_modified:
+        if state.retrieval_attempts > 0:
             feedback = state.text_response_eval.summary
             system_prompt += dedent(f"""
                 Generate a new query on EXACTLY one of the concepts that the
@@ -73,7 +73,11 @@ class GenerateRetrievalQuery(BaseLLMNode[RAGState]):
         output = AIMessage(content=answer)
         messages.append(output)
 
-        return {"messages": messages, "retrieval_query": answer}
+        return {
+            "messages": messages,
+            "retrieval_query": answer,
+            "retrieval_attempts": state.retrieval_attempts + 1,
+        }
 
     @override
     def _get_default_error_result(self) -> Any:

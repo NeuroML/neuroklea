@@ -67,8 +67,11 @@ class RAGState(BaseModel):
     # reference material from retrievals
     reference_material: Dict[str, List[Tuple]] = Field(default_factory=dict)
 
-    # whether the retrieval query has been modified based on evaluator feedback
-    query_modified: bool = False
+    # number of retrieval query modification attempts in evaluator loop
+    retrieval_attempts: int = 0
+
+    # number of answer rewrite attempts in evaluator loop
+    rewrite_attempts: int = 0
 
     # generated retrieval query for the current round
     retrieval_query: str = ""

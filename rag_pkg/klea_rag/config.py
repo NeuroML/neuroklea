@@ -32,6 +32,8 @@ class GeneralConfig(BaseModel):
     non_domain_chat: bool = True
     fallback_to_training_data: bool = True
     fallback_warning: str = ""
+    max_retrieval_attempts: int = 2
+    max_rewrite_attempts: int = 1
 
 
 class PerDomainConfig(BaseModel):

@@ -50,6 +50,10 @@ class RAG(BaseLangGraph):
     config_class = AppConfig
     logger_name = "RAG"
 
+    # type hints
+    app_env: AppEnv
+    app_config: AppConfig
+
     def __init__(
         self,
         logging_level: int = logging.DEBUG,
@@ -79,7 +83,7 @@ class RAG(BaseLangGraph):
         "Set up bits required before graph is compiled"
         # for refusal node
         self.refusal_message = "Sorry. I cannot answer this query as it does not fall into my permitted domains. Available domains are:\n"
-        self.refusal_message += "\n- ".join([""] + self.stores.domains)
+        self.refusal_message += "\n- ".join([""] + list(self.app_config.domains))
         self.refusal_message += "\n\n\nPlease try another query."
 
         # for clarification node
@@ -120,7 +124,11 @@ class RAG(BaseLangGraph):
     @override
     async def _create_graph(self):
         """Create the LangGraph"""
-        self.workflow = StateGraph(RAGState)
+        self.workflow = StateGraph(RAGState)  # ty: ignore[invalid-assignment]
+
+        # TODO: should be a check that gives user an error
+        assert self.stores is not None or self.mcp_client is not None
+        assert self.QueryDomainSchema is not None
 
         # Guard nodes
         self._guard_node = GuardNode(
@@ -150,7 +158,10 @@ class RAG(BaseLangGraph):
             output_schema=self.QueryDomainSchema,
             temperature=0.3,
             memory=self.memory,
-            stores=self.stores,
+            domains={
+                d: info.description for d, info in self.app_config.domains.items()
+            },
+            pre_prompt=self.app_config.general.pre_prompt,
         )
         self.workflow.add_node(
             "classify_question_domain", self._classify_question_node.execute

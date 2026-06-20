@@ -72,11 +72,19 @@ class RAG(BaseLangGraph):
     async def get_graph(self):
         """Setup and get compiled graph"""
         await self.setup()
+
         return self.graph
 
     @override
     async def _pre_graph(self):
         "Set up bits required before graph is compiled"
+        # RAG must have at least one vector store
+        if not self.stores:
+            self.logger.error(
+                "No vector stores defined. Please check the config. Exiting"
+            )
+            return None
+
         # for refusal node
         self.refusal_message = "Sorry. I cannot answer this query as it does not fall into my permitted domains. Available domains are:\n"
         self.refusal_message += "\n- ".join([""] + self.stores.domains)
@@ -120,6 +128,7 @@ class RAG(BaseLangGraph):
     @override
     async def _create_graph(self):
         """Create the LangGraph"""
+        assert self.stores
         self.workflow = StateGraph(RAGState)
 
         # Guard nodes

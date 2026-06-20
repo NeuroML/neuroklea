@@ -160,7 +160,7 @@ class BaseLangGraph(ABC):
         Reads the MCP server configurations from ``self.app_env.mcp_config_file``
         and creates a ``fastmcp.Client`` instance.
         """
-        if self.mcp_config:
+        if self.mcp_config and self.mcp_config.mcpServers:
             self.logger.debug(f"{self.mcp_config = }")
             self.mcp_client = Client(self.mcp_config)
         else:

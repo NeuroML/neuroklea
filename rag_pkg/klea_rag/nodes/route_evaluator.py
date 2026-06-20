@@ -25,6 +25,7 @@ class RouteEvaluator(AbstractRouterNode):
         stores: VectorStores | None,
         max_retrieval_attempts: int = 2,
         max_rewrite_attempts: int = 1,
+        fallback_to_training_data: bool = False,
     ):
         """Initialise the evaluator node.
 
@@ -32,6 +33,7 @@ class RouteEvaluator(AbstractRouterNode):
         :param stores: Vector Stores
         :param max_retrieval_attempts: Max retrieval query modifications
         :param max_rewrite_attempts: Max answer rewrites
+        :param fallback_to_training_data: Whether to fall back to LLM training data
         """
         super().__init__(
             logger=logger,
@@ -39,6 +41,7 @@ class RouteEvaluator(AbstractRouterNode):
         self.stores = stores
         self.max_retrieval_attempts = max_retrieval_attempts
         self.max_rewrite_attempts = max_rewrite_attempts
+        self.fallback_to_training_data = fallback_to_training_data
 
     def execute(self, state: RAGState):
         """Route based on state, set by evaluator node."""
@@ -84,7 +87,7 @@ class RouteEvaluator(AbstractRouterNode):
                 # if we've already modified query, fallback to training data if
                 # possible, otherwise ask for clarification
                 else:
-                    if self.stores.vs_config.fallback_to_training_data:
+                    if self.fallback_to_training_data:
                         self.logger.debug("returning: fallback")
                         return "fallback"
                     else:
@@ -107,7 +110,7 @@ class RouteEvaluator(AbstractRouterNode):
             return "rewrite_answer"
         # all other cases: fallback to training data if enabled, otherwise ask for clarification
         else:
-            if self.stores and self.stores.vs_config.fallback_to_training_data:
+            if self.fallback_to_training_data:
                 self.logger.debug("returning: fallback")
                 return "fallback"
             else:

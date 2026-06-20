@@ -96,8 +96,6 @@ class RAG(BaseLangGraph):
     def _configure_resources(self):
         """Configure resources"""
         assert self.app_config
-        general_settings = self.app_config.general.model_dump()
-        general_settings["embedding_model"] = self.app_env.embedding_model
         domains = self.app_config.domains
         domain_vs = {}
         domain_ms = {}
@@ -111,7 +109,12 @@ class RAG(BaseLangGraph):
         self.logger.debug(f"{domain_ms = }")
 
         # set up configs
-        self.stores_config = VectorStoresConfig(domains=domain_vs, **general_settings)
+        self.stores_config = VectorStoresConfig(
+            domains=domain_vs,
+            embedding_model=self.app_env.embedding_model,
+            default_k=self.app_config.general.default_k,
+            k_max=self.app_config.general.k_max,
+        )
         self.mcp_config = MCPConfig(mcpServers=domain_ms)
 
         # store per-domain MCP configs for domain-aware tool descriptions
@@ -239,6 +242,7 @@ class RAG(BaseLangGraph):
             stores=self.stores,
             max_retrieval_attempts=self.app_config.general.max_retrieval_attempts,
             max_rewrite_attempts=self.app_config.general.max_rewrite_attempts,
+            fallback_to_training_data=self.app_config.general.fallback_to_training_data,
         )
 
         self._answer_user_node = AnswerUser(logger=self.logger)

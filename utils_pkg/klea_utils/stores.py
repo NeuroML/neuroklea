@@ -8,7 +8,6 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
-import json
 import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
@@ -74,11 +73,8 @@ class VectorStoresConfig(BaseModel):
 
     default_k: int = 5
     k_max: int = 10
-    pre_prompt: str = ""
     embedding_model: str
     domains: Dict[str, PerDomainConfig]
-    fallback_to_training_data: bool = False
-    fallback_warning: str = ""
 
 
 class VectorStores:

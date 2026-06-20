@@ -40,7 +40,7 @@ YYYY-MM-DD.md
 
 ## Guidelines
 
-- **Be concise**: Logs are added to agent context. Aim for 5-10 lines total. Focus on decisions and outcomes, not task-by-task details.
+- **Be concise**: Logs are added to agent context. Keep them high-level — decisions, architecture changes, and outcomes. Git commit logs hold the step-by-step details. Avoid listing every file edit unless the change is structural.
 - **Focus on continuity**: Capture what's needed to continue work in future sessions.
-- **Omit routine work**: Don't log every lint fix or commit unless noteworthy.
+- **Omit routine work**: Don't log lint fixes or minor edits unless noteworthy.
 - **Preserve information**: When updating a session log, do not remove existing content. Merge new information with what's already there.

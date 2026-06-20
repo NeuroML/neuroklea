@@ -13,7 +13,6 @@ from textwrap import dedent
 from typing import Any, Dict, Type, override
 
 from klea_utils.nodes.base import BaseLLMNode
-from klea_utils.stores import VectorStores
 from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel
 
@@ -25,7 +24,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
     """Classify a user query into domain categories.
 
     Uses an LLM to determine which domains the query belongs to, based on
-    configured vector store domains. Appends conversation history to the system
+    configured domain metadata. Appends conversation history to the system
     prompt when memory is enabled.
     """
 
@@ -33,19 +32,21 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         self,
         logger: logging.Logger,
         model: Any,
-        stores: VectorStores,
+        domains: Dict[str, str],
         output_schema: Type[TSchema],
         temperature: float = 0.3,
         memory: bool = False,
+        pre_prompt: str = "",
     ):
         """Initialise the classifier node.
 
         :param logger: Logger instance
         :param model: LLM model instance
-        :param stores: VectorStores instance (provides domain configuration)
+        :param domains: Domain name to description mapping
         :param output_schema: Pydantic schema for classification output
         :param temperature: Sampling temperature for LLM calls
         :param memory: Whether to include conversation history in the prompt
+        :param pre_prompt: Optional pre-prompt text for domain classification
         """
         super().__init__(
             logger=logger,
@@ -54,17 +55,15 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
             output_schema=output_schema,
             memory=memory,
         )
-        self.stores = stores
+        self.domains = domains
+        self.pre_prompt = pre_prompt
 
     def _build_domain_str(self) -> str:
-        """Build the domain classification string from vector store config."""
-        domain_info = self.stores.vs_config.domains
+        """Build the domain classification string from domain metadata."""
+        domain_str = self.pre_prompt
+        domain_str += "\n\n## Domains\n\n"
 
-        domain_str = self.stores.vs_config.pre_prompt
-        domain_str += "\n\Domains:\n\n"
-
-        for d, info in domain_info.items():
-            desc = info.description
+        for d, desc in self.domains.items():
             if not desc or len(desc) == 0:
                 desc = f"if the question is about {d}"
             else:
@@ -116,7 +115,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         # limit domains to valid ones
         valid_domains = []
         for d in domains:
-            if d in self.stores.domains:
+            if d in self.domains:
                 valid_domains.append(d)
 
         # if no valid domains, default to "undefined"

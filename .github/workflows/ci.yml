@@ -46,6 +46,11 @@ jobs:
         echo "github.base_ref is: ${{ github.base_ref }}"
 
 
+    - name: Update machine
+      run: |
+        sudo apt-get update
+        sudo apt-get upgrade -y
+
     - name: Install package
       run: |
         uv pip install -r ./requirements.txt

@@ -12,8 +12,6 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-import chromadb
-from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from pydantic import BaseModel
 
@@ -78,10 +76,16 @@ class VectorStoresConfig(BaseModel):
 
 
 class VectorStores:
-    """Manages domain-specific ChromaDB vector stores.
+    """Manages domain-specific vector stores.
 
     Loads vector stores on demand per domain and provides similarity search
     retrieval across multiple stores within a domain.
+
+    Store paths use a URI-style scheme prefix to identify the backend:
+
+    - ``chroma:/path/to/dir`` — ChromaDB (persistent, local disk)
+    - ``qdrant:http://host:port`` — Qdrant (remote HTTP)
+    - ``pgvector:postgresql://host/db`` — PGVector (PostgreSQL)
     """
 
     def __init__(self, vs_config: VectorStoresConfig, logger: logging.Logger):
@@ -168,45 +172,97 @@ class VectorStores:
 
         for store in stores:
             store_name = store.name
-            store_path = Path(store.path)
             self.logger.debug(
-                f"Got store for domain {domain_name}: {store_name} ({store_path})"
+                f"Got store for domain {domain_name}: {store_name} ({store.path})"
             )
 
-            # If not absolute, resolve relative to cwd
-            if not store_path.is_absolute():
-                store_path = Path.cwd() / store_path
+            store.loaded_object = self._instantiate_store(store.path, store_name)
+
+            self.logger.debug(
+                f"Finished loading vector store '{store_name}' from {store.path}"
+            )
+
+    def _instantiate_store(self, path: str, name: str):
+        """Instantiate a vector store based on the URI scheme in path.
+
+        Expected format: ``"scheme:location"``.
+
+        :param path: URI-style string with scheme prefix
+            (e.g. ``"chroma:/path/to/dir"``, ``"qdrant:http://localhost:6333"``,
+            ``"pgvector:postgresql://localhost/db"``)
+        :param name: Collection name for the vector store
+        :returns: Instantiated LangChain VectorStore
+        :raises ValueError: If the scheme is missing or unknown
+        """
+        scheme, sep, location = path.partition(":")
+        if not sep:
+            raise ValueError(
+                f"Invalid vector store path '{path}': "
+                f"expected format 'scheme:location' (e.g. 'chroma:/path/to/store')"
+            )
+
+        match scheme.lower():
+            case "chroma":
+                import chromadb
+                from langchain_chroma import Chroma
+
+                store_dir = Path(location)
+                if not store_dir.is_absolute():
+                    store_dir = Path.cwd() / store_dir
+                    self.logger.debug(
+                        f"Store path made absolute relative to cwd: {store_dir}"
+                    )
+
+                if not store_dir.is_dir():
+                    self.logger.error(f"Could not find folder: {store_dir}")
+                    raise FileNotFoundError(f"Could not find folder: {store_dir}")
+
+                store_db = store_dir / "chroma.sqlite3"
+                if not store_db.is_file():
+                    raise FileNotFoundError(f"ChromaDB not found at {store_db}")
+
                 self.logger.debug(
-                    f"Store path made absolute relative to cwd: {store_path}"
+                    f"Loading Chroma vector store '{name}' from {store_dir.absolute()}"
                 )
 
-            if not store_path.is_dir():
-                self.logger.error(f"Could not find folder: {store_path}")
-                raise FileNotFoundError(f"Could not find folder: {store_path}")
+                settings = chromadb.config.Settings(
+                    is_persistent=True,
+                    persist_directory=str(store_dir.absolute()),
+                    anonymized_telemetry=False,
+                )
+                return Chroma(
+                    collection_name=name,
+                    embedding_function=self.embeddings,
+                    client_settings=settings,
+                )
 
-            # Check that it is a pre-existing DB
-            store_db = store_path / Path("chroma.sqlite3")
-            assert store_db.is_file()
+            case "qdrant":
+                from langchain_qdrant import Qdrant
 
-            self.logger.debug(
-                f"Loading Chroma vector store '{store_name}' from path {store_path.absolute()}"
-            )
+                self.logger.debug(f"Loading Qdrant vector store '{name}' at {location}")
+                return Qdrant(
+                    collection_name=name,
+                    embeddings=self.embeddings,
+                    url=location,
+                )
 
-            chroma_client_settings = chromadb.config.Settings(
-                is_persistent=True,
-                persist_directory=str(store_path.absolute()),
-                anonymized_telemetry=False,
-            )
-            loaded_store = Chroma(
-                collection_name=store_name,
-                embedding_function=self.embeddings,
-                client_settings=chroma_client_settings,
-            )
-            store.loaded_object = loaded_store
+            case "pgvector":
+                from langchain_postgres import PGVector
 
-            self.logger.debug(
-                f"Finished loading Chroma vector store '{store_name}' from path {store_path.absolute()}"
-            )
+                self.logger.debug(
+                    f"Loading PGVector vector store '{name}' with connection {location}"
+                )
+                return PGVector(
+                    collection_name=name,
+                    embeddings=self.embeddings,
+                    connection=location,
+                )
+
+            case _:
+                raise ValueError(
+                    f"Unknown vector store scheme '{scheme}'. "
+                    f"Supported: chroma, qdrant, pgvector"
+                )
 
     def retrieve(self, domain_name: str, query: str) -> list[tuple[Document, float]]:
         """Retrieve documents from vector stores for a query.

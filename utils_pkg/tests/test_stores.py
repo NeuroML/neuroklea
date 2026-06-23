@@ -8,6 +8,9 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+# TODO: Add tests for Qdrant and PGVector backends.
+# Currently only Chroma is exercised here.
+
 import json
 import logging
 import os

@@ -171,6 +171,10 @@ class VectorStores:
         stores = domain.vector_stores
 
         for store in stores:
+            if store.loaded_object is not None:
+                self.logger.debug(f"Store '{store.name}' already loaded, skipping")
+                continue
+
             store_name = store.name
             self.logger.debug(
                 f"Got store for domain {domain_name}: {store_name} ({store.path})"
@@ -194,6 +198,7 @@ class VectorStores:
         :returns: Instantiated LangChain VectorStore
         :raises ValueError: If the scheme is missing or unknown
         """
+        assert self.embeddings
         scheme, sep, location = path.partition(":")
         if not sep:
             raise ValueError(
@@ -203,8 +208,14 @@ class VectorStores:
 
         match scheme.lower():
             case "chroma":
-                import chromadb
-                from langchain_chroma import Chroma
+                try:
+                    import chromadb
+                    from langchain_chroma import Chroma
+                except ImportError:
+                    raise ImportError(
+                        "ChromaDB backend not installed. "
+                        "Install: pip install klea_utils[chroma]"
+                    ) from None
 
                 store_dir = Path(location)
                 if not store_dir.is_absolute():
@@ -237,17 +248,31 @@ class VectorStores:
                 )
 
             case "qdrant":
-                from langchain_qdrant import Qdrant
+                try:
+                    from langchain_qdrant import QdrantVectorStore
+                    from qdrant_client import QdrantClient
+                except ImportError:
+                    raise ImportError(
+                        "Qdrant backend not installed. "
+                        "Install: pip install klea_utils[qdrant]"
+                    ) from None
 
+                client = QdrantClient(url=location)
                 self.logger.debug(f"Loading Qdrant vector store '{name}' at {location}")
-                return Qdrant(
+                return QdrantVectorStore(
+                    client=client,
                     collection_name=name,
-                    embeddings=self.embeddings,
-                    url=location,
+                    embedding=self.embeddings,
                 )
 
             case "pgvector":
-                from langchain_postgres import PGVector
+                try:
+                    from langchain_postgres import PGVector
+                except ImportError:
+                    raise ImportError(
+                        "PGVector backend not installed. "
+                        "Install: pip install klea_utils[pgvector]"
+                    ) from None
 
                 self.logger.debug(
                     f"Loading PGVector vector store '{name}' with connection {location}"

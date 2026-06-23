@@ -1,56 +1,103 @@
-# AGENTS.md - Klea Project
+# AGENTS.md -- Klea monorepo
 
-This file contains common guidelines for all coding agents working on the project.
+**NOTE:** `CLAUDE.md` is a symlink to this file (`CLAUDE.md -> AGENTS.md`).
+Editing or writing to `CLAUDE.md` will overwrite `AGENTS.md` -- always edit
+`AGENTS.md` directly.
 
-## Project Structure
+Multi-package Python project (setuptools + `setup.cfg`). Each `*_pkg/` is a
+separate installable; `code_pkg` and `rag_pkg` depend on `utils_pkg`.
 
-The project contains multiple Python packages:
+## Packages at a glance
 
-- [code_pkg/AGENTS.md](code_pkg/AGENTS.md) - AI assisted coding/workflow system
-- [mcp_pkg/AGENTS.md](mcp_pkg/AGENTS.md) - MCP server for NeuroML/OSB
-- [rag_pkg/AGENTS.md](rag_pkg/AGENTS.md) - Generic RAG implementation
-- [utils_pkg/AGENTS.md](utils_pkg/AGENTS.md) - Shared utilities
+| Dir | Package name | CLI entry |
+|-----|-------------|-----------|
+| `utils_pkg/` | `klea_utils` | -- (shared lib) |
+| `code_pkg/` | `klea_code` | `klea-code` |
+| `rag_pkg/` | `klea_rag` | `klea-rag`, `klea-rag-serve` |
+| `mcp_pkg/` | `neuroml_mcp` | `nml-mcp` |
 
-Consult the relevant package's AGENTS.md for package-specific commands and architecture guidelines.
+Each has its own `AGENTS.md` with architecture details -- refer to those for
+package-specific commands, node layout, and conventions.
 
-## Development Workflow
+## Commands
 
-### Session Logging
+```bash
+# Dev install (editable, all packages)
+uv pip install -r requirements-dev.txt
 
-At the start of each session, check the `.agents/` folder for previous session logs (named `YYYY-MM-DD.md`) to understand where work left off. Read `.agents/README.md` for the session log format and follow it when writing logs — do not write logs from memory.
+# Run all tests across packages (from repo root)
+bash scripts/run_tests.sh        # pytest -v -n auto in each *_pkg/tests
 
-### Tooling
-- **uv** is used as the package manager (not pip directly). Use `uv pip install`, `uv run`, etc.
-- **ruff** is used for linting and formatting
-- **ty** is used for type checking
+# Single package test
+cd mcp_pkg && pytest -v          # uses -n 1 (mcp tools are asyncio)
+cd utils_pkg && pytest -v
 
-### Pre-commit Requirements
-- All code must pass ruff linting and formatting
-- All code must pass ty type checking
-- Import sorting is mandatory
-- No trailing whitespace or large files
-- Line endings must be Unix format
+# Run only tests that do NOT need an LLM
+pytest -m "not localonly"
 
-### Git Conventions
-- Never stage or commit without explicit user approval
-- When creating new files, use `git add --intent-to-add <file>` so they appear in `git diff`
-- Flag large changes and suggest breaking them into smaller, focused commits for provenance and clarity
-- Use conventional commit messages when possible
-- Include relevant issue numbers in commit messages
-- Keep commits focused and atomic
-- Ensure all tests pass before pushing
+# Lint + format
+ruff check . --fix
+ruff format .
+ruff check . --select I --fix    # import sorting
 
-## Security Considerations
+# Type check
+ty
 
-### Code Safety
-- Avoid eval() and exec() with user input
-- Sanitize all file paths and inputs
-- Implement proper access controls
-- Use HTTPS for all external communications
-- Never log sensitive information or credentials
+# Pre-commit (CI gate)
+pre-commit run --all-files
+```
 
-### Comments
-- Never remove TODO, FIXME, NOTE, or other comments from the codebase
-- Preserve all existing comments during refactoring unless explicitly asked to remove them
+`mcp_pkg` pytest uses `addopts = -n 1` -- do **not** run its tests with `-n auto`.
 
-This file should be updated as the project evolves. All agents should familiarize themselves with these guidelines before making changes to the codebase.
+All packages ignore `F403`, `F405` in ruff.
+
+## CI flow
+
+`.github/workflows/ci.yml` (pushes/PRs to main/development/*test*/**feat*/**fix*):
+`uv pip install -r ./requirements.txt` -> `ollama pull qwen3:0.6b bge-m3` ->
+`bash scripts/run_tests.sh` -> `ruff check . --exit-zero`
+
+`.github/workflows/ruff.yml`: changed-files lint on PRs.
+
+## Config & env loading
+
+Both `KleaCode` and `RAG` orchestrators load configuration via:
+1. An env file (`k=v` format, path from `KLEA_CODE_ENV_FILE` / `KLEA_RAG_ENV_FILE` or default `klea_code.env` / `rag.env`)
+2. A JSON config file referenced inside the env file
+
+`ty.toml` adds `extra-paths` for all four packages so type-checking resolves
+cross-package imports.
+
+## Testing quirks
+
+- Tests marked `localonly` require an LLM -- skipped in CI.
+- `utils_pkg/tests/test_stores.py` reads `VS_TEST_CONFIG` env var (default `vector-stores-tests.json`).
+- MCP tests are asyncio + single-process (`-n 1`).
+
+## Names to know
+
+Copyright format: `# Copyright 2026 Ankur Sinha <sanjay DOT ankur AT gmail DOT com>`
+(`mcp_pkg` additionally requires `#!/usr/bin/env python3` shebang on every `.py` file.)
+
+MCP tool auto-discovery: any function ending `_tool` is registered.
+
+`BaseLangGraph` lives at `utils_pkg/klea_utils/graph/base.py` -- shared
+setup -> MCP client -> vector stores -> compile graph template method.
+
+Vector stores use URI-style paths: `chroma:/path/to/dir`, `qdrant:http://...`,
+`pgvector:postgresql://...`.
+
+## Session continuity
+
+`.agents/YYYY-MM-DD.md` logs previous work. `.agents/Readme.md` has the format.
+Read at session start; write to on completion.
+
+## Git conventions
+
+- `git add --intent-to-add <new-file>` so new files appear in `git diff`.
+- Never stage/commit without explicit user approval.
+- Conventional commit messages with issue numbers when applicable.
+
+## File conventions
+
+- Use ASCII-only text. No unicode dashes, arrows, ellipsis, or emoticons.

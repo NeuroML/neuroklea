@@ -83,9 +83,9 @@ class VectorStores:
 
     Store paths use a URI-style scheme prefix to identify the backend:
 
-    - ``chroma:/path/to/dir`` — ChromaDB (persistent, local disk)
-    - ``qdrant:http://host:port`` — Qdrant (remote HTTP)
-    - ``pgvector:postgresql://host/db`` — PGVector (PostgreSQL)
+    - ``chroma:/path/to/dir``  ---  ChromaDB (persistent, local disk)
+    - ``qdrant:http://host:port``  ---  Qdrant (remote HTTP)
+    - ``pgvector:postgresql://host/db``  ---  PGVector (PostgreSQL)
     """
 
     def __init__(self, vs_config: VectorStoresConfig, logger: logging.Logger):

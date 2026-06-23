@@ -89,8 +89,11 @@ Vector stores use URI-style paths: `chroma:/path/to/dir`, `qdrant:http://...`,
 
 ## Session continuity
 
-`.agents/YYYY-MM-DD.md` logs previous work. `.agents/Readme.md` has the format.
-Read at session start; write to on completion.
+`.agents/YYYY-MM-DD.md` logs previous work (see `.agents/Readme.md` for template).
+Read previous logs at session start; write one at session end.
+
+Keep logs high-level — decisions, architecture changes, outcomes only.
+Git log has the step-by-step edits. Omit routine work.
 
 ## Git conventions
 

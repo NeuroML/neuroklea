@@ -10,16 +10,10 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import asyncio
 import logging
-import sys
 from pathlib import Path
 
 import aiohttp
-from klea_utils.plogging import (
-    LoggerInfoFilter,
-    LoggerNotInfoFilter,
-    logger_formatter_info,
-    logger_formatter_other,
-)
+from klea_utils.plogging import setup_logger
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -29,21 +23,7 @@ from tenacity import (
 
 from ..utils import MCP_DIRS
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.propagate = False
-
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.addFilter(LoggerInfoFilter())
-stdout_handler.setFormatter(logger_formatter_info)
-logger.addHandler(stdout_handler)
-
-stderr_handler = logging.StreamHandler(sys.stderr)
-stderr_handler.setLevel(logging.DEBUG)
-stderr_handler.addFilter(LoggerNotInfoFilter())
-stderr_handler.setFormatter(logger_formatter_other)
-logger.addHandler(stderr_handler)
+logger = setup_logger(__name__)
 
 
 @retry(

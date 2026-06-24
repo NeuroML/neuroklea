@@ -96,34 +96,9 @@ class BaseLangGraph(ABC):
 
         self.QueryDomainSchema: Type[BaseModel] | None = None
 
-        self.logger = logging.getLogger(self.logger_name)
-        self.logger.setLevel(logging_level)
-        self.logger.propagate = False
-        self._setup_logging(logging_level)
+        from klea_utils.plogging import setup_logger
 
-    def _setup_logging(self, level: int) -> None:
-        """Set up dual-stream logging (INFO to stdout, rest to stderr).
-
-        :param level: Logging level for stderr handler
-        """
-        from klea_utils.plogging import (
-            LoggerInfoFilter,
-            LoggerNotInfoFilter,
-            logger_formatter_info,
-            logger_formatter_other,
-        )
-
-        stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setLevel(logging.INFO)
-        stdout_handler.addFilter(LoggerInfoFilter())
-        stdout_handler.setFormatter(logger_formatter_info)
-        self.logger.addHandler(stdout_handler)
-
-        stderr_handler = logging.StreamHandler(sys.stderr)
-        stderr_handler.setLevel(level)
-        stderr_handler.addFilter(LoggerNotInfoFilter())
-        stderr_handler.setFormatter(logger_formatter_other)
-        self.logger.addHandler(stderr_handler)
+        self.logger = setup_logger(self.logger_name, stderr_level=logging_level)
 
     def _load_env(self) -> None:
         """Load env file, and configuration

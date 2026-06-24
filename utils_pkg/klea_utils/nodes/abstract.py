@@ -36,6 +36,10 @@ class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
 
         :param logger: Parent logger instance (used to derive child logger name)
         """
+        # Child logger — inherits the parent's dual-stream handlers
+        # (set up by BaseLangGraph via plogging.setup_logger) through
+        # propagation, so this class does NOT configure its own
+        # handlers.
         self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
 
     @abstractmethod

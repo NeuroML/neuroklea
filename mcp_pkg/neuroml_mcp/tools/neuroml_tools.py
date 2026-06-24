@@ -10,7 +10,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 import asyncio
 import logging
-import sys
 from dataclasses import asdict
 from textwrap import dedent
 from typing import Any, Dict
@@ -18,12 +17,7 @@ from typing import Any, Dict
 import aiohttp
 from cachetools import TTLCache
 from fastmcp import Context
-from klea_utils.plogging import (
-    LoggerInfoFilter,
-    LoggerNotInfoFilter,
-    logger_formatter_info,
-    logger_formatter_other,
-)
+from klea_utils.plogging import setup_logger
 from tenacity import (
     retry,
     retry_if_exception_type,
@@ -40,21 +34,7 @@ from .web_tools import _download_file_to_cache_by_content
 
 sbox = nml_mcp_sandbox
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-logger.propagate = False
-
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-stdout_handler.addFilter(LoggerInfoFilter())
-stdout_handler.setFormatter(logger_formatter_info)
-logger.addHandler(stdout_handler)
-
-stderr_handler = logging.StreamHandler(sys.stderr)
-stderr_handler.setLevel(logging.DEBUG)
-stderr_handler.addFilter(LoggerNotInfoFilter())
-stderr_handler.setFormatter(logger_formatter_other)
-logger.addHandler(stderr_handler)
+logger = setup_logger(__name__)
 
 
 MAX_RESULTS = 20

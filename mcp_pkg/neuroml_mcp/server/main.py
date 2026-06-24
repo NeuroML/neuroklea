@@ -12,21 +12,25 @@ import asyncio
 from textwrap import dedent
 
 import typer
-from fastmcp import FastMCP
-from fastmcp_docs import FastMCPDocs
-from starlette.requests import Request
-from starlette.responses import JSONResponse, PlainTextResponse
-
-from neuroml_mcp.tools import code_tools, neuroml_tools
-from neuroml_mcp.utils import register_tools
-
-from .app_lifespan import app_lifespan
 
 mcp_app = typer.Typer()
 
 
 async def create_server(port: int = 8542):
     """main server creator"""
+    # Lazy: fastmcp/fastmcp_docs/starlette/neuroml_mcp.tools all pull in
+    # heavy deps (starlette, uvicorn, httpx, neuroml tool sandboxes, etc.)
+    # Keep at function level so --help on the containing typer app stays fast.
+    from fastmcp import FastMCP
+    from fastmcp_docs import FastMCPDocs
+    from starlette.requests import Request
+    from starlette.responses import JSONResponse, PlainTextResponse
+
+    from neuroml_mcp.tools import code_tools, neuroml_tools
+    from neuroml_mcp.utils import register_tools
+
+    from .app_lifespan import app_lifespan
+
     usage = dedent(
         """
         NeuroML coding assistant server.

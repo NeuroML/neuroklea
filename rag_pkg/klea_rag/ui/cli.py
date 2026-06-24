@@ -14,9 +14,7 @@ import uuid
 from contextlib import chdir
 from pathlib import Path
 
-import httpx
 import typer
-from klea_utils.api import check_api_is_ready
 
 rag_app = typer.Typer()
 
@@ -40,6 +38,10 @@ def rag_cli(
 
         async def cli_main():
             """Cli main async"""
+            # Lazy: avoids importing httpx + klea_utils.api (and their deps)
+            # at module level, which would slow down --help.
+            import httpx
+            from klea_utils.api import check_api_is_ready
             from yaspin import yaspin
 
             session_id = str(uuid.uuid4())

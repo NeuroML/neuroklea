@@ -13,7 +13,6 @@ import logging
 import typer
 
 from klea_utils.plogging import setup_logger
-from klea_utils.stores.ingestion import VSBuilder
 
 logging.basicConfig()
 logging.root.setLevel(logging.WARNING)
@@ -62,6 +61,12 @@ def create(
     )
 
     try:
+        # Lazy: importing VSBuilder pulls in ingestion.py -> llm.py ->
+        # langchain_huggingface/langchain_ollama, stores/utils.py ->
+        # chromadb/qdrant etc.  Deferring to function body keeps
+        # --help fast (Python only needs the function signature).
+        from klea_utils.stores.ingestion import VSBuilder
+
         builder = VSBuilder(
             embedding_model=embedding_model,
             logger=logger,
@@ -75,7 +80,7 @@ def create(
             force=force,
             metadata_map_path=metadata_map_path,
         )
-        logger.info(f"Done — collection '{collection_name}' is ready")
+        logger.info(f"Done -- collection '{collection_name}' is ready")
     except Exception as e:
         logger.error(f"Failed: {e}")
         raise typer.Exit(1) from None

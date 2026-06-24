@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import typer
-import uvicorn
 
 serve_app = typer.Typer()
 
@@ -23,6 +22,10 @@ def serve(
     ),
 ):
     """Run the Klea RAG API server."""
+    # Lazy: uvicorn pulls in starlette/httptools/websockets etc.
+    # Deferring to function body keeps --help fast.
+    import uvicorn
+
     uvicorn.run(
         "klea_rag.api.main:app",
         host=host,

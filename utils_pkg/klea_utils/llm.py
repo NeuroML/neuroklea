@@ -237,23 +237,23 @@ def check_model_works(model, timeout=30, retries=5):
 
 
 def setup_embedding(model_name_full, logger):
-    # need to use inference providers
-    if model_name_full.lower().startswith("huggingface:"):
-        _, model_name, provider = model_name_full.split(":")
-        logger.debug(f"Using huggingface model: {model_name}")
+    parsed = parse_model_name(model_name_full)
+
+    if parsed.provider == "huggingface":
+        logger.debug(f"Using huggingface model: {parsed.model_name}")
 
         hf_token = os.environ.get("HF_TOKEN", None)
         assert hf_token
 
         model_var = HuggingFaceEndpointEmbeddings(
-            model=f"{model_name}",
-            provider="auto",
+            model=parsed.model_name,
+            provider=parsed.suffix or "auto",
             task="feature-extraction",
             huggingfacehub_api_token=hf_token,
         )
     else:
-        if model_name_full.lower().startswith("ollama:"):
-            check_ollama_model(logger, model_name_full.lower().replace("ollama:", ""))
+        if parsed.provider == "ollama":
+            check_ollama_model(logger, parsed.model_name)
         model_var = init_embeddings(model_name_full)
 
     assert model_var
@@ -263,18 +263,28 @@ def setup_embedding(model_name_full, logger):
 
 def setup_llm(model_name_full: str, logger: logging.Logger):
     """Set up a chat model"""
-    if model_name_full.lower().startswith("huggingface:"):
-        model_components = model_name_full.split(":")
-        # source: model name: provider
-        if len(model_components) == 2:
-            _, model_name = model_components
-            provider = "auto"
-        elif len(model_components) == 3:
-            _, model_name, provider = model_components
-        else:
-            raise LLMInitializationError(
-                f"Model components could not be found: {model_components =}"
-            )
+    parsed = parse_model_name(model_name_full)
+
+    if parsed.provider == "huggingface":
+        model_name = parsed.model_name
+        provider = parsed.suffix or "auto"
+
+        logger.debug(f"Using huggingface model: {model_name}")
+
+        hf_token = os.environ.get("HF_TOKEN", None)
+        assert hf_token
+
+        logger.debug(f"Got HuggingFace Token: {hf_token[:2]}...{hf_token[-2:]}")
+
+        llm = HuggingFaceEndpoint(
+            repo_id=model_name,
+            provider=provider,
+            max_new_tokens=32768,
+            do_sample=False,
+            repetition_penalty=1.03,
+            task="conversational",
+            huggingfacehub_api_token=hf_token,
+        )
 
         logger.debug(f"Using huggingface model: {model_name}")
 
@@ -320,8 +330,8 @@ def setup_llm(model_name_full: str, logger: logging.Logger):
             logger.error(f"Model does not work: {state}, {msg}")
         assert state
     else:
-        if model_name_full.lower().startswith("ollama:"):
-            check_ollama_model(logger, model_name_full.lower().replace("ollama:", ""))
+        if parsed.provider == "ollama":
+            check_ollama_model(logger, parsed.model_name)
 
         model_var = init_chat_model(
             model_name_full, configurable_fields=("temperature")

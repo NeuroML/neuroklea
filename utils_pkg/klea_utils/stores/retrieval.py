@@ -49,18 +49,7 @@ class VectorStores:
         self._load_config()
         self.embeddings = setup_embedding(self.embedding_model, self.logger)
 
-        # Extract model name for collection naming
         assert self.embedding_model
-        if self.embedding_model.lower().startswith("huggingface:"):
-            self.embedding_model = (
-                self.embedding_model.replace("huggingface:", "")
-                .replace(":cheapest", "")
-                .replace(":fastest", "")
-            )
-            splits = self.embedding_model.split("/")
-            self.embedding_model = "".join(splits[1:])
-        elif self.embedding_model.lower().startswith("ollama:"):
-            self.embedding_model = self.embedding_model.replace("ollama:", "")
 
     def _load_config(self) -> None:
         """Load domains from the configuration file."""

@@ -30,6 +30,7 @@ class TestStores(unittest.TestCase):
         """Test retrieval"""
         try:
             vs_config_file = os.environ.get("VS_TEST_CONFIG", None)
+            assert vs_config_file
             with open(vs_config_file, "r") as f:
                 config = json.load(f)
             print(config)

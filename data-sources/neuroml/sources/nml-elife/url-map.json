@@ -1,1 +1,5 @@
- {"DEFAULT_URL": "https://doi.org/10.7554/eLife.95135.3"}
+{
+    "DEFAULT": {
+        "url": "https://doi.org/10.7554/eLife.95135.3"
+    }
+}

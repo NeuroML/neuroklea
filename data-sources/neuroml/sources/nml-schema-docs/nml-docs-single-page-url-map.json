@@ -1,1 +1,2579 @@
-{"DEFAULT_URL": "https://docs.neuroml.org", "Mission and Aims": "https://docs.neuroml.org/Userdocs/MissionAndAims.html", "How to use this documentation": "https://docs.neuroml.org/Userdocs/Usage.html", "Structure and navigation": "https://docs.neuroml.org/Userdocs/Usage.html", "Using Jupyter notebooks included in the documentation": "https://docs.neuroml.org/Userdocs/Usage.html", "Downloading Jupyter Notebooks to run locally on your machine": "https://docs.neuroml.org/Userdocs/Usage.html", "Downloading this documentation as PDF": "https://docs.neuroml.org/Userdocs/Usage.html", "Reporting bugs and issues": "https://docs.neuroml.org/Userdocs/Usage.html", "Get NeuroML": "https://docs.neuroml.org/Userdocs/GetNeuroML.html", "What you need": "https://docs.neuroml.org/Userdocs/GetNeuroML.html", "Getting started with NeuroML": "https://docs.neuroml.org/Userdocs/GettingStarted.html", "Simulating a regular spiking Izhikevich neuron": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "Declaring the model in NeuroML": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Simulating the model": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Plotting the recorded membrane potential": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "Supplementary information": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The generated NeuroML model XML": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The schema": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The generated LEMS XML": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The component_factory() function": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The add() function": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "from neuroml import Izhikevich2007Cell": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "or": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "izh0 = component_factory(": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The info() function": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The ctinfo() function": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "or the second form:": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "ctinfo(neuroml.ExplicitInput)": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "The validate() function": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html", "A two population network of regular spiking Izhikevich neurons": "https://docs.neuroml.org/Userdocs/IzhikevichNetworkExample.html", "The generated NeuroML model": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Plotting recorded spike times": "https://docs.neuroml.org/Userdocs/IzhikevichNetworkExample.html", "Simulating a single compartment Hodgkin-Huxley neuron": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html", "Declaring ion channels": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html", "Declaring the cell": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Declaring the network": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Analysing channels": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html", "Plotting the recorded variables": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Simulating a multi compartment OLM neuron": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html", "Finding and sharing NeuroML models": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "NeuroML-DB: The NeuroML Database": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "Open Source Brain": "https://docs.neuroml.org/Userdocs/Publications.html", "Other related projects": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "NeuroMorpho.Org": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "OpenWorm": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Allen Institute": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "Blue Brain Project": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html", "Creating NeuroML models": "https://docs.neuroml.org/Userdocs/CreatingNeuroMLModels.html", "Converting models to NeuroML and sharing them on Open Source Brain": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "Step 1) Find the original model code": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "Step 2) Create GitHub and OSB accounts for sharing the code": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "2a) Sign up to GitHub and OSB": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "2b) Create GitHub repository": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "2c) Create OSB project": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "Step 3) Improve and test original model code": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "3a) Make simpler/modularised versions of original model scripts": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "3b) Add OMV tests": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4) Create a version of the model in NeuroML 2": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4a) Create a LEMS Simulation file to run the model": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4b) Convert channels to NeuroML": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4c) Compare single compartment cell with channels": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4d) Compare multi-compartmental cell incorporating channels": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4e) (Re)optimising cell models": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "4f) Create an equivalent network model in NeuroML": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "5) Access, view and run your model on OSB": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "6) Share and collaborate": "https://docs.neuroml.org/Userdocs/ConvertingModels.html", "Handling Morphology Files": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Terminology": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Cell validity": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Formats": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "NeuroML2": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Morphologies can be stored in external files": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "NEURON": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "GENESIS": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "CVApp/SWC files": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Neurolucida": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html", "Tools": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html", "CVApp": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html", "neuroConstruct": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html", "pyNeuroML": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "HDF5 support": "https://docs.neuroml.org/Userdocs/HDF5.html", "Maintaining provenance in NeuroML models": "https://docs.neuroml.org/Userdocs/Provenance.html", "Annotation specification": "https://docs.neuroml.org/Userdocs/Provenance.html", "Creating annotations": "https://docs.neuroml.org/Userdocs/Provenance.html", "Validating NeuroML Models": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "Using the command line tools": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "For NeuroML 2": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "For NeuroML 1 (deprecated)": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "Using the Python API": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "List of validation tests": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html", "Visualising NeuroML Models": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "Get a quick summary of your model": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "Using command line tools": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "Using pyNeuroML": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "View the 3D structure of your model": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "View the connectivity graph of your model": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "View the connectivity matrices of the model": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "View graph of the simulation instance of the model": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "Viewing/analysing ion channel dynamics": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html", "Visualising and analysing ion channel models": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "Help converting/examining channels in NeuroML": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "1) Use jnml -info  (note not in pynml yet...)": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "2) Use pynml utilities in pyNeuroML": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "4) Load cell model on to OSBv1 & analyse the channels": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "5) Export to one of the supported simulators": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "6) Use NeuroML-DB": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html", "Visualising and analysing cell models": "https://docs.neuroml.org/Userdocs/VisualisingCells.html", "Visualising morphology of multi-compartmental cell models": "https://docs.neuroml.org/Userdocs/VisualisingCells.html", "Visualising morphology of multi-compartmental cell models in NeuroML-db": "https://docs.neuroml.org/Userdocs/VisualisingCells.html", "Visualising morphology of multi-compartmental cell models in Open Source Brain": "https://docs.neuroml.org/Userdocs/VisualisingCells.html", "Analysing cell electrophysiology": "https://docs.neuroml.org/Userdocs/VisualisingCells.html", "Simulating NeuroML Models": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using Open Source Brain": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using jNeuroML/pyNeuroML": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Simulate the model using jNeuroML": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Simulate the model using pyNeuroML": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using NEURON": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Simulate the model using NEURON with python/hoc/mod files generated by jNeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "Simulate the model using NEURON with python/hoc/mod files generated by pyNeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "Using NetPyNE": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Simulate the model using NetPyNE with python/hoc/mod files generated by jNeuroML": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Simulate the model using NetPyNE with python/hoc/mod files generated by pyNeuroML": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using Brian2": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using jnml": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html", "Using pynml": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html", "Using MOOSE": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using EDEN": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Using Arbor": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html", "Optimising/fitting NeuroML Models": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Loading data and calculating metrics to use for optimisation": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Running the optimisation": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Writing a template model": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Setting up the optimisation parameters": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Calling the optimisation function": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Viewing results": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Extracting results and running a fitted model": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Plotting model generated and experimentally recorded membrane potentials": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html", "Testing/validating NeuroML Models": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html", "Testing behaviour of NeuroML models across simulators": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html", "OMV - Open Source Brain Model Validation framework": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html", "Validating that NeuroML model reproduce biological activity": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html", "SciUnit/NeuronUnit": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html", "LEMS: Low Entropy Model Specification": "https://docs.neuroml.org/Userdocs/LEMS.html", "Capabilities": "https://docs.neuroml.org/Userdocs/LEMS.html", "Background": "https://docs.neuroml.org/Userdocs/LEMS.html", "Example": "https://docs.neuroml.org/Userdocs/Paths.html", "Model structure overview": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Defining ComponentTypes": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Inheritance": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Run-time Dynamics": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Build-time Structure": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Other": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Observations": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Type specification examples": "https://docs.neuroml.org/Userdocs/LEMSOverview.html", "Example 1: Dimensions, Units, ComponentTypes and Components": "https://docs.neuroml.org/Userdocs/LEMSExample1.html", "Example 2: tidying up example 1": "https://docs.neuroml.org/Userdocs/LEMSExample2.html", "Main model": "https://docs.neuroml.org/Userdocs/LEMSExample2.html", "Included files": "https://docs.neuroml.org/Userdocs/LEMSExample2.html", "Example 3: Connection dependent synaptic components": "https://docs.neuroml.org/Userdocs/LEMSExample3.html", "Example 4: Kinetic schemes": "https://docs.neuroml.org/Userdocs/LEMSExample4.html", "Example 5: References and paths": "https://docs.neuroml.org/Userdocs/LEMSExample5.html", "Example 6: User defined types for simulation and display": "https://docs.neuroml.org/Userdocs/LEMSExample6.html", "Example 7: User defined types for networks and populations": "https://docs.neuroml.org/Userdocs/LEMSExample7.html", "Example 8: Regimes in Dynamics definitions": "https://docs.neuroml.org/Userdocs/LEMSExample8.html", "Schema/Specification": "https://docs.neuroml.org/Userdocs/Specification.html", "NeuroML v2": "https://docs.neuroml.org/Userdocs/NeuroMLv2.html", "NeuroMLDocument": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLDocument.html", "IncludeType": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLDocument.html", "NeuroMLCoreDimensions": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "Dimensions": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "area": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "capacitance": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "charge": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "charge\\_per\\_mole": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "concentration": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "conductance": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "conductanceDensity": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "conductance\\_per\\_voltage": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "current": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "currentDensity": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "idealGasConstantDims": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "length": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per\\_time": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per\\_voltage": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "permeability": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "resistance": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "resistivity": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "rho\\_factor": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "specificCapacitance": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "substance": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "temperature": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "time": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "voltage": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "volume": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "Units": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "A": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "A_per_m2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "C": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "C_per_mol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "F": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "F_per_m2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "Hz": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "J_per_K_per_mol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "K": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "M": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "Mohm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "S": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "S_per_V": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "S_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "S_per_m2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "V": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "cm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "cm3": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "cm_per_ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "cm_per_s": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "degC": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "e": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "fJ_per_K_per_umol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "hour": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "kohm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "kohm_cm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "litre": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "m": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "m2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "m3": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mA_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mM": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mS": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mS_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mV": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "m_per_s": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "min": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mol_per_cm3": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mol_per_cm_per_uA_per_ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mol_per_m3": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "mol_per_m_per_A_per_s": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "nA": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "nA_ms_per_amol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "nF": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "nS": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "nS_per_mV": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "ohm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "ohm_cm": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "ohm_m": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "pA": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "pC_per_umol": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "pF": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "pS": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_V": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_hour": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_mV": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_min": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "per_s": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "s": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uA": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uA_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uF": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uF_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uS": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "uS_per_cm2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "um": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "um2": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "um3": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "um_per_ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "umol_per_cm_per_nA_per_ms": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html", "NeuroMLCoreCompTypes": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "notes": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "annotation": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "property": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "*baseStandalone*": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "rdf_RDF": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "rdf_Description": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "*baseBqbiol*": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_encodes": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_hasPart": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_hasProperty": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_hasVersion": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_is": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isDescribedBy": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isEncodedBy": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isHomologTo": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isPartOf": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isPropertyOf": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_isVersionOf": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_occursIn": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqbiol_hasTaxon": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqmodel_is": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqmodel_isDescribedBy": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "bqmodel_isDerivedFrom": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "rdf_Bag": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "rdf_li": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "point3DWithDiam": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html", "Cells": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseCell*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseSpikingCell*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseCellMembPot*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseCellMembPotDL*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseChannelPopulation*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelPopulation": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelPopulationNernst": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseChannelDensity*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseChannelDensityCond*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "variableParameter": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "inhomogeneousValue": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityNonUniform": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityNonUniformNernst": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityNonUniformGHK": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensity": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityVShift": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityNernst": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityNernstCa2": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityGHK": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "channelDensityGHK2": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "pointCellCondBased": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "pointCellCondBasedCa": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "distal": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "proximal": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "parent": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "segment": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "segmentGroup": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "member": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "from": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "to": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "include": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "path": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "subTree": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "inhomogeneousParameter": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "proximalDetails": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "distalDetails": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "morphology": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "initMembPotential": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "spikeThresh": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "membraneProperties": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "membraneProperties2CaPools": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "biophysicalProperties": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "biophysicalProperties2CaPools": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "intracellularProperties": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "intracellularProperties2CaPools": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "concentrationModel": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "decayingPoolConcentrationModel": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "fixedFactorConcentrationModel": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "fixedFactorConcentrationModelTraub": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "species": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "cell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "cell2CaPools": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseCellMembPotCap*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseIaf*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "iafTauCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "iafTauRefCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "*baseIafCapCell*": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "iafCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "iafRefCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "izhikevichCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "izhikevich2007Cell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "adExIaFCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "fitzHughNagumoCell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "pinskyRinzelCA3Cell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "hindmarshRose1984Cell": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html", "Channels": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageDepRate*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageConcDepRate*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseHHRate*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHExpRate": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHSigmoidRate": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHExpLinearRate": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageDepVariable*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageConcDepVariable*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseHHVariable*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHExpVariable": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHSigmoidVariable": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "HHExpLinearVariable": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageDepTime*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseVoltageConcDepTime*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "fixedTimeCourse": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseQ10Settings*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "q10Fixed": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "q10ExpTemp": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseConductanceScaling*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "q10ConductanceScaling": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseConductanceScalingCaDependent*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseGate*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gate": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHrates": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHtauInf": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHInstantaneous": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHratesTau": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHratesInf": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateHHratesTauInf": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateFractional": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "subGate": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "*baseIonChannel*": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "ionChannelPassive": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "ionChannelHH": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "ionChannel": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "ionChannelVShift": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "KSState": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "closedState": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "openState": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "ionChannelKS": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "KSTransition": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "forwardTransition": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "reverseTransition": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "vHalfTransition": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "tauInfTransition": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "gateKS": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html", "Synapses": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseVoltageDepSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseSynapseDL*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseCurrentBasedSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "alphaCurrentSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseConductanceBasedSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseConductanceBasedSynapseTwo*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "expOneSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "alphaSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "expTwoSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "expThreeSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseBlockMechanism*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "voltageConcDepBlockMechanism": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*basePlasticityMechanism*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "tsodyksMarkramDepMechanism": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "tsodyksMarkramDepFacMechanism": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "blockingPlasticSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "doubleSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "stdpSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "gapJunction": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "*baseGradedSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "silentSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "linearGradedSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "gradedSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html", "Inputs": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*basePointCurrent*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*baseVoltageDepPointCurrent*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*baseVoltageDepPointCurrentSpiking*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*basePointCurrentDL*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*baseVoltageDepPointCurrentDL*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "*baseSpikeSource*": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spikeGenerator": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spikeGeneratorRandom": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spikeGeneratorPoisson": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spikeGeneratorRefPoisson": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "poissonFiringSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "transientPoissonFiringSynapse": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "timedSynapticInput": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spikeArray": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "spike": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "pulseGenerator": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "compoundInput": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "compoundInputDL": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "pulseGeneratorDL": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "sineGenerator": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "sineGeneratorDL": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "rampGenerator": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "rampGeneratorDL": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "voltageClamp": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "voltageClampTriple": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html", "Networks": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "network": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "networkWithTemperature": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "*basePopulation*": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "population": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "populationList": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "instance": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "location": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "region": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "rectangularExtent": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "projection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "explicitConnection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "connection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "synapticConnection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "synapticConnectionWD": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "connectionWD": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "electricalConnection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "electricalConnectionInstance": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "electricalConnectionInstanceW": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "electricalProjection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "continuousConnection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "continuousConnectionInstance": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "continuousConnectionInstanceW": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "continuousProjection": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "explicitInput": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "inputList": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "input": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "inputW": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html", "PyNN": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "*basePyNNCell*": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "*basePyNNIaFCell*": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "*basePyNNIaFCondCell*": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "IF_curr_alpha": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "IF_curr_exp": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "IF_cond_alpha": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "IF_cond_exp": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "EIF_cond_exp_isfa_ista": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "EIF_cond_alpha_isfa_ista": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "HH_cond_exp": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "*basePynnSynapse*": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "expCondSynapse": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "expCurrSynapse": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "alphaCondSynapse": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "alphaCurrSynapse": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "SpikeSourcePoisson": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html", "Simulation": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "Display": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "Line": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "OutputFile": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "OutputColumn": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "EventOutputFile": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "EventSelection": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html", "Meta": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Index": "https://docs.neuroml.org/Userdocs/Schemas/Index.html", "NeuroML v1": "https://docs.neuroml.org/Userdocs/Publications.html", "Level 1": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html", "Level 2": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html", "Level 3": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html", "LEMS": "https://docs.neuroml.org/Userdocs/LEMSSchema.html", "Model structure": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html", "Lems": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html", "Target": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html", "Constant": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html", "Include": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html", "Units and dimensions": "https://docs.neuroml.org/Userdocs/UnitsAndDimensions.html", "Dimension": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html", "Unit": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html", "Assertion": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html", "Defining component types": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "ComponentType": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Parameter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "PathParameter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Property": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "DerivedParameter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Fixed": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Requirement": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "ComponentRequirement": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "InstanceRequirement": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Exposure": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Child": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Children": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Link": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "ComponentReference": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "ComponentTypeReference": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Collection": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "PairCollection": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "EventPort": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Text": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Path": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Attachments": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Insertion": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "IntegerParameter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "IndexParameter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "About": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html", "Dynamics": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "StateVariable": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "StateAssignment": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "TimeDerivative": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "DerivedVariable": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "OnStart": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "OnCondition": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "OnEvent": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "EventOut": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "KineticScheme": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Regime": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "OnEntry": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Transition": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Super": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "ConditionalDerivedVariable": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Case": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Equilibrium": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "StateScalarField": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "DerivedScalarField": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "DerivedPunctateField": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html", "Structure": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "BuildElement": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "MultiInstantiate": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "CoInstantiate": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Assign": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Choose": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "ChildInstance": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "ForEach": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "EventConnection": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Tunnel": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "PairsEventConnection": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "PairFilter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "IncludePair": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "With": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "If": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Apply": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Gather": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "GatherPairs": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html", "Record": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "EventRecord": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "DataDisplay": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "DataWriter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "EventWriter": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "Run": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html", "Procedure": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Equilibrate": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html", "ForEachComponent": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html", "Print": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html", "Defining Components": "https://docs.neuroml.org/Userdocs/LEMS_elements/DefiningComponents.html", "Component": "https://docs.neuroml.org/Userdocs/LEMS_elements/DefiningComponents.html", "Geometry": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "Frustum": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "Solid": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "Location": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "Skeleton": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "ScalarField": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html", "NeuroML 2 and LEMS": "https://docs.neuroml.org/Userdocs/Publications.html", "NeuroML 2 Component Type definitions in LEMS": "https://docs.neuroml.org/Userdocs/NeuroMLv2AndLEMS.html", "More information": "https://docs.neuroml.org/Userdocs/NeuroMLv2AndLEMS.html", "Conventions": "https://docs.neuroml.org/Userdocs/Conventions.html", "Prefer underscores instead of spaces": "https://docs.neuroml.org/Userdocs/Conventions.html", "Component IDs: NmlId": "https://docs.neuroml.org/Userdocs/Conventions.html", "File naming": "https://docs.neuroml.org/Userdocs/Conventions.html", "Neuron segments": "https://docs.neuroml.org/Userdocs/Conventions.html", "Paths": "https://docs.neuroml.org/Userdocs/Paths.html", "Helper functions in pyNeuroML": "https://docs.neuroml.org/Userdocs/Paths.html", "Quantities and recording": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html", "Recording events": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html", "Recording quantities from exposures": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html", "LEMS Simulation files": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "Specification of format": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "Quantities and paths": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "Creating LEMS Simulation files": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "What about SED-ML?": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "Exporting LEMS simulation descriptions to SED-ML": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html", "Extending NeuroML": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "Creating new ComponentTypes with existing NeuroML ComponentTypes": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "Creating new ComponentTypes with LEMS elements": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "LEMS elements": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "Example: Lorenz model for cellular convection": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "Writing the model in Python using PyLEMS": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html", "Examples": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html", "Software and Tools": "https://docs.neuroml.org/Userdocs/Software/Software.html", "Core NeuroML Tools": "https://docs.neuroml.org/Userdocs/Software/Software.html", "Python based applications": "https://docs.neuroml.org/Userdocs/Software/Software.html", "Java based applications": "https://docs.neuroml.org/Userdocs/Software/Software.html", "NeuroML support in other languages": "https://docs.neuroml.org/Userdocs/Software/Software.html", "Other NeuroML supporting applications": "https://docs.neuroml.org/Userdocs/Software/Software.html", "Quick start": "https://docs.neuroml.org/Userdocs/Software/MatLab.html", "Install Python and the Java Runtime Environment": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "Install pyNeuroML with pip": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "Installing optional dependencies": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "Povray": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "Vispy": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html", "Installation on Fedora Linux": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html", "Documentation": "https://docs.neuroml.org/Devdocs/DevSOP.html", "API documentation": "https://docs.neuroml.org/Userdocs/Software/NeuroML_API.html", "Getting help": "https://docs.neuroml.org/Userdocs/Software/MatLab.html", "Development": "https://docs.neuroml.org/Userdocs/Software/MatLab.html", "libNeuroML": "https://docs.neuroml.org/Userdocs/Software/libNeuroML.html", "Install Python": "https://docs.neuroml.org/Userdocs/Software/NeuroMLlite.html", "Install libNeuroML with pip": "https://docs.neuroml.org/Userdocs/Software/libNeuroML.html", "pyLEMS": "https://docs.neuroml.org/Userdocs/Software/pyLEMS.html", "Install pyLEMS with pip": "https://docs.neuroml.org/Userdocs/Software/pyLEMS.html", "NeuroMLlite": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html", "Install NeuroMLlite with pip": "https://docs.neuroml.org/Userdocs/Software/NeuroMLlite.html", "jNeuroML": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html", "Install the Java Runtime Environment": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html", "Installation using pre-compiled JAR": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html", "Nightly (pre-release) jar builds:": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html", "jLEMS": "https://docs.neuroml.org/Userdocs/Software/jLEMS.html", "NeuroML C++ API": "https://docs.neuroml.org/Userdocs/Software/NeuroML_API.html", "MatLab NeuroML Toolbox": "https://docs.neuroml.org/Userdocs/Software/MatLab.html", "Tools and resources with NeuroML support": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Applications with NeuroML support": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NetPyNE": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "MOOSE": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "BRIAN": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "EDEN": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Arbor": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NEST": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Model Description Format (MDF)": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "The Virtual Brain": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "LFPy": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "BioSimulators": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "N2A": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NeuronLand": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "CX3D": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "TREES toolbox": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "TrakEM2": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Neuronvisio": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "CATMAID": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Myokit": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Geppetto": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Other/legacy tools": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "PSICS": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Whole Brain Catalogue": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "PCSIM": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Neuromantic": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Neurospaces/ GENESIS 3": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "SplitNeuron": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NeurAnim": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "CNrun": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NeuGen": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "morphforge": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "NeuroTranslate": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Moogli": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html", "Approaches to adding NeuroML support": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "Commonly used approaches": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "1) Native support for NeuroML elements": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "2) Native ability to import NeuroML elements": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "3) Native ability to export NeuroML elements": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "4) 3rd party mapping to simulator's own format": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html", "NEURON and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "Simulating NeuroML models in NEURON": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "Setting the NEURON_HOME environment variable": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "Using neuroConstruct": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html", "NetPyNE and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html", "Importing NeuroML into NetPyNE": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html", "Exporting NeuroML from NetPyNE": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html", "Running NetPyNE on OSBv2": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html", "PyNN and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/PyNN.html", "Brian and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/Brian.html", "Converting NeuroML model to Brian": "https://docs.neuroml.org/Userdocs/Software/Tools/Brian.html", "MOOSE and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html", "Simulating NeuroML models in MOOSE": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html", "EDEN and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/EDEN.html", "Arbor and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html", "Importing NeuroML into Arbor": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html", "Support for channels/synapses in LEMS": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html", "Network models in Arbor with NeuroMLlite": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html", "N2A and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/N2A.html", "NEST and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/NEST.html", "SWC and NeuroML": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html", "Citing NeuroML and related publications": "https://docs.neuroml.org/Userdocs/Publications.html", "Citing NeuroML": "https://docs.neuroml.org/Userdocs/Publications.html", "Papers": "https://docs.neuroml.org/Userdocs/Publications.html", "libNeuroML and PyLEMS": "https://docs.neuroml.org/Userdocs/Publications.html", "Software": "https://docs.neuroml.org/Userdocs/Publications.html", "Other publications": "https://docs.neuroml.org/Userdocs/Publications.html", "Book Chapters": "https://docs.neuroml.org/Userdocs/Publications.html", "Abstracts": "https://docs.neuroml.org/Userdocs/Publications.html", "Frequently asked questions (FAQ)": "https://docs.neuroml.org/Userdocs/FAQ.html", "1. Are length 0 segments allowed in NeuroML?": "https://docs.neuroml.org/Userdocs/FAQ.html", "2. What is the difference between reader/writer methods in pyNeuroML and libNeuroML?": "https://docs.neuroml.org/Userdocs/FAQ.html", "Walk throughs": "https://docs.neuroml.org/Userdocs/Walkthroughs/Walkthroughs.html", "Converting Ray et al 2020 to NeuroML": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/RayEtAl2020.html", "Setting up": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "Step 2) Create GitHub and Open Source Brain accounts for sharing the code": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "2a) Sign up to GitHub and Open Source Brain": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "2c) Create Open Source Brain project": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html", "Converting to NeuroML": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Converting the Giant GABAergic Neuron": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Step 1) Exporting morphology of the GGN": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Step 2) Adding biophysics to the GGN": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Converting the Kenyon Cell": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Step 1) Converting ion channels": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "1a) Kv, Naf, Kst": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "1b) Ka": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Step 2) Creating the morphology": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Step 3) Testing the model": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html", "Adding OMV tests": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html", "Step 1) Getting spike data from the NEURON model": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html", "generated from test-kc.py": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html", "Step 2) Adding tests": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html", "Step 3) Setting up continuous testing on GitHub Actions": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html", "NeuroML outreach and events": "https://docs.neuroml.org/Events/Events.html", "July 2024: NeuroML tutorial at CNS 2024": "https://docs.neuroml.org/Events/202407-CNS2024.html", "Agenda": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html", "Times and dates": "https://docs.neuroml.org/Events/202103-Harmony.html", "Registration": "https://docs.neuroml.org/Events/202103-Harmony.html", "April 2024: NeuroML hackathon at HARMONY 2024": "https://docs.neuroml.org/Events/202404-Harmony.html", "Open an issue beforehand!": "https://docs.neuroml.org/Events/202103-Harmony.html", "Slack": "https://docs.neuroml.org/Events/202103-Harmony.html", "June 2022: NeuroML tutorial at CNS*2022 satellite tutorials": "https://docs.neuroml.org/Events/20220630-CNS2022.html", "Target audience": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html", "Where": "https://docs.neuroml.org/Events/20220630-CNS2022.html", "Part 1: Introduction to NeuroML": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html", "Part 2: Hands on demonstrations of building and using NeuroML models": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html", "April 2022: NeuroML development workshop at HARMONY 2022": "https://docs.neuroml.org/Events/202204-Harmony.html", "October 2021: NeuroML development workshop at COMBINE meeting": "https://docs.neuroml.org/Events/202109-COMBINE.html", "Agenda/minutes": "https://docs.neuroml.org/Events/202109-COMBINE.html", "August 2021: NeuroML tutorial at INCF Training Weeks": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html", "July 2021: NeuroML tutorial at CNS*2021": "https://docs.neuroml.org/Events/202107-CNS2021.html", "Why take part?": "https://docs.neuroml.org/Events/202103-Harmony.html", "Pre-requisites": "https://docs.neuroml.org/Events/202107-CNS2021.html", "March 2021: NeuroML hackathon at HARMONY 2021": "https://docs.neuroml.org/Events/202103-Harmony.html", "March 2012: Fourth NeuroML Development Workshop": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Meeting report": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Monday 12th March: NeuroML Development Workshop Day 1": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Morning session: Current state of NeuroML 2 development & relationship to other initiatives": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Afternoon session: Specification of detailed biophysical components in NeuroML 2/LEMS": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Tuesday 13th March: NeuroML Development Workshop Day 2": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Morning session: Representing morphologies/support for detailed neuronal simulators/relationship to connectomics initiatives": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Afternoon session: Best practices when implementing support for NeuroML in simulators": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Wednesday 14th March--Friday 16th March": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Funding": "https://docs.neuroml.org/Events/2012-Edinburgh.html", "Past NeuroML Events": "https://docs.neuroml.org/Events/PastEvents.html", "Getting in touch": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html", "Mailing list": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html", "Chat channels": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html", "Issues related to the libraries or specification": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html", "Social media": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html", "Overview of standards in neuroscience": "https://docs.neuroml.org/NeuroMLOrg/Standards.html", "NeuroML as a standard": "https://docs.neuroml.org/NeuroMLOrg/Standards.html", "Endorsed INCF standard": "https://docs.neuroml.org/NeuroMLOrg/Standards.html", "COMBINE standard": "https://docs.neuroml.org/NeuroMLOrg/Standards.html", "A brief history of NeuroML": "https://docs.neuroml.org/NeuroMLOrg/History.html", "The early days": "https://docs.neuroml.org/NeuroMLOrg/History.html", "NeuroML v1.x": "https://docs.neuroml.org/NeuroMLOrg/History.html", "NeuroML v2.x - introducing LEMS...": "https://docs.neuroml.org/NeuroMLOrg/History.html", "The future": "https://docs.neuroml.org/NeuroMLOrg/History.html", "NeuroML Editorial Board": "https://docs.neuroml.org/NeuroMLOrg/Board.html", "Current Editorial Board": "https://docs.neuroml.org/NeuroMLOrg/Board.html", "Procedures": "https://docs.neuroml.org/NeuroMLOrg/Board.html", "Responsibilities of NeuroML Editors": "https://docs.neuroml.org/NeuroMLOrg/Board.html", "History of the NeuroML Editorial Board": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Initial election of editors (2013)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2015)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2016)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2018)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2019)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2022)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2024)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Election of editors (2025)": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html", "Workshop and Meeting reports": "https://docs.neuroml.org/NeuroMLOrg/BoardMeetingReports.html", "NeuroML Scientific Committee": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html", "Current Members": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html", "Past Members": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html", "Funding and Acknowledgements": "https://docs.neuroml.org/NeuroMLOrg/Funding.html", "Outreach and training": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "Google summer of Code": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "2025": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "2024": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "2022": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "Other past GSoC projects": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html", "NeuroML contributors": "https://docs.neuroml.org/NeuroMLOrg/Contributors.html", "NeuroML repositories": "https://docs.neuroml.org/NeuroMLOrg/Repositories.html", "Code of Conduct": "https://docs.neuroml.org/NeuroMLOrg/CoC.html", "Overview": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html", "Contribution guidelines": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Code of conduct": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Structure of repositories": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Kanban board on Zenhub": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Versioning": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Git branches": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Git commits": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Code style: Java": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Code style: Python": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Testing": "https://docs.neuroml.org/Devdocs/DevSOP.html", "Release Process": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html", "Steps for new major release": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html", "Making changes to the NeuroML standard": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Regenerating schema documentation": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Updating the Java API: org.neuroml.model": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Updating the Python API: libNeuroML": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Updating the C++ API": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html", "Interaction with other languages and standards": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "SBML": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "Sonata": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "NineML & SpineML": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "ModECI MDF": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "SWC": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html", "Glossary": "https://docs.neuroml.org/Reference/Glossary.html", "Bibliography": "https://docs.neuroml.org/Reference/zBibliography.html"}
+{
+    "DEFAULT": {
+        "url": "https://docs.neuroml.org"
+    },
+    "Mission and Aims": {
+        "url": "https://docs.neuroml.org/Userdocs/MissionAndAims.html"
+    },
+    "How to use this documentation": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Structure and navigation": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Using Jupyter notebooks included in the documentation": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Downloading Jupyter Notebooks to run locally on your machine": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Downloading this documentation as PDF": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Reporting bugs and issues": {
+        "url": "https://docs.neuroml.org/Userdocs/Usage.html"
+    },
+    "Get NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/GetNeuroML.html"
+    },
+    "What you need": {
+        "url": "https://docs.neuroml.org/Userdocs/GetNeuroML.html"
+    },
+    "Getting started with NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/GettingStarted.html"
+    },
+    "Simulating a regular spiking Izhikevich neuron": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "Declaring the model in NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Simulating the model": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Plotting the recorded membrane potential": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "Supplementary information": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The generated NeuroML model XML": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The schema": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The generated LEMS XML": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The component_factory() function": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The add() function": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "from neuroml import Izhikevich2007Cell": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "or": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "izh0 = component_factory(": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The info() function": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The ctinfo() function": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "or the second form:": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "ctinfo(neuroml.ExplicitInput)": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "The validate() function": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleNeuronExample.html"
+    },
+    "A two population network of regular spiking Izhikevich neurons": {
+        "url": "https://docs.neuroml.org/Userdocs/IzhikevichNetworkExample.html"
+    },
+    "The generated NeuroML model": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Plotting recorded spike times": {
+        "url": "https://docs.neuroml.org/Userdocs/IzhikevichNetworkExample.html"
+    },
+    "Simulating a single compartment Hodgkin-Huxley neuron": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html"
+    },
+    "Declaring ion channels": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html"
+    },
+    "Declaring the cell": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Declaring the network": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Analysing channels": {
+        "url": "https://docs.neuroml.org/Userdocs/SingleCompartmentHHExample.html"
+    },
+    "Plotting the recorded variables": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Simulating a multi compartment OLM neuron": {
+        "url": "https://docs.neuroml.org/Userdocs/MultiCompartmentOLMexample.html"
+    },
+    "Finding and sharing NeuroML models": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "NeuroML-DB: The NeuroML Database": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "Open Source Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Other related projects": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "NeuroMorpho.Org": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "OpenWorm": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Allen Institute": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "Blue Brain Project": {
+        "url": "https://docs.neuroml.org/Userdocs/FindingNeuroMLModels.html"
+    },
+    "Creating NeuroML models": {
+        "url": "https://docs.neuroml.org/Userdocs/CreatingNeuroMLModels.html"
+    },
+    "Converting models to NeuroML and sharing them on Open Source Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "Step 1) Find the original model code": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "Step 2) Create GitHub and OSB accounts for sharing the code": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "2a) Sign up to GitHub and OSB": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "2b) Create GitHub repository": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "2c) Create OSB project": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "Step 3) Improve and test original model code": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "3a) Make simpler/modularised versions of original model scripts": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "3b) Add OMV tests": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4) Create a version of the model in NeuroML 2": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4a) Create a LEMS Simulation file to run the model": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4b) Convert channels to NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4c) Compare single compartment cell with channels": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4d) Compare multi-compartmental cell incorporating channels": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4e) (Re)optimising cell models": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "4f) Create an equivalent network model in NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "5) Access, view and run your model on OSB": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "6) Share and collaborate": {
+        "url": "https://docs.neuroml.org/Userdocs/ConvertingModels.html"
+    },
+    "Handling Morphology Files": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Terminology": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Cell validity": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Formats": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "NeuroML2": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Morphologies can be stored in external files": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "NEURON": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "GENESIS": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "CVApp/SWC files": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Neurolucida": {
+        "url": "https://docs.neuroml.org/Userdocs/ImportingMorphologyFiles.html"
+    },
+    "Tools": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html"
+    },
+    "CVApp": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html"
+    },
+    "neuroConstruct": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html"
+    },
+    "pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "HDF5 support": {
+        "url": "https://docs.neuroml.org/Userdocs/HDF5.html"
+    },
+    "Maintaining provenance in NeuroML models": {
+        "url": "https://docs.neuroml.org/Userdocs/Provenance.html"
+    },
+    "Annotation specification": {
+        "url": "https://docs.neuroml.org/Userdocs/Provenance.html"
+    },
+    "Creating annotations": {
+        "url": "https://docs.neuroml.org/Userdocs/Provenance.html"
+    },
+    "Validating NeuroML Models": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "Using the command line tools": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "For NeuroML 2": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "For NeuroML 1 (deprecated)": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "Using the Python API": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "List of validation tests": {
+        "url": "https://docs.neuroml.org/Userdocs/ValidatingNeuroMLModels.html"
+    },
+    "Visualising NeuroML Models": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "Get a quick summary of your model": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "Using command line tools": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "Using pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "View the 3D structure of your model": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "View the connectivity graph of your model": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "View the connectivity matrices of the model": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "View graph of the simulation instance of the model": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "Viewing/analysing ion channel dynamics": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingNeuroMLModels.html"
+    },
+    "Visualising and analysing ion channel models": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "Help converting/examining channels in NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "1) Use jnml -info  (note not in pynml yet...)": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "2) Use pynml utilities in pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "4) Load cell model on to OSBv1 & analyse the channels": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "5) Export to one of the supported simulators": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "6) Use NeuroML-DB": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingChannels.html"
+    },
+    "Visualising and analysing cell models": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingCells.html"
+    },
+    "Visualising morphology of multi-compartmental cell models": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingCells.html"
+    },
+    "Visualising morphology of multi-compartmental cell models in NeuroML-db": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingCells.html"
+    },
+    "Visualising morphology of multi-compartmental cell models in Open Source Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingCells.html"
+    },
+    "Analysing cell electrophysiology": {
+        "url": "https://docs.neuroml.org/Userdocs/VisualisingCells.html"
+    },
+    "Simulating NeuroML Models": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using Open Source Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using jNeuroML/pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Simulate the model using jNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Simulate the model using pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using NEURON": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Simulate the model using NEURON with python/hoc/mod files generated by jNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "Simulate the model using NEURON with python/hoc/mod files generated by pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "Using NetPyNE": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Simulate the model using NetPyNE with python/hoc/mod files generated by jNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Simulate the model using NetPyNE with python/hoc/mod files generated by pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using Brian2": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using jnml": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html"
+    },
+    "Using pynml": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html"
+    },
+    "Using MOOSE": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using EDEN": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Using Arbor": {
+        "url": "https://docs.neuroml.org/Userdocs/SimulatingNeuroMLModels.html"
+    },
+    "Optimising/fitting NeuroML Models": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Loading data and calculating metrics to use for optimisation": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Running the optimisation": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Writing a template model": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Setting up the optimisation parameters": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Calling the optimisation function": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Viewing results": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Extracting results and running a fitted model": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Plotting model generated and experimentally recorded membrane potentials": {
+        "url": "https://docs.neuroml.org/Userdocs/OptimisingNeuroMLModels.html"
+    },
+    "Testing/validating NeuroML Models": {
+        "url": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html"
+    },
+    "Testing behaviour of NeuroML models across simulators": {
+        "url": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html"
+    },
+    "OMV - Open Source Brain Model Validation framework": {
+        "url": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html"
+    },
+    "Validating that NeuroML model reproduce biological activity": {
+        "url": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html"
+    },
+    "SciUnit/NeuronUnit": {
+        "url": "https://docs.neuroml.org/Userdocs/TestingNeuroMLModels.html"
+    },
+    "LEMS: Low Entropy Model Specification": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS.html"
+    },
+    "Capabilities": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS.html"
+    },
+    "Background": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS.html"
+    },
+    "Example": {
+        "url": "https://docs.neuroml.org/Userdocs/Paths.html"
+    },
+    "Model structure overview": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Defining ComponentTypes": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Inheritance": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Run-time Dynamics": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Build-time Structure": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Other": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Observations": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Type specification examples": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSOverview.html"
+    },
+    "Example 1: Dimensions, Units, ComponentTypes and Components": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample1.html"
+    },
+    "Example 2: tidying up example 1": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample2.html"
+    },
+    "Main model": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample2.html"
+    },
+    "Included files": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample2.html"
+    },
+    "Example 3: Connection dependent synaptic components": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample3.html"
+    },
+    "Example 4: Kinetic schemes": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample4.html"
+    },
+    "Example 5: References and paths": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample5.html"
+    },
+    "Example 6: User defined types for simulation and display": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample6.html"
+    },
+    "Example 7: User defined types for networks and populations": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample7.html"
+    },
+    "Example 8: Regimes in Dynamics definitions": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSExample8.html"
+    },
+    "Schema/Specification": {
+        "url": "https://docs.neuroml.org/Userdocs/Specification.html"
+    },
+    "NeuroML v2": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv2.html"
+    },
+    "NeuroMLDocument": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLDocument.html"
+    },
+    "IncludeType": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLDocument.html"
+    },
+    "NeuroMLCoreDimensions": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "Dimensions": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "area": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "capacitance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "charge": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "charge\\_per\\_mole": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "concentration": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "conductance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "conductanceDensity": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "conductance\\_per\\_voltage": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "current": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "currentDensity": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "idealGasConstantDims": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "length": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per\\_time": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per\\_voltage": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "permeability": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "resistance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "resistivity": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "rho\\_factor": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "specificCapacitance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "substance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "temperature": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "time": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "voltage": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "volume": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "Units": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "A": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "A_per_m2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "C": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "C_per_mol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "F": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "F_per_m2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "Hz": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "J_per_K_per_mol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "K": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "M": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "Mohm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "S": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "S_per_V": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "S_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "S_per_m2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "V": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "cm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "cm3": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "cm_per_ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "cm_per_s": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "degC": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "e": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "fJ_per_K_per_umol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "hour": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "kohm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "kohm_cm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "litre": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "m": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "m2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "m3": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mA_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mM": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mS_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mV": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "m_per_s": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "min": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mol_per_cm3": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mol_per_cm_per_uA_per_ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mol_per_m3": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "mol_per_m_per_A_per_s": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "nA": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "nA_ms_per_amol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "nF": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "nS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "nS_per_mV": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "ohm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "ohm_cm": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "ohm_m": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "pA": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "pC_per_umol": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "pF": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "pS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_V": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_hour": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_mV": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_min": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "per_s": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "s": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uA": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uA_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uF": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uF_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "uS_per_cm2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "um": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "um2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "um3": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "um_per_ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "umol_per_cm_per_nA_per_ms": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreDimensions.html"
+    },
+    "NeuroMLCoreCompTypes": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "notes": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "annotation": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "property": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "*baseStandalone*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "rdf_RDF": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "rdf_Description": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "*baseBqbiol*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_encodes": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_hasPart": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_hasProperty": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_hasVersion": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_is": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isDescribedBy": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isEncodedBy": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isHomologTo": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isPartOf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isPropertyOf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_isVersionOf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_occursIn": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqbiol_hasTaxon": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqmodel_is": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqmodel_isDescribedBy": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "bqmodel_isDerivedFrom": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "rdf_Bag": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "rdf_li": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "point3DWithDiam": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/NeuroMLCoreCompTypes.html"
+    },
+    "Cells": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseSpikingCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseCellMembPot*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseCellMembPotDL*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseChannelPopulation*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelPopulation": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelPopulationNernst": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseChannelDensity*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseChannelDensityCond*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "variableParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "inhomogeneousValue": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityNonUniform": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityNonUniformNernst": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityNonUniformGHK": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensity": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityVShift": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityNernst": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityNernstCa2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityGHK": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "channelDensityGHK2": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "pointCellCondBased": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "pointCellCondBasedCa": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "distal": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "proximal": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "parent": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "segment": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "segmentGroup": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "member": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "from": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "to": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "include": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "path": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "subTree": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "inhomogeneousParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "proximalDetails": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "distalDetails": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "morphology": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "initMembPotential": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "spikeThresh": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "membraneProperties": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "membraneProperties2CaPools": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "biophysicalProperties": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "biophysicalProperties2CaPools": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "intracellularProperties": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "intracellularProperties2CaPools": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "concentrationModel": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "decayingPoolConcentrationModel": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "fixedFactorConcentrationModel": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "fixedFactorConcentrationModelTraub": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "species": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "cell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "cell2CaPools": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseCellMembPotCap*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseIaf*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "iafTauCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "iafTauRefCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "*baseIafCapCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "iafCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "iafRefCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "izhikevichCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "izhikevich2007Cell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "adExIaFCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "fitzHughNagumoCell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "pinskyRinzelCA3Cell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "hindmarshRose1984Cell": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Cells.html"
+    },
+    "Channels": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageDepRate*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageConcDepRate*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseHHRate*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHExpRate": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHSigmoidRate": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHExpLinearRate": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageDepVariable*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageConcDepVariable*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseHHVariable*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHExpVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHSigmoidVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "HHExpLinearVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageDepTime*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseVoltageConcDepTime*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "fixedTimeCourse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseQ10Settings*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "q10Fixed": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "q10ExpTemp": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseConductanceScaling*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "q10ConductanceScaling": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseConductanceScalingCaDependent*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseGate*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gate": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHrates": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHtauInf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHInstantaneous": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHratesTau": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHratesInf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateHHratesTauInf": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateFractional": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "subGate": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "*baseIonChannel*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "ionChannelPassive": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "ionChannelHH": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "ionChannel": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "ionChannelVShift": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "KSState": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "closedState": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "openState": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "ionChannelKS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "KSTransition": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "forwardTransition": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "reverseTransition": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "vHalfTransition": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "tauInfTransition": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "gateKS": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Channels.html"
+    },
+    "Synapses": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseVoltageDepSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseSynapseDL*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseCurrentBasedSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "alphaCurrentSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseConductanceBasedSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseConductanceBasedSynapseTwo*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "expOneSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "alphaSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "expTwoSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "expThreeSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseBlockMechanism*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "voltageConcDepBlockMechanism": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*basePlasticityMechanism*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "tsodyksMarkramDepMechanism": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "tsodyksMarkramDepFacMechanism": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "blockingPlasticSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "doubleSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "stdpSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "gapJunction": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "*baseGradedSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "silentSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "linearGradedSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "gradedSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Synapses.html"
+    },
+    "Inputs": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*basePointCurrent*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*baseVoltageDepPointCurrent*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*baseVoltageDepPointCurrentSpiking*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*basePointCurrentDL*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*baseVoltageDepPointCurrentDL*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "*baseSpikeSource*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spikeGenerator": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spikeGeneratorRandom": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spikeGeneratorPoisson": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spikeGeneratorRefPoisson": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "poissonFiringSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "transientPoissonFiringSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "timedSynapticInput": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spikeArray": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "spike": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "pulseGenerator": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "compoundInput": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "compoundInputDL": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "pulseGeneratorDL": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "sineGenerator": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "sineGeneratorDL": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "rampGenerator": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "rampGeneratorDL": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "voltageClamp": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "voltageClampTriple": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Inputs.html"
+    },
+    "Networks": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "network": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "networkWithTemperature": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "*basePopulation*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "population": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "populationList": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "instance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "location": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "region": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "rectangularExtent": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "projection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "explicitConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "connection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "synapticConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "synapticConnectionWD": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "connectionWD": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "electricalConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "electricalConnectionInstance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "electricalConnectionInstanceW": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "electricalProjection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "continuousConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "continuousConnectionInstance": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "continuousConnectionInstanceW": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "continuousProjection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "explicitInput": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "inputList": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "input": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "inputW": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Networks.html"
+    },
+    "PyNN": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "*basePyNNCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "*basePyNNIaFCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "*basePyNNIaFCondCell*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "IF_curr_alpha": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "IF_curr_exp": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "IF_cond_alpha": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "IF_cond_exp": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "EIF_cond_exp_isfa_ista": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "EIF_cond_alpha_isfa_ista": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "HH_cond_exp": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "*basePynnSynapse*": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "expCondSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "expCurrSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "alphaCondSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "alphaCurrSynapse": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "SpikeSourcePoisson": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/PyNN.html"
+    },
+    "Simulation": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "Display": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "Line": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "OutputFile": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "OutputColumn": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "EventOutputFile": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "EventSelection": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Simulation.html"
+    },
+    "Meta": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Index": {
+        "url": "https://docs.neuroml.org/Userdocs/Schemas/Index.html"
+    },
+    "NeuroML v1": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Level 1": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html"
+    },
+    "Level 2": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html"
+    },
+    "Level 3": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv1.html"
+    },
+    "LEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSchema.html"
+    },
+    "Model structure": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html"
+    },
+    "Lems": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html"
+    },
+    "Target": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html"
+    },
+    "Constant": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html"
+    },
+    "Include": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Modelstructure.html"
+    },
+    "Units and dimensions": {
+        "url": "https://docs.neuroml.org/Userdocs/UnitsAndDimensions.html"
+    },
+    "Dimension": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html"
+    },
+    "Unit": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html"
+    },
+    "Assertion": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Unitsanddimensions.html"
+    },
+    "Defining component types": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "ComponentType": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Parameter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "PathParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Property": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "DerivedParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Fixed": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Requirement": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "ComponentRequirement": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "InstanceRequirement": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Exposure": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Child": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Children": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Link": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "ComponentReference": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "ComponentTypeReference": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Collection": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "PairCollection": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "EventPort": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Text": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Path": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Attachments": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Insertion": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "IntegerParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "IndexParameter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "About": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Definingcomponenttypes.html"
+    },
+    "Dynamics": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "StateVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "StateAssignment": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "TimeDerivative": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "DerivedVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "OnStart": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "OnCondition": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "OnEvent": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "EventOut": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "KineticScheme": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Regime": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "OnEntry": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Transition": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Super": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "ConditionalDerivedVariable": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Case": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Equilibrium": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "StateScalarField": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "DerivedScalarField": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "DerivedPunctateField": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Dynamics.html"
+    },
+    "Structure": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "BuildElement": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "MultiInstantiate": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "CoInstantiate": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Assign": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Choose": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "ChildInstance": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "ForEach": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "EventConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Tunnel": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "PairsEventConnection": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "PairFilter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "IncludePair": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "With": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "If": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Apply": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Gather": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "GatherPairs": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Structure.html"
+    },
+    "Record": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "EventRecord": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "DataDisplay": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "DataWriter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "EventWriter": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "Run": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Simulation.html"
+    },
+    "Procedure": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Equilibrate": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html"
+    },
+    "ForEachComponent": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html"
+    },
+    "Print": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Procedure.html"
+    },
+    "Defining Components": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/DefiningComponents.html"
+    },
+    "Component": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/DefiningComponents.html"
+    },
+    "Geometry": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "Frustum": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "Solid": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "Location": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "Skeleton": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "ScalarField": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMS_elements/Geometry.html"
+    },
+    "NeuroML 2 and LEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "NeuroML 2 Component Type definitions in LEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv2AndLEMS.html"
+    },
+    "More information": {
+        "url": "https://docs.neuroml.org/Userdocs/NeuroMLv2AndLEMS.html"
+    },
+    "Conventions": {
+        "url": "https://docs.neuroml.org/Userdocs/Conventions.html"
+    },
+    "Prefer underscores instead of spaces": {
+        "url": "https://docs.neuroml.org/Userdocs/Conventions.html"
+    },
+    "Component IDs: NmlId": {
+        "url": "https://docs.neuroml.org/Userdocs/Conventions.html"
+    },
+    "File naming": {
+        "url": "https://docs.neuroml.org/Userdocs/Conventions.html"
+    },
+    "Neuron segments": {
+        "url": "https://docs.neuroml.org/Userdocs/Conventions.html"
+    },
+    "Paths": {
+        "url": "https://docs.neuroml.org/Userdocs/Paths.html"
+    },
+    "Helper functions in pyNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Paths.html"
+    },
+    "Quantities and recording": {
+        "url": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html"
+    },
+    "Recording events": {
+        "url": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html"
+    },
+    "Recording quantities from exposures": {
+        "url": "https://docs.neuroml.org/Userdocs/QuantitiesAndRecording.html"
+    },
+    "LEMS Simulation files": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "Specification of format": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "Quantities and paths": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "Creating LEMS Simulation files": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "What about SED-ML?": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "Exporting LEMS simulation descriptions to SED-ML": {
+        "url": "https://docs.neuroml.org/Userdocs/LEMSSimulation.html"
+    },
+    "Extending NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "Creating new ComponentTypes with existing NeuroML ComponentTypes": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "Creating new ComponentTypes with LEMS elements": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "LEMS elements": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "Example: Lorenz model for cellular convection": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "Writing the model in Python using PyLEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/ExtendingNeuroMLv2.html"
+    },
+    "Examples": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html"
+    },
+    "Software and Tools": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "Core NeuroML Tools": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "Python based applications": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "Java based applications": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "NeuroML support in other languages": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "Other NeuroML supporting applications": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Software.html"
+    },
+    "Quick start": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/MatLab.html"
+    },
+    "Install Python and the Java Runtime Environment": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "Install pyNeuroML with pip": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "Installing optional dependencies": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "Povray": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "Vispy": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyNeuroML.html"
+    },
+    "Installation on Fedora Linux": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html"
+    },
+    "Documentation": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "API documentation": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/NeuroML_API.html"
+    },
+    "Getting help": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/MatLab.html"
+    },
+    "Development": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/MatLab.html"
+    },
+    "libNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/libNeuroML.html"
+    },
+    "Install Python": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/NeuroMLlite.html"
+    },
+    "Install libNeuroML with pip": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/libNeuroML.html"
+    },
+    "pyLEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyLEMS.html"
+    },
+    "Install pyLEMS with pip": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/pyLEMS.html"
+    },
+    "NeuroMLlite": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html"
+    },
+    "Install NeuroMLlite with pip": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/NeuroMLlite.html"
+    },
+    "jNeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html"
+    },
+    "Install the Java Runtime Environment": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html"
+    },
+    "Installation using pre-compiled JAR": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html"
+    },
+    "Nightly (pre-release) jar builds:": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jNeuroML.html"
+    },
+    "jLEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/jLEMS.html"
+    },
+    "NeuroML C++ API": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/NeuroML_API.html"
+    },
+    "MatLab NeuroML Toolbox": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/MatLab.html"
+    },
+    "Tools and resources with NeuroML support": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Applications with NeuroML support": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NetPyNE": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "MOOSE": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "BRIAN": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "EDEN": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Arbor": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NEST": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Model Description Format (MDF)": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "The Virtual Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "LFPy": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "BioSimulators": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "N2A": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NeuronLand": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "CX3D": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "TREES toolbox": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "TrakEM2": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Neuronvisio": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "CATMAID": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Myokit": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Geppetto": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Other/legacy tools": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "PSICS": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Whole Brain Catalogue": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "PCSIM": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Neuromantic": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Neurospaces/ GENESIS 3": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "SplitNeuron": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NeurAnim": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "CNrun": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NeuGen": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "morphforge": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "NeuroTranslate": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Moogli": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/SupportingTools.html"
+    },
+    "Approaches to adding NeuroML support": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "Commonly used approaches": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "1) Native support for NeuroML elements": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "2) Native ability to import NeuroML elements": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "3) Native ability to export NeuroML elements": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "4) 3rd party mapping to simulator's own format": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Approaches.html"
+    },
+    "NEURON and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "Simulating NeuroML models in NEURON": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "Setting the NEURON_HOME environment variable": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "Using neuroConstruct": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEURON.html"
+    },
+    "NetPyNE and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html"
+    },
+    "Importing NeuroML into NetPyNE": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html"
+    },
+    "Exporting NeuroML from NetPyNE": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html"
+    },
+    "Running NetPyNE on OSBv2": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NetPyNE.html"
+    },
+    "PyNN and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/PyNN.html"
+    },
+    "Brian and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Brian.html"
+    },
+    "Converting NeuroML model to Brian": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Brian.html"
+    },
+    "MOOSE and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html"
+    },
+    "Simulating NeuroML models in MOOSE": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/MOOSE.html"
+    },
+    "EDEN and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/EDEN.html"
+    },
+    "Arbor and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html"
+    },
+    "Importing NeuroML into Arbor": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html"
+    },
+    "Support for channels/synapses in LEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html"
+    },
+    "Network models in Arbor with NeuroMLlite": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/Arbor.html"
+    },
+    "N2A and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/N2A.html"
+    },
+    "NEST and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/NEST.html"
+    },
+    "SWC and NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Software/Tools/SWC.html"
+    },
+    "Citing NeuroML and related publications": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Citing NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Papers": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "libNeuroML and PyLEMS": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Software": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Other publications": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Book Chapters": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Abstracts": {
+        "url": "https://docs.neuroml.org/Userdocs/Publications.html"
+    },
+    "Frequently asked questions (FAQ)": {
+        "url": "https://docs.neuroml.org/Userdocs/FAQ.html"
+    },
+    "1. Are length 0 segments allowed in NeuroML?": {
+        "url": "https://docs.neuroml.org/Userdocs/FAQ.html"
+    },
+    "2. What is the difference between reader/writer methods in pyNeuroML and libNeuroML?": {
+        "url": "https://docs.neuroml.org/Userdocs/FAQ.html"
+    },
+    "Walk throughs": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/Walkthroughs.html"
+    },
+    "Converting Ray et al 2020 to NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/RayEtAl2020.html"
+    },
+    "Setting up": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "Step 2) Create GitHub and Open Source Brain accounts for sharing the code": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "2a) Sign up to GitHub and Open Source Brain": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "2c) Create Open Source Brain project": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Setup.html"
+    },
+    "Converting to NeuroML": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Converting the Giant GABAergic Neuron": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Step 1) Exporting morphology of the GGN": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Step 2) Adding biophysics to the GGN": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Converting the Kenyon Cell": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Step 1) Converting ion channels": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "1a) Kv, Naf, Kst": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "1b) Ka": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Step 2) Creating the morphology": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Step 3) Testing the model": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/Conversion.html"
+    },
+    "Adding OMV tests": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html"
+    },
+    "Step 1) Getting spike data from the NEURON model": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html"
+    },
+    "generated from test-kc.py": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html"
+    },
+    "Step 2) Adding tests": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html"
+    },
+    "Step 3) Setting up continuous testing on GitHub Actions": {
+        "url": "https://docs.neuroml.org/Userdocs/Walkthroughs/RayEtAl2020/OMV.html"
+    },
+    "NeuroML outreach and events": {
+        "url": "https://docs.neuroml.org/Events/Events.html"
+    },
+    "July 2024: NeuroML tutorial at CNS 2024": {
+        "url": "https://docs.neuroml.org/Events/202407-CNS2024.html"
+    },
+    "Agenda": {
+        "url": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html"
+    },
+    "Times and dates": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "Registration": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "April 2024: NeuroML hackathon at HARMONY 2024": {
+        "url": "https://docs.neuroml.org/Events/202404-Harmony.html"
+    },
+    "Open an issue beforehand!": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "Slack": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "June 2022: NeuroML tutorial at CNS*2022 satellite tutorials": {
+        "url": "https://docs.neuroml.org/Events/20220630-CNS2022.html"
+    },
+    "Target audience": {
+        "url": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html"
+    },
+    "Where": {
+        "url": "https://docs.neuroml.org/Events/20220630-CNS2022.html"
+    },
+    "Part 1: Introduction to NeuroML": {
+        "url": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html"
+    },
+    "Part 2: Hands on demonstrations of building and using NeuroML models": {
+        "url": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html"
+    },
+    "April 2022: NeuroML development workshop at HARMONY 2022": {
+        "url": "https://docs.neuroml.org/Events/202204-Harmony.html"
+    },
+    "October 2021: NeuroML development workshop at COMBINE meeting": {
+        "url": "https://docs.neuroml.org/Events/202109-COMBINE.html"
+    },
+    "Agenda/minutes": {
+        "url": "https://docs.neuroml.org/Events/202109-COMBINE.html"
+    },
+    "August 2021: NeuroML tutorial at INCF Training Weeks": {
+        "url": "https://docs.neuroml.org/Events/202108-INCF-Training-Week.html"
+    },
+    "July 2021: NeuroML tutorial at CNS*2021": {
+        "url": "https://docs.neuroml.org/Events/202107-CNS2021.html"
+    },
+    "Why take part?": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "Pre-requisites": {
+        "url": "https://docs.neuroml.org/Events/202107-CNS2021.html"
+    },
+    "March 2021: NeuroML hackathon at HARMONY 2021": {
+        "url": "https://docs.neuroml.org/Events/202103-Harmony.html"
+    },
+    "March 2012: Fourth NeuroML Development Workshop": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Meeting report": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Monday 12th March: NeuroML Development Workshop Day 1": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Morning session: Current state of NeuroML 2 development & relationship to other initiatives": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Afternoon session: Specification of detailed biophysical components in NeuroML 2/LEMS": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Tuesday 13th March: NeuroML Development Workshop Day 2": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Morning session: Representing morphologies/support for detailed neuronal simulators/relationship to connectomics initiatives": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Afternoon session: Best practices when implementing support for NeuroML in simulators": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Wednesday 14th March--Friday 16th March": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Funding": {
+        "url": "https://docs.neuroml.org/Events/2012-Edinburgh.html"
+    },
+    "Past NeuroML Events": {
+        "url": "https://docs.neuroml.org/Events/PastEvents.html"
+    },
+    "Getting in touch": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html"
+    },
+    "Mailing list": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html"
+    },
+    "Chat channels": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html"
+    },
+    "Issues related to the libraries or specification": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html"
+    },
+    "Social media": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CommunicationChannels.html"
+    },
+    "Overview of standards in neuroscience": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Standards.html"
+    },
+    "NeuroML as a standard": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Standards.html"
+    },
+    "Endorsed INCF standard": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Standards.html"
+    },
+    "COMBINE standard": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Standards.html"
+    },
+    "A brief history of NeuroML": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/History.html"
+    },
+    "The early days": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/History.html"
+    },
+    "NeuroML v1.x": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/History.html"
+    },
+    "NeuroML v2.x - introducing LEMS...": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/History.html"
+    },
+    "The future": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/History.html"
+    },
+    "NeuroML Editorial Board": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Board.html"
+    },
+    "Current Editorial Board": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Board.html"
+    },
+    "Procedures": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Board.html"
+    },
+    "Responsibilities of NeuroML Editors": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Board.html"
+    },
+    "History of the NeuroML Editorial Board": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Initial election of editors (2013)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2015)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2016)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2018)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2019)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2022)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2024)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Election of editors (2025)": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardHistory.html"
+    },
+    "Workshop and Meeting reports": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/BoardMeetingReports.html"
+    },
+    "NeuroML Scientific Committee": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html"
+    },
+    "Current Members": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html"
+    },
+    "Past Members": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/ScientificCommittee.html"
+    },
+    "Funding and Acknowledgements": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Funding.html"
+    },
+    "Outreach and training": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "Google summer of Code": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "2025": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "2024": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "2022": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "Other past GSoC projects": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/OutreachTraining.html"
+    },
+    "NeuroML contributors": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Contributors.html"
+    },
+    "NeuroML repositories": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/Repositories.html"
+    },
+    "Code of Conduct": {
+        "url": "https://docs.neuroml.org/NeuroMLOrg/CoC.html"
+    },
+    "Overview": {
+        "url": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html"
+    },
+    "Contribution guidelines": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Code of conduct": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Structure of repositories": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Kanban board on Zenhub": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Versioning": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Git branches": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Git commits": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Code style: Java": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Code style: Python": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Testing": {
+        "url": "https://docs.neuroml.org/Devdocs/DevSOP.html"
+    },
+    "Release Process": {
+        "url": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html"
+    },
+    "Steps for new major release": {
+        "url": "https://docs.neuroml.org/Devdocs/ReleaseProcess.html"
+    },
+    "Making changes to the NeuroML standard": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Regenerating schema documentation": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Updating the Java API: org.neuroml.model": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Updating the Python API: libNeuroML": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Updating the C++ API": {
+        "url": "https://docs.neuroml.org/Devdocs/UpdatingStandard.html"
+    },
+    "Interaction with other languages and standards": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "SBML": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "Sonata": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "NineML & SpineML": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "ModECI MDF": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "SWC": {
+        "url": "https://docs.neuroml.org/Devdocs/InteractionOtherBits.html"
+    },
+    "Glossary": {
+        "url": "https://docs.neuroml.org/Reference/Glossary.html"
+    },
+    "Bibliography": {
+        "url": "https://docs.neuroml.org/Reference/zBibliography.html"
+    }
+}

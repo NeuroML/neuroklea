@@ -12,7 +12,7 @@ import unittest
 
 import pytest
 
-from klea_utils.llm import split_output_by_section
+from klea_utils.llm import parse_model_name, split_output_by_section
 
 
 @pytest.mark.parametrize(
@@ -121,6 +121,42 @@ def test_split_output_by_section(
     delim, other = split_output_by_section(text, start_mark, end_mark)
     assert delim == expected_delim
     assert other == expected_other
+
+
+@pytest.mark.parametrize(
+    argnames=[
+        "raw",
+        "expected_provider",
+        "expected_model",
+        "expected_suffix",
+    ],
+    argvalues=[
+        # provider:model:tag -> provider + model:tag
+        ("ollama:bge-m3:latest", "ollama", "bge-m3:latest", None),
+        ("ollama:qwen3:0.6b", "ollama", "qwen3:0.6b", None),
+        # huggingface:org/model:suffix -> provider, model, suffix
+        (
+            "huggingface:intfloat/multilingual-e5-large:auto",
+            "huggingface",
+            "intfloat/multilingual-e5-large",
+            "auto",
+        ),
+        # huggingface:org/model -> provider, model, no suffix
+        ("huggingface:org/model", "huggingface", "org/model", None),
+        # provider:model (2 parts) for any provider
+        ("openai:gpt-4o", "openai", "gpt-4o", None),
+        ("anthropic:claude-sonnet-4-5", "anthropic", "claude-sonnet-4-5", None),
+        ("deepseek:deepseek-chat", "deepseek", "deepseek-chat", None),
+        ("google_genai:gemini-2.0-flash", "google_genai", "gemini-2.0-flash", None),
+        # bare model name, no provider
+        ("bge-m3", None, "bge-m3", None),
+    ],
+)
+def test_parse_model_name(raw, expected_provider, expected_model, expected_suffix):
+    parsed = parse_model_name(raw)
+    assert parsed.provider == expected_provider
+    assert parsed.model_name == expected_model
+    assert parsed.suffix == expected_suffix
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, override
 
 from klea_utils.nodes.abstract import AbstractLangGraphNode
-from klea_utils.stores.retrieval import VectorStores
+from klea_utils.stores.retrieval import VSRetriever
 
 from klea_rag.schemas import RAGState
 
@@ -29,13 +29,13 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     def __init__(
         self,
         logger: logging.Logger,
-        stores: VectorStores | None,
+        stores: VSRetriever | None,
         num_refs_max: int = 10,
     ):
         """Initialise the retrieval node.
 
         :param logger: Logger instance
-        :param stores: VectorStores instance for retrieval (None skips retrieval)
+        :param stores: VSRetriever instance for retrieval (None skips retrieval)
         :param num_refs_max: Maximum number of references to keep per domain
         """
         super().__init__(logger)

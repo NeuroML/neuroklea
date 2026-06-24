@@ -17,7 +17,7 @@ from .config import VectorStoresConfig
 from .utils import instantiate_vector_store
 
 
-class VectorStores:
+class VSRetriever:
     """Manages domain-specific vector stores.
 
     Loads vector stores on demand per domain and provides similarity search

@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 
 from klea_utils.nodes.abstract import AbstractRouterNode
-from klea_utils.stores.retrieval import VectorStores
+from klea_utils.stores.retrieval import VSRetriever
 
 from klea_rag.schemas import RAGState
 
@@ -22,7 +22,7 @@ class RouteEvaluator(AbstractRouterNode):
     def __init__(
         self,
         logger: logging.Logger,
-        stores: VectorStores | None,
+        stores: VSRetriever | None,
         max_retrieval_attempts: int = 2,
         max_rewrite_attempts: int = 1,
         fallback_to_training_data: bool = False,

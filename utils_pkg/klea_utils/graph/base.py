@@ -25,7 +25,7 @@ from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
 from klea_utils.stores.config import VectorStoresConfig
-from klea_utils.stores.retrieval import VectorStores
+from klea_utils.stores.retrieval import VSRetriever
 
 
 class BaseLangGraph(ABC):
@@ -92,7 +92,7 @@ class BaseLangGraph(ABC):
         self.mcp_tools: list[Tool] | None = None
 
         self.stores_config: VectorStoresConfig | None = None
-        self.stores: VectorStores | None = None
+        self.stores: VSRetriever | None = None
 
         self.QueryDomainSchema: Type[BaseModel] | None = None
 
@@ -222,7 +222,7 @@ class BaseLangGraph(ABC):
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""
         if self.stores_config:  # type: ignore
-            self.stores = VectorStores(vs_config=self.stores_config, logger=self.logger)
+            self.stores = VSRetriever(vs_config=self.stores_config, logger=self.logger)
             self.stores.setup()
             self.logger.info(f"Vector stores loaded: {self.stores.domains}")
 

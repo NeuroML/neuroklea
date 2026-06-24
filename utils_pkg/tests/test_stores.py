@@ -20,7 +20,7 @@ import pytest
 from ollama import ResponseError
 
 from klea_utils.stores.config import VectorStoresConfig
-from klea_utils.stores.retrieval import VectorStores
+from klea_utils.stores.retrieval import VSRetriever
 
 
 class TestStores(unittest.TestCase):
@@ -36,7 +36,7 @@ class TestStores(unittest.TestCase):
             vs_config = VectorStoresConfig(**config)
 
             logger = logging.getLogger("test_stores")
-            stores = VectorStores(vs_config=vs_config, logger=logger)
+            stores = VSRetriever(vs_config=vs_config, logger=logger)
             stores.setup()
             stores.retrieve("NeuroML", "NeuroML community")
         except ResponseError as e:

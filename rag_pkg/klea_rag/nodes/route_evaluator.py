@@ -11,7 +11,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 import logging
 
 from klea_utils.nodes.abstract import AbstractRouterNode
-from klea_utils.stores import VectorStores
+from klea_utils.stores.retrieval import VectorStores
 
 from klea_rag.schemas import RAGState
 

@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, override
 
 from klea_utils.nodes.abstract import AbstractLangGraphNode
-from klea_utils.stores import VectorStores
+from klea_utils.stores.retrieval import VectorStores
 
 from klea_rag.schemas import RAGState
 

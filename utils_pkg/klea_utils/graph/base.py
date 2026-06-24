@@ -24,7 +24,8 @@ from langgraph.graph.state import CompiledStateGraph
 from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
-from klea_utils.stores import VectorStores, VectorStoresConfig
+from klea_utils.stores.config import VectorStoresConfig
+from klea_utils.stores.retrieval import VectorStores
 
 
 class BaseLangGraph(ABC):

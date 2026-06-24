@@ -19,7 +19,8 @@ import unittest
 import pytest
 from ollama import ResponseError
 
-from klea_utils.stores import VectorStores, VectorStoresConfig
+from klea_utils.stores.config import VectorStoresConfig
+from klea_utils.stores.retrieval import VectorStores
 
 
 class TestStores(unittest.TestCase):

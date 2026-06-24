@@ -13,7 +13,7 @@ from typing import Any, Dict, override
 
 from klea_utils.llm import split_output_by_section
 from klea_utils.nodes.base import BaseLLMNode
-from klea_utils.stores import serialize_vs_retrieval
+from klea_utils.stores.utils import serialize_vs_retrieval
 from klea_utils.tools import textualize_tool_results
 from langchain.messages import AIMessage
 from pydantic import BaseModel, Field

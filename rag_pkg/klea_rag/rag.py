@@ -19,7 +19,7 @@ from klea_utils.nodes.fixed_answer import FixedAnswer
 from klea_utils.nodes.guard import GuardNode
 from klea_utils.nodes.guard_router import GuardRouterNode
 from klea_utils.nodes.summarise_memory import SummariseMemoryNode
-from klea_utils.stores import VectorStoresConfig
+from klea_utils.stores.config import VectorStoresConfig
 from langgraph.graph import END, START, StateGraph
 
 from .config import AppConfig, AppEnv

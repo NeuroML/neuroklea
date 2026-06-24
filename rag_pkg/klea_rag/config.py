@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from typing import Any
 
-from klea_utils.stores import VectorStoreInfo
+from klea_utils.stores.config import VectorStoreInfo
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

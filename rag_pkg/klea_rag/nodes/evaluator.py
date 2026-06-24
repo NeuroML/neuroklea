@@ -12,7 +12,7 @@ import logging
 from typing import Any, Dict, override
 
 from klea_utils.nodes.base import BaseLLMNode
-from klea_utils.stores import serialize_vs_retrieval
+from klea_utils.stores.utils import serialize_vs_retrieval
 
 from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 

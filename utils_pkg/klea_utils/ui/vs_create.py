@@ -39,6 +39,13 @@ def create(
     max_tokens: int = typer.Option(
         450, "--max-tokens", help="Maximum tokens per chunk"
     ),
+    metadata_map_path: str = typer.Option(
+        None,
+        "--metadata-map",
+        "-M",
+        help="JSON file mapping heading text to dicts of metadata "
+        "key-value pairs (with optional DEFAULT fallback)",
+    ),
     force: bool = typer.Option(
         False, "--force", "-f", help="Re-process all files even if unchanged"
     ),
@@ -51,6 +58,7 @@ def create(
         f"\n  Source: {source_dir}"
         f"\n  Model: {embedding_model}"
         f"\n  Max tokens: {max_tokens}"
+        f"\n  Metadata map: {metadata_map_path or '(none)'}"
     )
 
     try:
@@ -65,6 +73,7 @@ def create(
             store_uri=store_path,
             collection_name=collection_name,
             force=force,
+            metadata_map_path=metadata_map_path,
         )
         logger.info(f"Done — collection '{collection_name}' is ready")
     except Exception as e:

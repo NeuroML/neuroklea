@@ -8,8 +8,10 @@ Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
+import json
 import logging
 from pathlib import Path
+from typing import Any
 
 import xxhash
 from langchain_core.documents import Document
@@ -69,23 +71,36 @@ class VSBuilder:
         store_uri: str,
         collection_name: str,
         force: bool = False,
+        metadata_map_path: str | None = None,
     ) -> None:
         """Convert documents in ``source_dir``, chunk, embed, and store.
 
         Files are hashed with xxhash to skip already-indexed content
         unless ``force`` is ``True``.
 
+        When a metadata map is provided, each chunk's metadata is
+        enriched by matching its most specific heading against map keys.
+        The ``DEFAULT`` key provides a fallback when no heading matches.
+
         :param source_dir: Path to a directory containing source documents
         :param store_uri: Vector store URI (``chroma:/path``, etc.)
         :param collection_name: Collection name for the store
         :param force: Re-process all files even if they have not changed
-        :raises FileNotFoundError: If ``source_dir`` does not exist
+        :param metadata_map_path: Optional path to a JSON file mapping
+            heading text to dicts of metadata key-value pairs
+        :raises FileNotFoundError: If ``source_dir`` or
+            ``metadata_map_path`` does not exist
+        :raises ValueError: If the metadata map is malformed
         """
         assert self.embeddings
 
         source_path = Path(source_dir).resolve()
         if not source_path.is_dir():
             raise FileNotFoundError(f"Source directory not found: {source_path}")
+
+        metadata_map = None
+        if metadata_map_path:
+            metadata_map = self._load_metadata_map(metadata_map_path)
 
         store = instantiate_vector_store(
             store_uri, collection_name, self.embeddings, self.logger, create=True
@@ -118,6 +133,14 @@ class VSBuilder:
                         }
                     )
 
+                if metadata_map:
+                    for doc in docs:
+                        meta = self._resolve_metadata(
+                            doc.metadata.get("headings"), metadata_map
+                        )
+                        if meta:
+                            doc.metadata.update(meta)
+
                 store.add_documents(docs)
                 self.logger.info(f"Added {len(docs)} chunks from {file_path.name}")
             except Exception as e:
@@ -127,6 +150,66 @@ class VSBuilder:
             f"Ingestion complete for collection '{collection_name}' "
             f"({len(files)} files)"
         )
+
+    # ------------------------------------------------------------------
+    # Metadata map helpers
+    # ------------------------------------------------------------------
+
+    def _load_metadata_map(self, metadata_map_path: str) -> dict[str, dict[str, Any]]:
+        """Load and validate a metadata map JSON file.
+
+        The file must contain a JSON object with string keys (heading
+        text) and dict values of metadata key-value pairs.  An optional
+        ``DEFAULT`` key provides a fallback when no heading matches.
+
+        :param metadata_map_path: Path to the JSON file
+        :returns: Mapping of heading text to metadata dicts
+        :raises FileNotFoundError: If the path does not exist
+        :raises ValueError: If the JSON is not well-formed
+        """
+        path = Path(metadata_map_path)
+        if not path.is_file():
+            raise FileNotFoundError(f"Metadata map file not found: {path}")
+        with open(path) as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            raise ValueError(
+                f"Metadata map must be a JSON object (dict), got {type(data).__name__}"
+            )
+        for k, v in data.items():
+            if not isinstance(k, str):
+                raise ValueError(
+                    f"Metadata map keys must be strings, got {type(k).__name__}"
+                )
+            if not isinstance(v, dict):
+                raise ValueError(
+                    f"Values in metadata map must be dicts, "
+                    f"got {type(v).__name__} for key {k!r}"
+                )
+        self.logger.info(f"Loaded metadata map with {len(data)} entries from {path}")
+        return data
+
+    def _resolve_metadata(
+        self,
+        headings: list[str] | None,
+        metadata_map: dict[str, dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        """Resolve a metadata dict for a chunk by matching its heading chain.
+
+        Iterates the heading chain from most specific to least specific
+        and returns the first match.  Falls back to ``DEFAULT`` if no
+        heading matches.
+
+        :param headings: Heading hierarchy for the chunk (most specific
+            last), or ``None``
+        :param metadata_map: Mapping of heading text to metadata dicts
+        :returns: Matched metadata dict, or ``None``
+        """
+        if headings:
+            for heading in reversed(headings):
+                if heading in metadata_map:
+                    return metadata_map[heading]
+        return metadata_map.get("DEFAULT")
 
     # ------------------------------------------------------------------
     # Internal helpers

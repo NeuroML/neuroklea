@@ -16,7 +16,7 @@ import time
 from functools import lru_cache
 from pathlib import Path
 from textwrap import dedent
-from typing import Type
+from typing import NamedTuple, Type
 
 import ollama
 from langchain.chat_models import init_chat_model
@@ -38,6 +38,53 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+class ParsedModelName(NamedTuple):
+    """Parsed components of a model name string."""
+
+    provider: str | None
+    model_name: str
+    suffix: str | None
+
+
+def parse_model_name(raw: str) -> ParsedModelName:
+    """Split a model name into provider, model identifier, and suffix.
+
+    Follows the ``provider:model_id`` convention.  The provider is
+    expected to be explicitly included; no provider inference is done.
+
+    ``huggingface`` is the only special case: a third ``:`` segment
+    denotes a provider hint (``auto``, ``cheapest``, ``fastest``)
+    rather than a model tag.  For all other providers the second and
+    third segments together form the model name.
+
+    Examples:
+
+    * ``ollama:bge-m3:latest`` -> provider=ollama, model=bge-m3:latest
+    * ``huggingface:org/model:auto`` -> provider=huggingface, model=org/model, suffix=auto
+    * ``openai:gpt-4o`` -> provider=openai, model=gpt-4o
+    * ``bge-m3`` -> provider=None, model=bge-m3
+
+    :param raw: Model name with optional provider prefix
+    :returns: Parsed model name components
+    """
+    parts = raw.split(":", 2)
+
+    if len(parts) == 1:
+        return ParsedModelName(provider=None, model_name=raw, suffix=None)
+
+    provider = parts[0].lower()
+
+    if provider == "huggingface" and len(parts) == 3:
+        return ParsedModelName(provider=provider, model_name=parts[1], suffix=parts[2])
+
+    if len(parts) == 3:
+        return ParsedModelName(
+            provider=provider, model_name=f"{parts[1]}:{parts[2]}", suffix=None
+        )
+
+    return ParsedModelName(provider=provider, model_name=parts[1], suffix=None)
 
 
 def check_ollama_model(logger, model, exit=False):

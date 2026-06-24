@@ -7,6 +7,24 @@ Editing or writing to `CLAUDE.md` will overwrite `AGENTS.md` -- always edit
 Multi-package Python project (setuptools + `setup.cfg`). Each `*_pkg/` is a
 separate installable; `code_pkg` and `rag_pkg` depend on `utils_pkg`.
 
+## Workflow
+
+This repo uses an incremental, review-driven workflow.  After each step of a
+plan:
+1. Apply the change.
+2. Run the relevant verification (lint, typecheck, test, --help).
+3. Stop and present the diff for review.
+4. Wait for feedback before proceeding to the next step.
+
+If the review requires changes, address them and loop back to step 2.  Only
+move to the next step after explicit approval.
+
+Verification in step 2 covers:
+- Lint + format: `ruff check . --fix` and `ruff format .` (in the affected package)
+- Type check: `ty` (from repo root)
+- If a CLI entry point was modified: `<cli-name> --help` to confirm it starts
+- If tests exist for the changed code: `pytest -v <test-path>`
+
 ## Packages at a glance
 
 | Dir | Package name | CLI entry |
@@ -47,10 +65,6 @@ ty
 pre-commit run --all-files
 ```
 
-`mcp_pkg` pytest uses `addopts = -n 1` -- do **not** run its tests with `-n auto`.
-
-All packages ignore `F403`, `F405` in ruff.
-
 ## CI flow
 
 `.github/workflows/ci.yml` (pushes/PRs to main/development/*test*/**feat*/**fix*):
@@ -72,9 +86,10 @@ cross-package imports.
 
 - Tests marked `localonly` require an LLM -- skipped in CI.
 - `utils_pkg/tests/test_stores.py` reads `VS_TEST_CONFIG` env var (default `vector-stores-tests.json`).
-- MCP tests are asyncio + single-process (`-n 1`).
+- MCP tests are asyncio + single-process; do **not** run with `-n auto` (uses `addopts = -n 1` in `pyproject.toml`).
+- All packages ignore `F403` and `F405` in ruff.
 
-## Names to know
+## Key references
 
 Copyright format: `# Copyright 2026 Ankur Sinha <sanjay DOT ankur AT gmail DOT com>`
 (`mcp_pkg` additionally requires `#!/usr/bin/env python3` shebang on every `.py` file.)
@@ -92,15 +107,24 @@ Vector stores use URI-style paths: `chroma:/path/to/dir`, `qdrant:http://...`,
 `.agents/YYYY-MM-DD.md` logs previous work (see `.agents/Readme.md` for template).
 Read previous logs at session start; write one at session end.
 
-Keep logs high-level — decisions, architecture changes, outcomes only.
+Keep logs high-level -- decisions, architecture changes, outcomes only.
 Git log has the step-by-step edits. Omit routine work.
 
 ## Git conventions
 
 - `git add --intent-to-add <new-file>` so new files appear in `git diff`.
 - Never stage/commit without explicit user approval.
+- Show `git diff --stat` first, then full diff before committing so scope is clear at a glance.
 - Conventional commit messages with issue numbers when applicable.
 
 ## File conventions
 
 - Use ASCII-only text. No unicode dashes, arrows, ellipsis, or emoticons.
+
+## CLI conventions
+
+- Heavy imports (orchestrators, vector store backends, LLM libraries) must be
+  deferred inside the function body of Typer commands, not at module level.
+  Otherwise `--help` forces eager import of the entire dependency chain.
+- Every deferred import must have a comment explaining *why* it is lazy, so the
+  pattern is self-documenting for future maintainers.

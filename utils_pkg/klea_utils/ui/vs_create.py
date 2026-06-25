@@ -42,8 +42,8 @@ def build(
         None,
         "--metadata-map",
         "-M",
-        help="JSON file mapping heading text to dicts of metadata "
-        "key-value pairs (with optional DEFAULT fallback)",
+        help="JSON file keyed by source filename; each file entry maps "
+        "heading chains to metadata dicts (with per-file DEFAULT fallback)",
     ),
     force: bool = typer.Option(
         False, "--force", "-f", help="Re-process all files even if unchanged"
@@ -57,19 +57,23 @@ def build(
     subsequent runs (e.g. with ``--metadata-map``) skip conversion.
 
     The optional ``--metadata-map`` / ``-M`` flag accepts a JSON file
-    where each key is a heading string and each value is a dict of
-    metadata key-value pairs.  The most specific heading match wins; a
-    ``DEFAULT`` key provides fallback.
+    organised by source file.  Within each file entry, the most specific
+    heading chain match wins; a ``DEFAULT`` entry provides fallback for
+    any heading not listed.
 
     Example metadata-map.json:
 
         {
-            "C. elegans tissue morphology": {
-                "url": "https://example.com/worm",
-                "category": "paper"
+            "PrimerOnCElegans.md": {
+                "DEFAULT": {},
+                "C. elegans tissue morphology": {
+                    "url": "https://example.com/worm"
+                }
             },
-            "DEFAULT": {
-                "url": "https://example.com"
+            "c302-paper.pdf": {
+                "DEFAULT": {
+                    "url": "https://example.com/c302"
+                }
             }
         }
     """
@@ -122,8 +126,9 @@ def chunk(
 
     Converts all files in SOURCE_DIR with Docling, chunks them, and
     caches the result in ``<source_dir>/.klea-cache/``.  Also writes a
-    ``metadata-map.template.json`` file with every unique heading chain
-    found.  Fill in the ``{}`` placeholders and pass the file to
+    ``metadata-map.template.json`` file organised by source file, with
+    empty ``{}`` placeholders for each heading chain.  Fill in the
+    metadata values and pass the file to
     ``klea-vs-create store --metadata-map``.
     """
     logger = setup_logger("klea-vs-create")
@@ -148,8 +153,8 @@ def chunk(
         if not source_path.is_dir():
             raise FileNotFoundError(f"Source directory not found: {source_path}")
 
-        _, heading_chains = builder.chunk_all(source_path, force=force)
-        builder.write_heading_template(heading_chains, source_path)
+        _, file_headings = builder.chunk_all(source_path, force=force)
+        builder.write_heading_template(file_headings, source_path)
         logger.info("Chunking complete -- cache is ready")
     except Exception as e:
         logger.error(f"Failed: {e}")
@@ -178,8 +183,8 @@ def store(
         None,
         "--metadata-map",
         "-M",
-        help="JSON file mapping heading text to dicts of metadata "
-        "key-value pairs (with optional DEFAULT fallback)",
+        help="JSON file keyed by source filename; each file entry maps "
+        "heading chains to metadata dicts (with per-file DEFAULT fallback)",
     ),
     force: bool = typer.Option(
         False, "--force", "-f", help="Re-process all files even if unchanged"
@@ -188,8 +193,9 @@ def store(
     """Write cached document chunks to a vector store.
 
     Reads previously cached chunks from ``<source_dir>/.klea-cache/``,
-    optionally applies a metadata map, and writes them to the vector
-    store.  Unseen files are converted and chunked on the fly.
+    optionally applies a metadata map (per-file format), and writes
+    them to the vector store.  Unseen files are converted and chunked
+    on the fly.
 
     Run ``klea-vs-create chunk`` first to populate the cache and
     generate a ``metadata-map.template.json``.

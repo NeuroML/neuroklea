@@ -100,20 +100,21 @@ class VSBuilder:
         source_path: Path,
         metadata_map: dict[str, dict[str, Any]] | None = None,
         force: bool = False,
-    ) -> tuple[list[tuple[str, list[Document], Path]], set[str]]:
+    ) -> tuple[list[tuple[str, list[Document], Path]], dict[str, dict[str, Any]]]:
         """Convert, chunk, cache, and enrich metadata for all files.
 
         Skips converting files whose cache entry exists (unless
         ``force`` is ``True``).  Always caches newly-converted chunks.
-        Heading chains are collected across all files regardless of mode.
+        Heading chains are collected per file for template generation.
 
         :param source_path: Resolved source directory path
         :param metadata_map: Metadata map for heading-based enrichment,
             or ``None``
         :param force: Re-process all files even if cached
-        :returns: ``(results, all_heading_chains)`` where *results* is a
+        :returns: ``(results, file_headings)`` where *results* is a
             list of ``(file_hash, docs, file_path)`` tuples and
-            *all_heading_chains* is a set of unique heading chains
+            *file_headings* is a ``{file_name: {"DEFAULT": {},
+            "heading > heading": {}, ...}}`` dict
         """
         self._ensure_tokenizer()
 
@@ -121,7 +122,7 @@ class VSBuilder:
         self.logger.info(f"Found {len(files)} ingestible files in {source_path}")
 
         results: list[tuple[str, list[Document], Path]] = []
-        all_heading_chains: set[str] = set()
+        file_headings: dict[str, dict[str, Any]] = {}
         total = len(files)
 
         for ctr, file_path in enumerate(files, 1):
@@ -156,19 +157,25 @@ class VSBuilder:
             if metadata_map:
                 for doc in docs:
                     meta = self._resolve_metadata(
-                        doc.metadata.get("headings"), metadata_map
+                        file_path.name,
+                        doc.metadata.get("headings"),
+                        metadata_map,
                     )
                     if meta:
                         doc.metadata.update(meta)
 
+            file_entry: dict[str, Any] = {"DEFAULT": {}}
             for doc in docs:
                 headings = doc.metadata.get("headings", [])
                 if headings:
-                    all_heading_chains.add(" > ".join(headings))
+                    key = " > ".join(headings)
+                    if key not in file_entry:
+                        file_entry[key] = {}
+            file_headings[file_path.name] = file_entry
 
             results.append((file_hash, docs, file_path))
 
-        return results, all_heading_chains
+        return results, file_headings
 
     def store_all(
         self,
@@ -214,30 +221,27 @@ class VSBuilder:
             self.logger.info(f"Added {len(docs)} chunks from {file_path.name}")
 
     def write_heading_template(
-        self, heading_chains: set[str], source_dir: Path
+        self, file_headings: dict[str, dict[str, Any]], source_dir: Path
     ) -> None:
-        """Write a metadata-map template JSON file with empty placeholder
-        dicts for every unique heading chain found across all files.
+        """Write a metadata-map template JSON file organised per source file.
 
-        The user fills in the ``{}`` with their metadata key-value pairs
-        and passes the file to ``klea-vs-create store --metadata-map``.
+        Each file gets a ``"DEFAULT"`` placeholder and one entry per
+        unique heading chain found in that file.  The user fills in the
+        ``{}`` with their metadata key-value pairs.
 
-        :param heading_chains: Unique heading chains collected across all
-            processed files
+        :param file_headings: ``{file_name: {"DEFAULT": {},
+            "heading > heading": {}, ...}, ...}`` from :meth:`chunk_all`
         :param source_dir: Resolved source directory path (template is
             written alongside it)
         """
-        template: dict[str, dict[str, Any]] = {"DEFAULT": {}}
-        for chain in sorted(heading_chains):
-            template[chain] = {}
-
         out_path = source_dir / TEMPLATE_FILE_NAME
         with open(out_path, "w") as f:
-            json.dump(template, f, indent=4)
+            json.dump(file_headings, f, indent=4)
             f.write("\n")
+        total_chains = sum(len(v) - 1 for v in file_headings.values())
         self.logger.info(
             f"Metadata map template written to {out_path} "
-            f"({len(template) - 1} heading chains)"
+            f"({len(file_headings)} files, {total_chains} heading chains)"
         )
 
     def _cache_dir(self, source_dir: Path) -> Path:
@@ -344,25 +348,31 @@ class VSBuilder:
 
     def _resolve_metadata(
         self,
+        file_name: str,
         headings: list[str] | None,
         metadata_map: dict[str, dict[str, Any]],
     ) -> dict[str, Any] | None:
-        """Resolve a metadata dict for a chunk by matching its heading chain.
+        """Resolve a metadata dict for a chunk using the per-file metadata map.
 
-        Iterates the heading chain from most specific to least specific
-        and returns the first match.  Falls back to ``DEFAULT`` if no
-        heading matches.
+        Looks up the file in the map, then matches the heading chain
+        from most specific to least specific.  Falls back to
+        ``DEFAULT`` for that file.
 
+        :param file_name: Source filename to look up in the map
         :param headings: Heading hierarchy for the chunk (most specific
             last), or ``None``
-        :param metadata_map: Mapping of heading text to metadata dicts
+        :param metadata_map: Per-file metadata map
+            ``{file_name: {"DEFAULT": {}, "heading": {...}}}``
         :returns: Matched metadata dict, or ``None``
         """
+        file_map = metadata_map.get(file_name)
+        if file_map is None:
+            return None
         if headings:
             for heading in reversed(headings):
-                if heading in metadata_map:
-                    return metadata_map[heading]
-        return metadata_map.get("DEFAULT")
+                if heading in file_map:
+                    return file_map[heading]
+        return file_map.get("DEFAULT")
 
     # ------------------------------------------------------------------
     # Internal helpers

@@ -22,7 +22,7 @@ rag_app = typer.Typer(help="Simple KLEA RAG user client")
 
 @rag_app.command()
 def cli(
-    rag_server_url: str = typer.Option(
+    server_url: str = typer.Option(
         "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server URL:port"
     ),
     single_query: str = typer.Option(
@@ -38,7 +38,7 @@ def cli(
     print()
     print()
 
-    url = rag_server_url
+    url = server_url
 
     async def cli_main():
         """Cli main async"""
@@ -54,7 +54,7 @@ def cli(
             response = await check_api_is_ready(f"{url}/health/ready")
 
         if len(single_query):
-            print(f"Klea-RAG (USER) >>> {single_query}\n\n")
+            print(f"klea (USER) >>> {single_query}\n\n")
             if single_query.lower() == "quit":
                 pass
             else:
@@ -66,10 +66,10 @@ def cli(
                             timeout=None,
                         )
                         response_result = response.json().get("result")
-                        print(f"Klea-RAG (AI) >>> {response_result}\n\n")
+                        print(f"klea (AI) >>> {response_result}\n\n")
 
         else:
-            while (query := input("Klea-RAG (USER) >>> ")) != "quit":
+            while (query := input("klea (USER) >>> ")) != "quit":
                 # we use checkpoints, so we don't need to store and reload the
                 # state ourselves
                 with yaspin(text="Working ..."):
@@ -80,20 +80,20 @@ def cli(
                             timeout=None,
                         )
                         response_result = response.json().get("result")
-                        print(f"Klea-RAG (AI) >>> {response_result}\n\n")
+                        print(f"klea (AI) >>> {response_result}\n\n")
 
     try:
         asyncio.run(cli_main())
     except KeyboardInterrupt:
         print("\nInterrupted. Exiting.")
 
-    print("Klea-RAG >>> Bye!")
+    print("klea >>> Bye!")
 
 
 @rag_app.command()
 def web(
     title: str = typer.Argument(help="Title for application"),
-    rag_server_url: str = typer.Option(
+    server_url: str = typer.Option(
         "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server URL:port"
     ),
 ):
@@ -102,7 +102,7 @@ def web(
     cwd = Path(__file__).parent
     with chdir(cwd):
         subprocess.run(
-            shlex.split(f"streamlit run streamlit_ui.py '{title}' '{rag_server_url}'")
+            shlex.split(f"streamlit run streamlit_ui.py '{title}' '{server_url}'")
         )
 
 

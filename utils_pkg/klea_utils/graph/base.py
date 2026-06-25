@@ -112,8 +112,7 @@ class BaseLangGraph(ABC):
         env_file_path = Path(self.env_file)
         if not env_file_path.exists():
             raise FileNotFoundError(
-                f"Could not find env file: {self.env_file}"
-                f"You can use the {self.env_var} environment variable to specify the env file."
+                f"""Could not find env file: {self.env_file}. You can use the {self.env_var} environment variable to specify the env file."""
             )
 
         self.app_env = self.env_class(_env_file=self.env_file)

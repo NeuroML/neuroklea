@@ -65,6 +65,11 @@ class VSBuilder:
         self._converter = None
         self._chunker = None
 
+        self.logger.info(
+            f"VSBuilder initialised (max_tokens={max_tokens}, "
+            f"merge_peers={merge_peers}, tokenizer={tokenizer_model})"
+        )
+
     def build(
         self,
         source_dir: str,
@@ -86,6 +91,11 @@ class VSBuilder:
         source_path = Path(source_dir).resolve()
         if not source_path.is_dir():
             raise FileNotFoundError(f"Source directory not found: {source_path}")
+
+        self.logger.info(
+            f"Starting full pipeline: {source_dir} -> "
+            f"collection '{collection_name}' at {store_uri}"
+        )
 
         metadata_map = None
         if metadata_map_path:
@@ -197,9 +207,11 @@ class VSBuilder:
         :param force: Re-store all files even if already indexed
         """
         if self.embeddings is None:
+            self.logger.info(f"Initialising embedding model ({self.embedding_model})")
             self.embeddings = setup_embedding(self.embedding_model, self.logger)
         assert store_uri and collection_name
 
+        self.logger.info(f"Opening vector store '{collection_name}' at {store_uri}")
         store = instantiate_vector_store(
             store_uri,
             collection_name,
@@ -282,7 +294,7 @@ class VSBuilder:
         path = self._cache_path(source_dir, file_hash)
         with open(path, "wb") as f:
             pickle.dump(docs, f)
-        self.logger.debug(f"Cached {len(docs)} chunks to {path}")
+        self.logger.info(f"Cached {len(docs)} chunks to {path}")
 
     def _load_from_cache(
         self, source_dir: Path, file_hash: str
@@ -305,6 +317,7 @@ class VSBuilder:
         path = self._cache_path(source_dir, file_hash)
         if not path.is_file():
             return None
+        self.logger.debug(f"Cache hit: {path.name}")
         with open(path, "rb") as f:
             return pickle.load(f)
 
@@ -327,6 +340,7 @@ class VSBuilder:
         path = Path(metadata_map_path)
         if not path.is_file():
             raise FileNotFoundError(f"Metadata map file not found: {path}")
+        self.logger.info(f"Loading metadata map from {path}")
         with open(path) as f:
             data = json.load(f)
         if not isinstance(data, dict):
@@ -371,8 +385,12 @@ class VSBuilder:
         if headings:
             for heading in reversed(headings):
                 if heading in file_map:
+                    self.logger.debug(f"Resolved metadata for {file_name}: '{heading}'")
                     return file_map[heading]
-        return file_map.get("DEFAULT")
+        fallback = file_map.get("DEFAULT")
+        if fallback:
+            self.logger.debug(f"Resolved DEFAULT metadata for {file_name}")
+        return fallback
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -416,6 +434,7 @@ class VSBuilder:
         """
         from transformers import AutoTokenizer
 
+        self.logger.debug(f"Ensuring tokenizer '{self.tokenizer_model}' is available")
         AutoTokenizer.from_pretrained(self.tokenizer_model)
 
     def _get_converter(self):
@@ -426,6 +445,7 @@ class VSBuilder:
             instance
         """
         if self._converter is None:
+            self.logger.debug("Initialising Docling DocumentConverter")
             from docling.document_converter import DocumentConverter
 
             self._converter = DocumentConverter()
@@ -439,6 +459,10 @@ class VSBuilder:
         :returns: Configured :class:`~docling.chunking.HybridChunker` instance
         """
         if self._chunker is None:
+            self.logger.debug(
+                f"Initialising HybridChunker "
+                f"(max_tokens={self.max_tokens}, merge_peers={self.merge_peers})"
+            )
             from docling.chunking import HybridChunker
             from docling_core.transforms.chunker.tokenizer.huggingface import (
                 HuggingFaceTokenizer,
@@ -469,6 +493,7 @@ class VSBuilder:
         converter = self._get_converter()
         chunker = self._get_chunker()
 
+        self.logger.info(f"Converting {file_path.name} with Docling")
         result = converter.convert(str(file_path))
         dl_doc = result.document
 

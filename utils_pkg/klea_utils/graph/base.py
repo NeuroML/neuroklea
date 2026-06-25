@@ -108,7 +108,10 @@ class BaseLangGraph(ABC):
         """
         env_file_path = Path(self.env_file)
         if not env_file_path.exists():
-            raise FileNotFoundError(f"Could not find env file: {self.env_file}")
+            raise FileNotFoundError(
+                f"Could not find env file: {self.env_file}"
+                f"You can use the {self.env_var} environment variable to specify the env file."
+            )
 
         self.app_env = self.env_class(_env_file=self.env_file)
         assert self.app_env
@@ -128,6 +131,7 @@ class BaseLangGraph(ABC):
         else:
             raise FileNotFoundError(
                 f"No config file provided. Please provide one in the env file ({self.env_file})."
+                + f"You can use the {self.env_var} environment variable to specify the env file."
             )
 
     def _create_mcp_client(self) -> None:

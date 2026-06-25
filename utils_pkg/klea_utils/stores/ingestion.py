@@ -415,6 +415,8 @@ class VSBuilder:
         for f in sorted(source_dir.rglob("*")):
             if not f.is_file():
                 continue
+            if CACHE_DIR_NAME in f.parts:
+                continue
             suffix = f.suffix.lstrip(".").lower()
             if suffix in all_exts:
                 supported.append(f)

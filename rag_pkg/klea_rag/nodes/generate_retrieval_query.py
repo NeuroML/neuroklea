@@ -43,21 +43,34 @@ class GenerateRetrievalQuery(BaseLLMNode[RAGState]):
         system_prompt = super()._get_system_prompt(state)
 
         if state.retrieval_attempts > 0:
-            feedback = state.text_response_eval.summary
-            system_prompt += dedent(f"""
-                Generate a new query on EXACTLY one of the concepts that the
-                evaluator's feedback says is missing.
+            self.logger.info("Regenerating retrieval query, updating system prompt")
+            sentence, newline, rest = system_prompt.partition("\n")
+            new_sentence = dedent(
+                """
+                Generate a new concise retrieval query from the user's question. Think about the user's intent step by step.
+                Take the evaluator's feedback into account.
+
+                Previous query: {previous}
 
                 Evaluator feedback:
+
                 {feedback}
-            """)
+
+                """
+            )
+            system_prompt = new_sentence + rest
+            self.logger.debug(f"New {system_prompt =}")
 
         return system_prompt
 
     @override
     def _get_prompt_variables(self, state: RAGState) -> dict:
         """Format prompt with user query."""
-        return {"query": state.query}
+        return {
+            "query": state.query,
+            "feedback": state.text_response_eval.summary,
+            "previous": state.retrieval_query,
+        }
 
     @override
     def _update_state(self, result: Output, state: RAGState) -> Dict[str, Any]:

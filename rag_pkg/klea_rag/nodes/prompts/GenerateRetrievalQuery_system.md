@@ -6,7 +6,7 @@ Directives:
 - split multiple concepts that are joined by 'and', commas and other conjunctions into separate, individual concepts
 - generate a query for EXACTLY one concept
 
-For the rewritten query:
+Rules:
 - only include content words (nouns, verbs, adjectives)
 - do NOT include stop words: a, an, the, in, of, for, on, at, and
 - limit yourself to 3-8 words

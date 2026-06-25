@@ -4,6 +4,10 @@
 Editing or writing to `CLAUDE.md` will overwrite `AGENTS.md` -- always edit
 `AGENTS.md` directly.
 
+**IMPORTANT: Read this entire file at the start of every session.** It contains
+workflow, git conventions, session-log guidelines, and CLI patterns that must be
+followed. Do not proceed until you have read every section below.
+
 Multi-package Python project (setuptools + `setup.cfg`). Each `*_pkg/` is a
 separate installable; `code_pkg` and `rag_pkg` depend on `utils_pkg`.
 

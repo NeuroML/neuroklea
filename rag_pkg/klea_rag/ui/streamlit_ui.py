@@ -9,6 +9,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import asyncio
+import sys
 import uuid
 
 import httpx
@@ -18,7 +19,8 @@ from klea_utils.api import check_api_is_ready
 
 def runner():
     """Main runner for streamlit app"""
-    url = "http://127.0.0.1:8005"
+    title = sys.argv[1]
+    url = sys.argv[2]
     try:
         with st.spinner("Waiting for backend..."):
             asyncio.run(check_api_is_ready(f"{url}/health/ready"))
@@ -26,7 +28,7 @@ def runner():
         st.error(f"Could not connect to backend: {e}")
         st.stop()
 
-    st.title("NeuroML AI Assistant")
+    st.title(title)
     st.info(
         "The answers are generated using an LLM. They may be inaccurate.  Please check with the documentation at https://docs.neuroml.org."
     )

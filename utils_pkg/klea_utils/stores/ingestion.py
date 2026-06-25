@@ -220,17 +220,21 @@ class VSBuilder:
             create=True,
         )
 
-        for file_hash, docs, file_path in results:
+        total = len(results)
+        for ctr, (file_hash, docs, file_path) in enumerate(results, 1):
             if not force:
                 existing = store.get(where={"file_hash": file_hash})
                 if existing and existing["ids"]:
                     self.logger.debug(
-                        f"Skipping already indexed file: {file_path.name}"
+                        f"Skipping already indexed file: "
+                        f"{file_path.name} ({ctr}/{total})"
                     )
                     continue
 
             store.add_documents(docs)
-            self.logger.info(f"Added {len(docs)} chunks from {file_path.name}")
+            self.logger.info(
+                f"Added {len(docs)} chunks from {file_path.name} ({ctr}/{total})"
+            )
 
     def write_heading_template(
         self, file_headings: dict[str, dict[str, Any]], source_dir: Path

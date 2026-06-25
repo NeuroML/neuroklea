@@ -14,6 +14,8 @@ from typing import Dict, List, Tuple
 
 from langchain_core.documents import Document
 
+_INTERNAL_META_KEYS = {"file_name", "source_path", "file_hash", "headings"}
+
 
 def serialize_vs_retrieval(
     reference_material: Dict[str, List[Tuple[Document, float]]],
@@ -21,11 +23,12 @@ def serialize_vs_retrieval(
     """Serialize vector store retrieval results into text for use in prompt context.
 
     Documents are sorted by relevance score within each group.
+    Uses Docling ``HybridChunker`` metadata format:
 
-    ..  TODO:: Update the metadata-key lookup to handle Docling's
-        ``HybridChunker`` format (``headings`` list) in addition to
-        the legacy ``Header 1`` / ``Header 2`` keys from
-        ``MarkdownHeaderTextSplitter``.
+    - ``headings``: list of heading hierarchy (most specific last)
+    - ``file_name``: source filename
+    - ``source_path``: full path to source file
+    - Optional custom keys from the ``--metadata-map`` (e.g., ``url``)
 
     :param reference_material: Dict mapping query/domain to list of (doc, score) tuples
     :returns: Formatted string representation of references
@@ -35,18 +38,22 @@ def serialize_vs_retrieval(
         ctr = 1
         serialized += f"## {q}\n"
         for r, score in sorted_refs:
-            metadata = [
-                f"{key}: {val}"
-                for key, val in r.metadata.items()
-                if "header" in key.lower()
-            ]
-            metadata_str = f"### Document {ctr}/{len(sorted_refs)}: " + " | ".join(
-                metadata
+            headings = r.metadata.get("headings", [])
+            file_name = r.metadata.get("file_name", "")
+            heading_str = " > ".join(headings) if headings else "(no heading)"
+            if file_name:
+                heading_str = f"[{file_name}] {heading_str}"
+
+            score_str = f" (relevance score: {score:.4f})"
+            serialized += (
+                f"\n### Document {ctr}/{len(sorted_refs)}: {heading_str}{score_str}\n"
             )
-            serialized += "\n" + f"{metadata_str}\n"
-            url = r.metadata.get("url", None)
-            if url:
-                serialized += f"Reference URL: {url}\n"
+            custom_meta = {
+                k: v for k, v in r.metadata.items() if k not in _INTERNAL_META_KEYS
+            }
+            if custom_meta:
+                meta_str = " | ".join(f"{k}={v}" for k, v in custom_meta.items())
+                serialized += f"Metadata: {meta_str}\n"
             serialized += r.page_content
             ctr += 1
 

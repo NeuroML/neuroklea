@@ -64,7 +64,6 @@ class TestIngestion:
                 embedding_model="ollama:bge-m3:latest",
                 logger=self.logger,
             )
-            builder.setup()
             self.logger.info("Builder set up with Ollama embeddings")
             builder.build(
                 source_dir=str(self.tmpdir_path),
@@ -112,7 +111,6 @@ class TestIngestion:
                 embedding_model="ollama:bge-m3:latest",
                 logger=self.logger,
             )
-            builder.setup()
             self.logger.info("Builder set up with Ollama embeddings")
 
             builder.build(
@@ -167,7 +165,6 @@ class TestIngestion:
                 embedding_model="ollama:bge-m3:latest",
                 logger=self.logger,
             )
-            builder.setup()
             self.logger.info("Builder set up with Ollama embeddings")
 
             builder.build(

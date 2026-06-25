@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import asyncio
-import logging
 from pathlib import Path
 
 import aiohttp

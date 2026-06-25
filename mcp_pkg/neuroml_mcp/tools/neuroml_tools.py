@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import asyncio
-import logging
 from dataclasses import asdict
 from textwrap import dedent
 from typing import Any, Dict

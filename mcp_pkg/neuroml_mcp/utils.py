@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import inspect
-import os
 import shutil
 from pathlib import Path
 from typing import Any

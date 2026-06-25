@@ -30,8 +30,6 @@ from langchain_huggingface import (
 )
 from pydantic import BaseModel
 
-from .errors import LLMInitializationError
-
 logging.basicConfig(
     format="%(name)s (%(levelname)s) >>> %(message)s\n", level=logging.WARNING
 )

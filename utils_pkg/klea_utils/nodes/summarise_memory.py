@@ -9,7 +9,6 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import logging
-from pathlib import Path
 from typing import Any, Dict, override
 
 from langchain_core.messages import AIMessage

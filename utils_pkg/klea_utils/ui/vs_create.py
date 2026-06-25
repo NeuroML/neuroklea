@@ -49,7 +49,25 @@ def create(
         False, "--force", "-f", help="Re-process all files even if unchanged"
     ),
 ):
-    """Convert documents in SOURCE_DIR, chunk, embed, and write to a vector store."""
+    """Convert documents in SOURCE_DIR, chunk, embed, and write to a vector store.
+
+    The optional --metadata-map / -M flag accepts a JSON file where each
+    key is a heading string and each value is a dict of metadata to
+    attach to matching chunks (e.g. a URL for citation).  The most
+    specific heading match wins; a "DEFAULT" key provides fallback.
+
+    Example metadata-map.json:
+
+        {
+            "C. elegans tissue morphology": {
+                "url": "https://example.com/worm",
+                "category": "paper"
+            },
+            "DEFAULT": {
+                "url": "https://example.com"
+            }
+        }
+    """
     logger = setup_logger("klea-vs-create")
 
     logger.info(

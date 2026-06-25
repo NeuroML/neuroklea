@@ -60,10 +60,12 @@ jobs:
         uv pip list
         env
 
-    - name: Run simple test
+    - name: Test commands
       run: |
         klea-rag --help
+        klea-rag-serve --help
         klea-code  --help
+        klea-vs-create  --help
         nml-mcp --help
 
     - name: Setup Ollama

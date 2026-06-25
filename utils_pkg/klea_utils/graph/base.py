@@ -93,6 +93,9 @@ class BaseLangGraph(ABC):
 
         self.stores_config: VectorStoresConfig | None = None
         self.stores: VSRetriever | None = None
+        self.embedding_model: str | None = None
+        self.default_k: int = 5
+        self.k_max: int = 10
 
         self.QueryDomainSchema: Type[BaseModel] | None = None
 
@@ -200,8 +203,14 @@ class BaseLangGraph(ABC):
 
     async def _get_vector_stores(self) -> None:
         """Get vector stores"""
-        if self.stores_config:  # type: ignore
-            self.stores = VSRetriever(vs_config=self.stores_config, logger=self.logger)
+        if self.stores_config and self.embedding_model:
+            self.stores = VSRetriever(
+                vs_config=self.stores_config,
+                logger=self.logger,
+                embedding_model=self.embedding_model,
+                default_k=self.default_k,
+                k_max=self.k_max,
+            )
             self.stores.setup()
             self.logger.info(f"Vector stores loaded: {self.stores.domains}")
 

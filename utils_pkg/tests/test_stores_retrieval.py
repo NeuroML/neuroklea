@@ -37,7 +37,11 @@ class TestStores(unittest.TestCase):
             vs_config = VectorStoresConfig(**config)
 
             logger = logging.getLogger("test_stores")
-            stores = VSRetriever(vs_config=vs_config, logger=logger)
+            stores = VSRetriever(
+                vs_config=vs_config,
+                logger=logger,
+                embedding_model="ollama:bge-m3:latest",
+            )
             stores.setup()
             stores.retrieve("NeuroML", "NeuroML community")
         except ResponseError as e:

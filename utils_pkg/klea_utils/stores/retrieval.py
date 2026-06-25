@@ -30,35 +30,36 @@ class VSRetriever:
     - ``pgvector:postgresql://host/db``  ---  PGVector (PostgreSQL)
     """
 
-    def __init__(self, vs_config: VectorStoresConfig, logger: logging.Logger):
+    def __init__(
+        self,
+        vs_config: VectorStoresConfig,
+        logger: logging.Logger,
+        embedding_model: str,
+        default_k: int = 5,
+        k_max: int = 10,
+    ):
         """Initialise vector stores manager.
 
         :param logger: Logger instance (injected from orchestrator)
+        :param embedding_model: Embedding model identifier for retrieval
+        :param default_k: Default number of documents to retrieve
+        :param k_max: Maximum number of documents to retrieve
         """
-        self.default_k = 5
-        self.k_max = 10
+        self.default_k = default_k
+        self.k_max = k_max
         self.k = self.default_k
         self.sim_thresh = 0.15
         self.embeddings = None
+        self.embedding_model = embedding_model
         self.vs_config: VectorStoresConfig = vs_config
         self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
-        self.embedding_model: str | None = None
 
     def setup(self) -> None:
-        """Load configuration and initialise embedding model."""
-        self._load_config()
+        """Initialise embedding model."""
+        assert self.embedding_model
+
         self.embeddings = setup_embedding(self.embedding_model, self.logger)
-
-        assert self.embedding_model
-
-    def _load_config(self) -> None:
-        """Load domains from the configuration file."""
-        self.embedding_model = self.vs_config.embedding_model
-        self.default_k = self.vs_config.default_k
-        self.k_max = self.vs_config.k_max
-        self.logger.debug(f"{self.vs_config =}")
-
-        assert self.embedding_model
+        assert self.embeddings
 
     def inc_k(self, inc: int = 1) -> bool:
         """Increase k by inc.

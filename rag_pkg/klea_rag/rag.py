@@ -109,12 +109,10 @@ class RAG(BaseLangGraph):
         self.logger.debug(f"{domain_ms = }")
 
         # set up configs
-        self.stores_config = VectorStoresConfig(
-            domains=domain_vs,
-            embedding_model=self.app_env.embedding_model,
-            default_k=self.app_config.general.default_k,
-            k_max=self.app_config.general.k_max,
-        )
+        self.stores_config = VectorStoresConfig(domains=domain_vs)
+        self.embedding_model = self.app_env.embedding_model
+        self.default_k = self.app_config.general.default_k
+        self.k_max = self.app_config.general.k_max
         self.mcp_config = MCPConfig(mcpServers=domain_ms)
 
         # store per-domain MCP configs for domain-aware tool descriptions

@@ -10,7 +10,7 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 
 from typing import Any
 
-from klea_utils.stores.config import VectorStoreInfo
+from klea_utils.stores.config import PerDomainConfig as BasePerDomainConfig
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -36,11 +36,10 @@ class GeneralConfig(BaseModel):
     max_rewrite_attempts: int = 1
 
 
-class PerDomainConfig(BaseModel):
+class PerDomainConfig(BasePerDomainConfig):
     """Configuration for a single domain."""
 
     description: str
-    vector_stores: list[VectorStoreInfo]
     mcp_servers: dict[str, Any] = Field(default_factory=dict)
 
 

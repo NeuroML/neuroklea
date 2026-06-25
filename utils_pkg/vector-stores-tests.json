@@ -1,11 +1,6 @@
 {
-    "embedding_model": "ollama:bge-m3:latest",
-    "pre_prompt": "",
-    "fallback_to_training_data": true,
-    "fallback_warning": "",
     "domains": {
         "NeuroML": {
-            "description": "The NeuroML standard for computational modelling in neuroscience and the associated software ecosystem",
             "vector_stores": [
                 {
                     "name": "nml-docs",

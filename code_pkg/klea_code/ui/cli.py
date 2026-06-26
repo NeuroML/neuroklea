@@ -23,12 +23,14 @@ code_app = typer.Typer(help="Simple KLEA Code user client")
 @code_app.command()
 def cli(
     server_url: str = typer.Option(
-        "http://127.0.0.1:8005", "--server", "-s", help="KLEA Code server URL:port"
+        "http://127.0.0.1:8005", "--server", "-s", help="KLEA Code server (URL:port)"
     ),
     single_query: str = typer.Option(
         None, "--single-query", "-q", help="Single query mode: answer a query and exit"
     ),
-    title: str = typer.Argument(help="Title for application"),
+    title: str = typer.Option(
+        "KLEA code", "-title", "-t", help="Title for application"
+    ),
 ):
     """Klea Code cli client"""
     print(f"*** {title} ***")
@@ -92,7 +94,9 @@ def cli(
 
 @code_app.command()
 def web(
-    title: str = typer.Argument(help="Title for application"),
+    title: str = typer.Option(
+        "KLEA Code", "--title", "-t", help="Title for application"
+    ),
     server_url: str = typer.Option(
         "http://127.0.0.1:8005", "--server", "-s", help="KLEA Code server URL:port"
     ),

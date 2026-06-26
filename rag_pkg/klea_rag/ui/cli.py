@@ -23,12 +23,12 @@ rag_app = typer.Typer(help="Simple KLEA RAG user client")
 @rag_app.command()
 def cli(
     server_url: str = typer.Option(
-        "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server URL:port"
+        "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server (URL:port)"
     ),
     single_query: str = typer.Option(
         None, "--single-query", "-q", help="Single query mode: answer a query and exit"
     ),
-    title: str = typer.Argument(help="Title for application"),
+    title: str = typer.Option("KLEA RAG", "-title", "-t", help="Title for application"),
 ):
     """Klea RAG cli client"""
     print(f"*** {title} ***")
@@ -92,7 +92,9 @@ def cli(
 
 @rag_app.command()
 def web(
-    title: str = typer.Argument(help="Title for application"),
+    title: str = typer.Option(
+        "KLEA RAG", "--title", "-t", help="Title for application"
+    ),
     server_url: str = typer.Option(
         "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server URL:port"
     ),

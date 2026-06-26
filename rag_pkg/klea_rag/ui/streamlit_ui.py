@@ -20,7 +20,8 @@ from klea_utils.api import check_api_is_ready
 def runner():
     """Main runner for streamlit app"""
     title = sys.argv[1]
-    url = sys.argv[2]
+    subtitle = sys.argv[2]
+    url = sys.argv[3]
     try:
         with st.spinner("Waiting for backend..."):
             asyncio.run(check_api_is_ready(f"{url}/health/ready"))
@@ -29,9 +30,7 @@ def runner():
         st.stop()
 
     st.title(title)
-    st.info(
-        "The answers are generated using an LLM. They may be inaccurate.  Please check with the documentation at https://docs.neuroml.org."
-    )
+    st.info(subtitle)
 
     # get history and re-write it
     if "history" not in st.session_state:

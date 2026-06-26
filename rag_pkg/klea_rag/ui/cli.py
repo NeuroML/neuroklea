@@ -106,6 +106,12 @@ def web(
     title: str = typer.Option(
         "KLEA RAG", "--title", "-t", help="Title for application"
     ),
+    subtitle: str = typer.Option(
+        "Answers use LLM technology and may be incorrect. Please re-confirm.",
+        "--subtitle",
+        "-b",
+        help="Sub title for application",
+    ),
     server_url: str = typer.Option(
         "http://127.0.0.1:8005",
         "--server",
@@ -119,7 +125,9 @@ def web(
     cwd = Path(__file__).parent
     with chdir(cwd):
         subprocess.run(
-            shlex.split(f"streamlit run streamlit_ui.py '{title}' '{server_url}'")
+            shlex.split(
+                f"streamlit run streamlit_ui.py '{title}' '{subtitle}' '{server_url}'"
+            )
         )
 
 

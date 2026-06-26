@@ -11,7 +11,7 @@
 #
 
 ignore () {
-    pushd rag_pkg/klea_rag/data/vector-stores || exit 1
+    pushd vector-stores || exit 1
         find . -type f -print -execdir git update-index --assume-unchanged '{}' \;
     popd || exit 1
     echo > "VECTOR_STORES_IGNORED"
@@ -19,7 +19,7 @@ ignore () {
 }
 
 unignore () {
-    pushd rag_pkg/klea_rag/data/vector-stores || exit 1
+    pushd vector-stores || exit 1
         find . -type f -print -execdir git update-index --no-assume-unchanged '{}' \;
     popd || exit 1
     rm -f "VECTOR_STORES_IGNORED"

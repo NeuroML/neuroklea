@@ -3,16 +3,8 @@
         "NeuroML": {
             "vector_stores": [
                 {
-                    "name": "nml-docs",
-                    "path": "chroma:../rag_pkg/klea_rag/data/vector-stores/nml-docs_bge-m3.db"
-                },
-                {
                     "name": "nml-elife",
-                    "path": "chroma:../rag_pkg/klea_rag/data/vector-stores/nml-elife_bge-m3.db"
-                },
-                {
-                    "name": "nml-schema-docs",
-                    "path": "chroma:../rag_pkg/klea_rag/data/vector-stores/nml-schema-docs_bge-m3.db"
+                    "path": "chroma:../vector_stores/nml-elife_bge-m3.db"
                 }
             ]
         }

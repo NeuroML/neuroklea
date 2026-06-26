@@ -118,19 +118,25 @@ def parse_output_with_thought[TSchema: BaseModel](
 ) -> tuple[TSchema, str]:
     """Parse AI message with thought to a dict based on given schema"""
     thought = ""
-    if "</think>" in message.content:
-        splits = message.content.split("</think>")
-        thought = splits[0].strip()
-        answer = splits[1].strip()
+    answer = ""
+
+    if isinstance(message.content, str):
+        if "</think>" in message.content:
+            splits = message.content.split("</think>")
+            thought = splits[0].strip()
+            answer = splits[1].strip()
+        else:
+            answer = message.content
+
+        parser = JsonOutputParser()
+        parser.pydantic_object = schema()
+        result = parser.parse(answer)
     else:
-        answer = message.content
+        logger.warning(f"Unexpected message content: {message.content}")
 
     logger.debug(f"{thought = }")
     logger.debug(f"{answer = }")
 
-    parser = JsonOutputParser()
-    parser.pydantic_object = schema()
-    result = parser.parse(answer)
     return result, thought
 
 

@@ -115,18 +115,23 @@ def check_ollama_model(logger, model, exit=False):
 
 def parse_output_with_thought[TSchema: BaseModel](
     message: AIMessage, schema: Type[TSchema]
-) -> TSchema:
+) -> tuple[TSchema, str]:
     """Parse AI message with thought to a dict based on given schema"""
+    thought = ""
     if "</think>" in message.content:
         splits = message.content.split("</think>")
+        thought = splits[0].strip()
         answer = splits[1].strip()
     else:
         answer = message.content
 
+    logger.debug(f"{thought = }")
+    logger.debug(f"{answer = }")
+
     parser = JsonOutputParser()
     parser.pydantic_object = schema()
     result = parser.parse(answer)
-    return result
+    return result, thought
 
 
 def split_output_by_section(

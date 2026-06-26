@@ -157,7 +157,7 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
                 self.logger.warning(
                     f"LLM parsing error, using fallback: {output['parsing_error']}"
                 )
-                result = parse_output_with_thought(output["raw"], schema)
+                result, _ = parse_output_with_thought(output["raw"], schema)
             else:
                 result = output["parsed"]
                 if isinstance(result, dict):

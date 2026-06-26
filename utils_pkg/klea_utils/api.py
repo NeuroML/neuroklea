@@ -9,12 +9,23 @@ Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import httpx
+from pydantic import AnyUrl
+from pydantic import ValidationError as PydanticValidationError
 from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_random_exponential,
 )
+
+
+def validate_url(value: str) -> str:
+    """Return *value* if it is a valid HTTP(S) URL, else raise ``ValueError``."""
+    try:
+        AnyUrl(value)
+    except PydanticValidationError:
+        raise ValueError(f"'{value}' is not a valid HTTP(S) URL")
+    return value
 
 
 @retry(

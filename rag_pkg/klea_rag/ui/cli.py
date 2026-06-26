@@ -16,14 +16,26 @@ from contextlib import chdir
 from pathlib import Path
 
 import typer
+from klea_utils.api import validate_url
 
 rag_app = typer.Typer(help="Simple KLEA RAG user client")
+
+
+def _validate_url(value: str) -> str:
+    try:
+        return validate_url(value)
+    except ValueError as e:
+        raise typer.BadParameter(str(e))
 
 
 @rag_app.command()
 def cli(
     server_url: str = typer.Option(
-        "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server (URL:port)"
+        "http://127.0.0.1:8005",
+        "--server",
+        "-s",
+        help="KLEA RAG server (URL:port)",
+        callback=_validate_url,
     ),
     single_query: str = typer.Option(
         None, "--single-query", "-q", help="Single query mode: answer a query and exit"
@@ -95,7 +107,11 @@ def web(
         "KLEA RAG", "--title", "-t", help="Title for application"
     ),
     server_url: str = typer.Option(
-        "http://127.0.0.1:8005", "--server", "-s", help="KLEA RAG server URL:port"
+        "http://127.0.0.1:8005",
+        "--server",
+        "-s",
+        help="KLEA RAG server URL:port",
+        callback=_validate_url,
     ),
 ):
     """Klea RAG Streamlit client"""

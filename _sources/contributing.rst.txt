@@ -8,7 +8,7 @@ Clone the repository and install in editable mode::
 
    git clone https://github.com/NeuroML/neuroklea.git
    cd neuroklea
-   uv pip install -r requirements-dev.txt
+   pip install -r requirements-dev.txt
 
 Workflow
 --------

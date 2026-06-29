@@ -3,9 +3,9 @@ Welcome to Klea
 
 Knowledge vaLidated Expert AI Assistant for Neuroscience.
 
-Klea is a suite of AI tools for the `NeuroML <https://neuroml.org>`_
-community.  It provides a generic RAG pipeline, an AI-assisted coding
-workflow system, and an MCP server for NeuroML development.
+Klea is a suite of AI tools for Neuroscience.  It provides a generic
+RAG pipeline, an AI-assisted coding workflow system, and MCP servers
+for modelling and analysis.
 
 Architecture
 ------------
@@ -43,13 +43,25 @@ provides LLM setup, vector store abstraction, and the
 Quick start
 -----------
 
-1. Install the packages::
+1. Clone the repository and check out the ``development`` branch::
+
+      git clone https://github.com/NeuroML/neuroklea.git
+      cd neuroklea
+      git checkout development
+
+   .. note::
+
+      PyPI releases coming soon.  Once published, ``pip install klea-rag``
+      (and friends) will work directly and the clone step will not
+      be needed.
+
+2. Install the packages::
 
       pip install -r requirements.txt
 
-2. Set up a configuration file (see :doc:`install` for details).
+3. Set up a configuration file (see :doc:`install` for details).
 
-3. Run the CLI::
+4. Run a CLI::
 
       klea-rag --help
 

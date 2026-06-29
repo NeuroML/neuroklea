@@ -260,13 +260,25 @@
 <h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Python 3.12 or later</p></li>
-<li><p>An LLM backend – either:</p>
-<ul>
-<li><p><a class="reference external" href="https://ollama.ai">Ollama</a> for local inference, or</p></li>
-<li><p>A HuggingFace inference provider (requires <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code>)</p></li>
+<li><p>A <a class="reference external" href="https://docs.langchain.com/oss/python/integrations/providers/overview">LangChain-compatible inference provider</a>
+for LLM access (e.g. OpenAI, Anthropic, Ollama, HuggingFace, etc.)</p></li>
 </ul>
-</li>
-</ul>
+</section>
+<section id="clone">
+<h2>Clone<a class="headerlink" href="#clone" title="Link to this heading">¶</a></h2>
+<p>Until packages are published on PyPI, clone the repository and work
+from the <code class="docutils literal notranslate"><span class="pre">development</span></code> branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">NeuroML</span><span class="o">/</span><span class="n">neuroklea</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">neuroklea</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">development</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PyPI releases coming soon.  Once published, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">klea-rag</span></code>
+(and friends) will work directly and the clone step will not be
+needed.</p>
+</div>
 </section>
 <section id="install-all-packages">
 <h2>Install all packages<a class="headerlink" href="#install-all-packages" title="Link to this heading">¶</a></h2>
@@ -276,10 +288,9 @@
 </div>
 <p>This installs all four packages (<code class="docutils literal notranslate"><span class="pre">klea_utils</span></code>, <code class="docutils literal notranslate"><span class="pre">klea_rag</span></code>,
 <code class="docutils literal notranslate"><span class="pre">klea_code</span></code>, <code class="docutils literal notranslate"><span class="pre">neuroml_mcp</span></code>) with their dependencies.</p>
-<p>The recommended tool for dependency management is <a class="reference external" href="https://github.com/astral-sh/uv">uv</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-</pre></div>
-</div>
+<p>The recommended tool for dependency management is <a class="reference external" href="https://github.com/astral-sh/uv">uv</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-r</span> <span class="pre">requirements.txt</span></code> is a faster alternative to
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code> used above.</p>
 </section>
 <section id="per-package-install">
 <h2>Per-package install<a class="headerlink" href="#per-package-install" title="Link to this heading">¶</a></h2>
@@ -291,10 +302,87 @@
 </pre></div>
 </div>
 </section>
+<section id="optional-extras">
+<h2>Optional extras<a class="headerlink" href="#optional-extras" title="Link to this heading">¶</a></h2>
+<section id="klea-utils-extras">
+<h3><code class="docutils literal notranslate"><span class="pre">klea_utils</span></code> extras<a class="headerlink" href="#klea-utils-extras" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Extra</p></th>
+<th class="head"><p>Installs</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chroma</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">langchain-chroma</span></code>, <code class="docutils literal notranslate"><span class="pre">chromadb</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/chroma-core/chroma">Chroma</a> vector store support</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pgvector</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">langchain-postgres</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/pgvector/pgvector-python">pgvector</a> support</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">qdrant</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">langchain-qdrant</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/qdrant/qdrant">Qdrant</a> vector store support</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ingest</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">docling</span></code>, <code class="docutils literal notranslate"><span class="pre">typer</span></code>, <code class="docutils literal notranslate"><span class="pre">xxhash</span></code></p></td>
+<td><p>Document ingestion pipeline</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">full</span></code></p></td>
+<td><p>All of the above</p></td>
+<td><p>All optional extras</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">klea_utils</span><span class="p">[</span><span class="n">chroma</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="klea-rag-extras">
+<h3><code class="docutils literal notranslate"><span class="pre">klea_rag</span></code> extras<a class="headerlink" href="#klea-rag-extras" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Extra</p></th>
+<th class="head"><p>Installs</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chroma</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">klea_utils[chroma]</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/chroma-core/chroma">Chroma</a> support for RAG</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pgvector</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">klea_utils[pgvector]</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/pgvector/pgvector-python">pgvector</a> support for RAG</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">qdrant</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">klea_utils[qdrant]</span></code></p></td>
+<td><p><a class="reference external" href="https://github.com/qdrant/qdrant">Qdrant</a> support for RAG</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">full</span></code></p></td>
+<td><p>All vector store extras</p></td>
+<td><p>All RAG optional extras</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">klea_rag</span><span class="p">[</span><span class="n">full</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="dev-install">
 <h2>Dev install<a class="headerlink" href="#dev-install" title="Link to this heading">¶</a></h2>
 <p>For development, install in editable mode with dev extras:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">txt</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">-</span><span class="n">dev</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
@@ -325,6 +413,17 @@
 <span class="n">KLEA_RAG_APP_CONFIG_FILE</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">klea_rag</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
+<p>Model names are prefixed according to their provider:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">ollama:&lt;model_name&gt;:&lt;tag&gt;</span></code> for Ollama models</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">huggingface:&lt;model_id&gt;</span></code> for HuggingFace inference providers</p></li>
+<li><p>Others (e.g. OpenAI, Anthropic) use their standard model names as
+supported by LangChain; consult <a class="reference external" href="https://docs.langchain.com/oss/python/integrations/providers/overview">LangChain provider docs</a>
+for the correct identifier and required environment variables.</p>
+<p>HuggingFace models additionally require the <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code> environment
+variable to be set (see <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">HuggingFace tokens</a>).</p>
+</li>
+</ul>
 </section>
 </section>
 
@@ -384,8 +483,14 @@
             <ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#clone">Clone</a></li>
 <li><a class="reference internal" href="#install-all-packages">Install all packages</a></li>
 <li><a class="reference internal" href="#per-package-install">Per-package install</a></li>
+<li><a class="reference internal" href="#optional-extras">Optional extras</a><ul>
+<li><a class="reference internal" href="#klea-utils-extras"><code class="docutils literal notranslate"><span class="pre">klea_utils</span></code> extras</a></li>
+<li><a class="reference internal" href="#klea-rag-extras"><code class="docutils literal notranslate"><span class="pre">klea_rag</span></code> extras</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#dev-install">Dev install</a></li>
 <li><a class="reference internal" href="#configuration">Configuration</a></li>
 </ul>

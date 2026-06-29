@@ -257,9 +257,9 @@
           <section id="welcome-to-klea">
 <h1>Welcome to Klea<a class="headerlink" href="#welcome-to-klea" title="Link to this heading">¶</a></h1>
 <p>Knowledge vaLidated Expert AI Assistant for Neuroscience.</p>
-<p>Klea is a suite of AI tools for the <a class="reference external" href="https://neuroml.org">NeuroML</a>
-community.  It provides a generic RAG pipeline, an AI-assisted coding
-workflow system, and an MCP server for NeuroML development.</p>
+<p>Klea is a suite of AI tools for Neuroscience.  It provides a generic
+RAG pipeline, an AI-assisted coding workflow system, and MCP servers
+for modelling and analysis.</p>
 <section id="architecture">
 <h2>Architecture<a class="headerlink" href="#architecture" title="Link to this heading">¶</a></h2>
 <p>The project is organised as a monorepo with four installable packages:</p>
@@ -303,13 +303,26 @@ provides LLM setup, vector store abstraction, and the
 <section id="quick-start">
 <h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
+<li><p>Clone the repository and check out the <code class="docutils literal notranslate"><span class="pre">development</span></code> branch:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">NeuroML</span><span class="o">/</span><span class="n">neuroklea</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">neuroklea</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">development</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PyPI releases coming soon.  Once published, <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">klea-rag</span></code>
+(and friends) will work directly and the clone step will not
+be needed.</p>
+</div>
+</li>
 <li><p>Install the packages:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
 </div>
 </li>
 <li><p>Set up a configuration file (see <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> for details).</p></li>
-<li><p>Run the CLI:</p>
+<li><p>Run a CLI:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">klea</span><span class="o">-</span><span class="n">rag</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>

@@ -18,7 +18,7 @@ from pathlib import Path
 import typer
 from klea_utils.api import validate_url
 
-code_app = typer.Typer(help="Simple KLEA Code user client")
+code_app = typer.Typer(help="Simple KLEA Code user client (WIP)")
 
 
 def _validate_url(value: str) -> str:

@@ -9,6 +9,11 @@ on:
       - 'test*'
       - 'feat*'
       - 'fix*'
+    paths-ignore:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches:
       - main
@@ -17,6 +22,11 @@ on:
       - 'test*'
       - 'feat*'
       - 'fix*'
+    paths-ignore:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/docs.yml'
 
 jobs:
   build:

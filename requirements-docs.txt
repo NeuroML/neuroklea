@@ -3,7 +3,7 @@
 sphinx
 furo
 sphinxcontrib-typer
-sphinx-autodoc-typehints
+
 # sphinxcontrib-typer not yet compatible with typer >= 0.26.8
 # https://github.com/sphinx-contrib/typer/issues/68
 typer < 0.26.8

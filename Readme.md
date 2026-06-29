@@ -3,7 +3,7 @@
 Knowledge vaLidated Expert AI Assistant for Neuroscience.
 
 [![GitHub CI](https://github.com/NeuroML/neuroklea/actions/workflows/ci.yml/badge.svg)](https://github.com/NeuroML/neuroklea/actions/workflows/ci.yml)
-[![GitHub](https://img.shields.io/github/license/NeuroML/neuroklea)](https://github.com/NeuroML/neuroklea/blob/main/rag_pkg/LICENSE)
+[![GitHub](https://img.shields.io/github/license/NeuroML/neuroklea)](https://github.com/NeuroML/neuroklea/blob/main/LICENSE)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/NeuroML/neuroklea)](https://github.com/NeuroML/neuroklea/pulls)
 [![GitHub issues](https://img.shields.io/github/issues/NeuroML/neuroklea)](https://github.com/NeuroML/neuroklea/issues)
 [![GitHub Org's stars](https://img.shields.io/github/stars/NeuroML?style=social)](https://github.com/NeuroML)

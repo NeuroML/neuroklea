@@ -1,36 +1,68 @@
-# This workflow will upload a Python Package using Twine when a release is created
-# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
-
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: Upload Python Package
 
 on:
   release:
     types: [published]
+  push:
+    tags:
+      - 'klea_utils-v*'
+      - 'klea_rag-v*'
+      - 'klea_code-v*'
+      - 'neuroml_mcp-v*'
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v7
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.x'
-    - name: Install dependencies
+        python-version: '3.12'
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        enable-cache: true
+
+    - name: Extract package info from tag
+      id: pkg_info
       run: |
-        python -m pip install --upgrade pip
-        pip install build
+        TAG="${{ github.event.release.tag_name || github.ref_name }}"
+        echo "Tag: $TAG"
+
+        if [[ "$TAG" =~ ^(klea_utils|klea_rag|klea_code|neuroml_mcp)-v(.+)$ ]]; then
+          PKG_NAME="${BASH_REMATCH[1]}"
+          VERSION="${BASH_REMATCH[2]}"
+        else
+          echo "::error::Unrecognised tag format: $TAG (expected <pkg>-v<semver>)"
+          exit 1
+        fi
+
+        case "$PKG_NAME" in
+          klea_utils)   PKG_DIR="utils_pkg" ;;
+          klea_rag)     PKG_DIR="rag_pkg" ;;
+          klea_code)    PKG_DIR="code_pkg" ;;
+          neuroml_mcp)  PKG_DIR="mcp_pkg" ;;
+        esac
+
+        echo "pkg_name=$PKG_NAME" >> "$GITHUB_OUTPUT"
+        echo "pkg_dir=$PKG_DIR" >> "$GITHUB_OUTPUT"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+    - name: Install build dependencies
+      run: |
+        uv pip install build
+
     - name: Build package
-      run: python -m build
-    - name: Publish package
+      run: |
+        python -m build "${{ steps.pkg_info.outputs.pkg_dir }}"
+
+    - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
+        packages-dir: ${{ steps.pkg_info.outputs.pkg_dir }}/dist

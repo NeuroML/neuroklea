@@ -1,0 +1,41 @@
+name: docs
+
+on:
+  push:
+    branches: [development, main]
+    paths:
+      - 'docs/**'
+      - 'code_pkg/**'
+      - 'rag_pkg/**'
+      - 'utils_pkg/**'
+      - 'mcp_pkg/**'
+      - '.github/workflows/docs.yml'
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    env:
+      UV_SYSTEM_PYTHON: 1
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install dependencies
+        run: uv pip install -r requirements-docs.txt
+      - name: Build docs
+        run: sphinx-build -W docs docs/_build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build

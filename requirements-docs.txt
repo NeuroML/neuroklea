@@ -1,0 +1,5 @@
+# Docs build: install all packages + Sphinx + Furo
+-r requirements.txt
+sphinx
+furo
+sphinx-autodoc-typehints

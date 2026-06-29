@@ -9,6 +9,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.intersphinx",
     "sphinx_autodoc_typehints",
+    "sphinxcontrib.typer",
 ]
 
 templates_path = ["_templates"]

@@ -5,10 +5,25 @@ Requirements
 ------------
 
 * Python 3.12 or later
-* An LLM backend -- either:
+* A `LangChain-compatible inference provider
+  <https://docs.langchain.com/oss/python/integrations/providers/overview>`_
+  for LLM access (e.g. OpenAI, Anthropic, Ollama, HuggingFace, etc.)
 
-  * `Ollama <https://ollama.ai>`_ for local inference, or
-  * A HuggingFace inference provider (requires ``HF_TOKEN``)
+Clone
+-----
+
+Until packages are published on PyPI, clone the repository and work
+from the ``development`` branch::
+
+   git clone https://github.com/NeuroML/neuroklea.git
+   cd neuroklea
+   git checkout development
+
+.. note::
+
+   PyPI releases coming soon.  Once published, ``pip install klea-rag``
+   (and friends) will work directly and the clone step will not be
+   needed.
 
 Install all packages
 --------------------
@@ -21,9 +36,10 @@ This installs all four packages (``klea_utils``, ``klea_rag``,
 ``klea_code``, ``neuroml_mcp``) with their dependencies.
 
 The recommended tool for dependency management is `uv
-<https://github.com/astral-sh/uv>`_::
+<https://github.com/astral-sh/uv>`_.
 
-   uv pip install -r requirements.txt
+``uv pip install -r requirements.txt`` is a faster alternative to
+``pip install`` used above.
 
 Per-package install
 -------------------
@@ -40,7 +56,7 @@ Dev install
 
 For development, install in editable mode with dev extras::
 
-   uv pip install -r requirements-dev.txt
+   pip install -r requirements-dev.txt
 
 .. seealso::
 
@@ -66,3 +82,16 @@ Example env file::
    KLEA_RAG_CHAT_MODEL=ollama:qwen3:0.6b
    KLEA_RAG_EMBEDDING_MODEL=ollama:bge-m3
    KLEA_RAG_APP_CONFIG_FILE=/path/to/klea_rag.json
+
+Model names are prefixed according to their provider:
+
+* ``ollama:<model_name>:<tag>`` for Ollama models
+* ``huggingface:<model_id>`` for HuggingFace inference providers
+* Others (e.g. OpenAI, Anthropic) use their standard model names as
+  supported by LangChain; consult `LangChain provider docs
+  <https://docs.langchain.com/oss/python/integrations/providers/overview>`_
+  for the correct identifier and required environment variables.
+
+  HuggingFace models additionally require the ``HF_TOKEN`` environment
+  variable to be set (see `HuggingFace tokens
+  <https://huggingface.co/docs/hub/security-tokens>`_).

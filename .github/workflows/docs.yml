@@ -17,6 +17,9 @@ concurrency:
 
 jobs:
   deploy:
+    permissions:
+      contents: write
+
     env:
       UV_SYSTEM_PYTHON: 1
 

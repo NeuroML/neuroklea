@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+"""
+Sphinx documentation configuration
+
+File: conf.py
+
+Copyright 2026 Ankur Sinha
+Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
+"""
+
 # Configuration file for the Sphinx documentation builder.
 project = "Klea"
 copyright = "2026, NeuroML contributors"

@@ -22,7 +22,7 @@ class SummariseMemoryNode(BaseLLMNode):
     """Node that summarises conversation history into a context summary.
 
     Uses _pre_exec() to skip execution if there aren't enough recent messages.
-    Does NOT append the summary to messages — it's metadata, not a turn.
+    Does NOT append the summary to messages -- it's metadata, not a turn.
 
     Expects state to have the following fields:
 

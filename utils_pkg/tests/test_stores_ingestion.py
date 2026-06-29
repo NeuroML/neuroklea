@@ -142,7 +142,7 @@ class TestIngestion:
                 f"Expected same count after idempotent build "
                 f"({first_count} != {second_count})"
             )
-            self.logger.info("Idempotency verified — counts match")
+            self.logger.info("Idempotency verified -- counts match")
 
         except ResponseError as e:
             pytest.skip(str(e))
@@ -199,7 +199,7 @@ class TestIngestion:
                 f"({second_count} <= {first_count})"
             )
             self.logger.info(
-                f"Incremental verified — added {second_count - first_count} more chunks"
+                f"Incremental verified -- added {second_count - first_count} more chunks"
             )
 
         except ResponseError as e:

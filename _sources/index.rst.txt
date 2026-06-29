@@ -58,6 +58,7 @@ Quick links
 
 * :doc:`install`
 * :doc:`contributing`
+* :doc:`code-of-conduct`
 * `GitHub <https://github.com/NeuroML/neuroklea>`_
 
 
@@ -69,3 +70,4 @@ Quick links
    cli/index
    api/index
    tutorials/index
+   code-of-conduct

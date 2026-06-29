@@ -51,6 +51,64 @@ Each package can be installed individually from its directory::
    cd code_pkg  && pip install .
    cd mcp_pkg   && pip install .
 
+Optional extras
+----------------
+
+``klea_utils`` extras
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Extra
+     - Installs
+     - Purpose
+   * - ``chroma``
+     - ``langchain-chroma``, ``chromadb``
+     - `Chroma <https://github.com/chroma-core/chroma>`_ vector store support
+   * - ``pgvector``
+     - ``langchain-postgres``
+     - `pgvector <https://github.com/pgvector/pgvector-python>`_ support
+   * - ``qdrant``
+     - ``langchain-qdrant``
+     - `Qdrant <https://github.com/qdrant/qdrant>`_ vector store support
+   * - ``ingest``
+     - ``docling``, ``typer``, ``xxhash``
+     - Document ingestion pipeline
+   * - ``full``
+     - All of the above
+     - All optional extras
+
+Usage::
+
+   pip install klea_utils[chroma]
+
+``klea_rag`` extras
+~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+
+   * - Extra
+     - Installs
+     - Purpose
+   * - ``chroma``
+     - ``klea_utils[chroma]``
+     - `Chroma <https://github.com/chroma-core/chroma>`_ support for RAG
+   * - ``pgvector``
+     - ``klea_utils[pgvector]``
+     - `pgvector <https://github.com/pgvector/pgvector-python>`_ support for RAG
+   * - ``qdrant``
+     - ``klea_utils[qdrant]``
+     - `Qdrant <https://github.com/qdrant/qdrant>`_ support for RAG
+   * - ``full``
+     - All vector store extras
+     - All RAG optional extras
+
+Usage::
+
+   pip install klea_rag[full]
+
 Dev install
 -----------
 

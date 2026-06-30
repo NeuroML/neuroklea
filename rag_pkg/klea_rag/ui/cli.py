@@ -40,7 +40,9 @@ def cli(
     single_query: str = typer.Option(
         None, "--single-query", "-q", help="Single query mode: answer a query and exit"
     ),
-    title: str = typer.Option("KLEA RAG", "-title", "-t", help="Title for application"),
+    title: str = typer.Option(
+        "KLEA RAG", "--title", "-t", help="Title for application"
+    ),
 ):
     """Klea RAG cli client"""
     url = server_url

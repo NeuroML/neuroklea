@@ -40,42 +40,23 @@ Each package is built on a shared foundation in ``klea_utils``, which
 provides LLM setup, vector store abstraction, and the
 :class:`~klea_utils.graph.base.BaseLangGraph` orchestrator framework.
 
-Quick start
------------
+Funding
+-------
 
-1. Clone the repository and check out the ``development`` branch::
+Klea is funded by the `BioFAIR <https://biofair.uk/>`_ Pathfinder
+Projects grant `"Creating AI-enabled analysis pipelines for FAIR
+neuroscience data"
+<https://biofair.uk/updates/2026/biofair-pathfinder-projects-launch-with-800k-to-transform-uk-fair-practices/>`_,
+awarded to `Padraig Gleeson
+<https://profiles.ucl.ac.uk/11654-padraig-gleeson>`_ and `Ankur Sinha
+<https://profiles.ucl.ac.uk/77575-ankur-sinha>`_ at `University College
+London <https://openneuroai.org/>`_.
 
-      git clone https://github.com/NeuroML/neuroklea.git
-      cd neuroklea
-      git checkout development
-
-   .. note::
-
-      PyPI releases coming soon.  Once published, ``pip install klea-rag``
-      (and friends) will work directly and the clone step will not
-      be needed.
-
-2. Install the packages::
-
-      pip install -r requirements.txt
-
-3. Set up a configuration file (see :doc:`install` for details).
-
-4. Run a CLI::
-
-      klea-rag --help
-
-Quick links
------------
-
-* :doc:`install`
-* :doc:`concepts/rag`
-* :doc:`glossary`
-* :doc:`tutorials/create-and-use-rag`
-* :doc:`contributing`
-* :doc:`code-of-conduct`
-* `GitHub <https://github.com/NeuroML/neuroklea>`_
-
+.. image:: _static/biofair-logo.png
+   :alt: BioFAIR logo
+   :class: biofair-logo
+   :width: 30%
+   :align: center
 
 .. toctree::
    :caption: Getting started

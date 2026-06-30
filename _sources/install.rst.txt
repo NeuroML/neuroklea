@@ -9,53 +9,22 @@ Requirements
   <https://docs.langchain.com/oss/python/integrations/providers/overview>`_
   for LLM access (e.g. OpenAI, Anthropic, Ollama, HuggingFace, etc.)
 
-Clone
------
+klea-rag and klea-utils (PyPI)
+-------------------------------
 
-Until packages are published on PyPI, clone the repository and work
-from the ``development`` branch::
+The RAG and utilities packages are available on PyPI::
 
-   git clone https://github.com/NeuroML/neuroklea.git
-   cd neuroklea
-   git checkout development
+   pip install klea-rag
 
-.. note::
+This installs ``klea_rag`` and its core dependency ``klea_utils``.
+Optional extras for vector store backends and document ingestion are
+listed below — add them with e.g. ``pip install klea-rag[chroma]``.
 
-   PyPI releases coming soon.  Once published, ``pip install klea-rag``
-   (and friends) will work directly and the clone step will not be
-   needed.
+If you use `uv <https://github.com/astral-sh/uv>`_, replace ``pip`` with
+``uv pip``.
 
-Install all packages
---------------------
-
-From the repository root::
-
-   pip install -r requirements.txt
-
-This installs all four packages (``klea_utils``, ``klea_rag``,
-``klea_code``, ``neuroml_mcp``) with their dependencies.
-
-The recommended tool for dependency management is `uv
-<https://github.com/astral-sh/uv>`_.
-
-``uv pip install -r requirements.txt`` is a faster alternative to
-``pip install`` used above.
-
-Per-package install
--------------------
-
-Each package can be installed individually from its directory::
-
-   cd utils_pkg && pip install .
-   cd rag_pkg   && pip install .
-   cd code_pkg  && pip install .
-   cd mcp_pkg   && pip install .
-
-Optional extras
-----------------
-
-``klea_utils`` extras
-~~~~~~~~~~~~~~~~~~~~~~
+klea-utils extras
+~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -83,8 +52,8 @@ Usage::
 
    pip install klea_utils[chroma]
 
-``klea_rag`` extras
-~~~~~~~~~~~~~~~~~~~~
+klea-rag extras
+~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -109,16 +78,12 @@ Usage::
 
    pip install klea_rag[full]
 
-Dev install
------------
+klea-code and neuroml-mcp (from source)
+----------------------------------------
 
-For development, install in editable mode with dev extras::
-
-   pip install -r requirements-dev.txt
-
-.. seealso::
-
-   :doc:`contributing` for the full development workflow.
+These packages are in active development.  They are not yet on PyPI.
+To install them, clone the repository and follow the
+:doc:`development workflow <contributing>`.
 
 Configuration
 -------------

@@ -6,25 +6,27 @@ Note that docstrings here should be written for the LLM to read.
 
 File: neuroml_mcp/tools/code_tools.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from pydantic import Field
 from typing_extensions import Annotated
 
 from neuroml_mcp.tools.sandbox.sandbox import RunPythonCode
 
+from ..utils import ToolInfo, tool_meta
 from .sandbox import nml_mcp_sandbox
 
 # set the implementation for development
 sbox = nml_mcp_sandbox
 
 
+@tool_meta(ToolInfo(tags={"testing"}))
 async def dummy_code_tool(
     astring: Annotated[str, Field(description="String to be echoed back")],
 ) -> str:
@@ -37,6 +39,7 @@ async def dummy_code_tool(
     return f"I got {astring}"
 
 
+@tool_meta(ToolInfo(tags={"testing"}))
 async def list_files_tool(
     path: Annotated[
         str,
@@ -49,7 +52,7 @@ async def list_files_tool(
         ),
     ],
     max_depth: Annotated[
-        Optional[int],
+        int | None,
         Field(description="Maximum directory depth to traverse. 'None' for unlimited"),
     ] = None,
     # LLMs are trained on shell style globs, so they insist on using space
@@ -134,6 +137,7 @@ async def list_files_tool(
     return result
 
 
+@tool_meta(ToolInfo(tags={"testing"}))
 async def run_python_code_tool(
     code: Annotated[
         str,

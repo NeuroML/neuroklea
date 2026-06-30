@@ -1,234 +1,134 @@
-# AGENTS.md - Neuroml_mcp Package
+# AGENTS.md -- Klea monorepo
 
-This file contains guidelines and commands for agentic coding agents working on the neuroml_mcp package.
+**NOTE:** `CLAUDE.md` is a symlink to this file (`CLAUDE.md -> AGENTS.md`).
+Editing or writing to `CLAUDE.md` will overwrite `AGENTS.md` -- always edit
+`AGENTS.md` directly.
 
-## Project Overview
+**IMPORTANT: Read this entire file at the start of every session.** It contains
+workflow, git conventions, session-log guidelines, and CLI patterns that must be
+followed. Do not proceed until you have read every section below.
 
-Neuroml_mcp is a Model Context Protocol (MCP) server that provides tools for NeuroML development. It uses FastMCP framework and implements a modular architecture with auto-discovered tools and sandboxed code execution.
+Multi-package Python project (setuptools + `setup.cfg`). Each `*_pkg/` is a
+separate installable; `code_pkg` and `rag_pkg` depend on `utils_pkg`.
 
-## Development Commands
+## Workflow
 
-### Building and Installation
+This repo uses an incremental, review-driven workflow.  After each step of a
+plan:
+1. Apply the change.
+2. Run the relevant verification (lint, typecheck, test, --help).
+3. Stop and present the diff for review.
+4. Wait for feedback before proceeding to the next step.
+
+If the review requires changes, address them and loop back to step 2.  Only
+move to the next step after explicit approval.
+
+Verification in step 2 covers:
+- Lint + format: `ruff check . --fix` and `ruff format .` (in the affected package)
+- Type check: `ty` (from repo root)
+- If a CLI entry point was modified: `<cli-name> --help` to confirm it starts
+- If tests exist for the changed code: `pytest -v <test-path>`
+
+## Packages at a glance
+
+| Dir | Package name | CLI entry |
+|-----|-------------|-----------|
+| `utils_pkg/` | `klea_utils` | -- (shared lib) |
+| `code_pkg/` | `klea_code` | `klea-code` |
+| `rag_pkg/` | `klea_rag` | `klea-rag`, `klea-rag-serve` |
+| `mcp_pkg/` | `neuroml_mcp` | `nml-mcp` |
+
+Each has its own `AGENTS.md` with architecture details -- refer to those for
+package-specific commands, node layout, and conventions.
+
+## Commands
+
 ```bash
-# Install in development mode
-pip install -e .
+# Dev install (editable, all packages)
+uv pip install -r requirements-dev.txt
 
-# Install development dependencies
-pip install -e .[dev]
-```
+# Run all tests across packages (from repo root)
+bash scripts/run_tests.sh        # pytest -v -n auto in each *_pkg/tests
 
-### Linting and Formatting
-```bash
-# Run ruff for linting and fixing
+# Single package test
+cd mcp_pkg && pytest -v          # uses -n 1 (mcp tools are asyncio)
+cd utils_pkg && pytest -v
+
+# Run only tests that do NOT need an LLM
+pytest -m "not localonly"
+
+# Lint + format
 ruff check . --fix
 ruff format .
+ruff check . --select I --fix    # import sorting
 
-# Sort imports specifically
-ruff check . --select I --fix
+# Type check
+ty
 
-# Run all pre-commit hooks manually
+# Pre-commit (CI gate)
 pre-commit run --all-files
 ```
 
-### Testing
-```bash
-# Run all tests
-pytest
+## CI flow
 
-# Run a single test file
-pytest tests/test_mcp.py
+`.github/workflows/ci.yml` (pushes/PRs to main/development/*test*/**feat*/**fix*):
+`uv pip install -r ./requirements.txt` -> `ollama pull qwen3:0.6b bge-m3` ->
+`bash scripts/run_tests.sh` -> `ruff check . --exit-zero`
 
-# Run a specific test function
-pytest tests/test_mcp.py::test_tool_discovery
+`.github/workflows/ruff.yml`: changed-files lint on PRs.
 
-# Run tests with verbose output
-pytest -v
+## Config & env loading
 
-# Run tests marked as local only (require LLM access)
-pytest -m localonly
+Both `KleaCode` and `RAG` orchestrators load configuration via:
+1. An env file (`k=v` format, path from `KLEA_CODE_ENV_FILE` / `KLEA_RAG_ENV_FILE` or default `klea_code.env` / `rag.env`)
+2. A JSON config file referenced inside the env file
 
-# Run tests excluding local only
-pytest -m "not localonly"
-```
+`ty.toml` adds `extra-paths` for all four packages so type-checking resolves
+cross-package imports.
 
-### Server Operations
-```bash
-# Start the MCP server
-nml-mcp
+## Testing quirks
 
-# Start with custom configuration (if implemented)
-nml-mcp --config custom_config.yaml
-```
+- Tests marked `localonly` require an LLM -- skipped in CI.
+- `utils_pkg/tests/test_stores.py` reads `VS_TEST_CONFIG` env var (default `vector-stores-tests.json`).
+- MCP tests are asyncio + single-process; do **not** run with `-n auto` (uses `addopts = -n 1` in `pyproject.toml`).
+- All packages ignore `F403` and `F405` in ruff.
 
-## Code Style Guidelines
+## Key references
 
-### File Organization
-- **Header**: All Python files must start with `#!/usr/bin/env python3` shebang
-- **Copyright**: Follow with copyright format: `# Copyright 2025 Ankur Sinha <ankursinha@fedoraproject.org>`
-- **Docstrings**: Use reStructuredText format with parameter and return type documentation
-- **Module structure**: `__init__.py` files should be minimal or empty
+Copyright format: `# Copyright 2026 Ankur Sinha <sanjay DOT ankur AT gmail DOT com>`
+(`mcp_pkg` additionally requires `#!/usr/bin/env python3` shebang on every `.py` file.)
 
-### Import Conventions
-```python
-# 1. Standard library imports
-import asyncio
-import os
-from typing import Any, Dict, List
+MCP tool auto-discovery: any function ending `_tool` is registered.
 
-# 2. Third-party imports
-from fastmcp import ClientContext, Context
-from pydantic import BaseModel
-from starlette.applications import Starlette
+`BaseLangGraph` lives at `utils_pkg/klea_utils/graph/base.py` -- shared
+setup -> MCP client -> vector stores -> compile graph template method.
 
-# 3. Local imports
-from neuroml_mcp.sandbox.local import LocalSandbox
-from neuroml_mcp.utils import register_all_tools
-```
+Vector stores use URI-style paths: `chroma:/path/to/dir`, `qdrant:http://...`,
+`pgvector:postgresql://...`.
 
-### Naming Conventions
-- **Functions**: snake_case with descriptive names (`create_new_NeuroML_model_tool`)
-- **Classes**: PascalCase (`LocalSandbox`, `RunCommand`)
-- **Variables**: snake_case (`tool_context`, `sandbox_manager`)
-- **Constants**: UPPER_CASE (`DEFAULT_TIMEOUT`, `MAX_RETRIES`)
-- **Tool functions**: Must end with `_tool` suffix for auto-discovery
-- **Private functions**: Prefix with underscore (`_internal_helper`)
+## Session continuity
 
-### Type Hints
-- Use type hints consistently across function signatures
-- Import from `typing` module for complex types
-- Use `typing.Any` sparingly and prefer specific types when possible
-- Return type annotations are mandatory for public APIs
+`.agents/YYYY-MM-DD.md` logs previous work (see `.agents/Readme.md` for template).
+Read previous logs at session start; write one at session end.
 
-### Error Handling
-- Use specific exceptions rather than generic `Exception`
-- Include descriptive error messages with context
-- Use async context managers for resource cleanup
-- Implement proper error propagation in sandbox operations
+Keep logs high-level -- decisions, architecture changes, outcomes only.
+Git log has the step-by-step edits. Omit routine work.
 
-### Async/Await Patterns
-- All sandbox operations should be async
-- Use `async with` for context managers when available
-- Implement proper async function signatures with `await`
-- Handle async exceptions appropriately
+## Git conventions
 
-## Architecture Guidelines
+- `git add --intent-to-add <new-file>` so new files appear in `git diff`.
+- Never stage/commit without explicit user approval.
+- Show `git diff --stat` first, then full diff before committing so scope is clear at a glance.
+- Conventional commit messages with issue numbers when applicable.
 
-### Tool Development
-- Tools must be functions ending with `_tool` suffix
-- Use `@context.require()` decorator for dependencies when needed
-- Include comprehensive docstrings with parameter types and examples
-- Return structured data (dicts, Pydantic models) rather than raw strings
-- Implement proper error handling for tool operations
+## File conventions
 
-### Sandbox Implementation
-- Inherit from `AsyncSandbox` abstract base class
-- Use `@singledispatchmethod` for handling different request types
-- Implement proper security isolation for code execution
-- Support both local and Docker-based execution environments
-- Handle process timeouts and resource limits
+- Use ASCII-only text. No unicode dashes, arrows, ellipsis, or emoticons.
 
-### Server Configuration
-- Use FastMCP framework conventions
-- Implement health check endpoints
-- Support both HTTP and Streamable HTTP transports
-- Provide tool listing and discovery capabilities
-- Handle graceful shutdowns and cleanup
+## CLI conventions
 
-## Configuration Management
-
-### Package Configuration
-- Primary configuration in `setup.cfg`
-- Build configuration in `pyproject.toml`
-- Use semantic versioning (currently 0.0.1)
-- Support Python 3.12-3.13
-
-### Environment Variables
-- Use environment variables for configurable values
-- Provide sensible defaults for all settings
-- Document required environment variables in README
-- Handle missing configuration gracefully
-
-## Testing Guidelines
-
-### Test Structure
-- Use pytest with asyncio support
-- Place tests in `tests/` directory
-- Use descriptive test function names
-- Mark tests requiring external services with `@pytest.mark.localonly`
-
-### Test Patterns
-- Use FastMCP client for integration testing
-- Test tool discovery and registration
-- Test sandbox isolation and security
-- Mock external dependencies when possible
-- Include both positive and negative test cases
-
-## Documentation Requirements
-
-### Code Documentation
-- All public APIs must have docstrings
-- Include parameter types, return types, and examples
-- Use reStructuredText format for consistency
-- Document async behavior and potential exceptions
-
-### API Documentation
-- Maintain tool documentation in docstrings
-- Include usage examples for complex operations
-- Document security considerations for sandbox operations
-- Provide troubleshooting guidance
-
-## Development Workflow
-
-### Pre-commit Requirements
-- All code must pass ruff linting and formatting
-- Import sorting is mandatory
-- No trailing whitespace or large files
-- Line endings must be Unix format
-
-### Git Conventions
-- Use conventional commit messages when possible
-- Include relevant issue numbers in commit messages
-- Keep commits focused and atomic
-- Ensure all tests pass before pushing
-
-## Security Considerations
-
-### Sandbox Security
-- Never execute untrusted code outside sandboxes
-- Implement proper resource limits and timeouts
-- Validate all inputs before execution
-- Use read-only file systems when possible
-- Monitor for suspicious activity patterns
-
-### Code Safety
-- Avoid eval() and exec() with user input
-- Sanitize all file paths and inputs
-- Implement proper access controls
-- Use HTTPS for all external communications
-- Never log sensitive information or credentials
-
-## Common Patterns
-
-### Tool Registration
-```python
-def my_tool_function(context: Context, param1: str, param2: int) -> Dict[str, Any]:
-    """Tool description with comprehensive docstring.
-
-    :param context: MCP context for the operation
-    :param param1: Description of first parameter
-    :param param2: Description of second parameter
-    :returns: Dictionary with operation results
-    """
-    # Implementation here
-    pass
-```
-
-### Sandbox Usage
-```python
-async with sandbox_manager.get_sandbox() as sandbox:
-    result = await sandbox.execute_command(command, timeout=30)
-    if result.return_code != 0:
-        raise RuntimeError(f"Command failed: {result.stderr}")
-```
-
-This file should be updated as the project evolves. All agents should familiarize themselves with these guidelines before making changes to the codebase.
+- Heavy imports (orchestrators, vector store backends, LLM libraries) must be
+  deferred inside the function body of Typer commands, not at module level.
+  Otherwise `--help` forces eager import of the entire dependency chain.
+- Every deferred import must have a comment explaining *why* it is lazy, so the
+  pattern is self-documenting for future maintainers.

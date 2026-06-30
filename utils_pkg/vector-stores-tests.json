@@ -1,0 +1,12 @@
+{
+    "domains": {
+        "NeuroML": {
+            "vector_stores": [
+                {
+                    "name": "nml-elife",
+                    "path": "chroma:../vector_stores/nml-elife_bge-m3.db"
+                }
+            ]
+        }
+    }
+}

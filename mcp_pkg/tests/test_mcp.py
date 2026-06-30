@@ -4,13 +4,14 @@ Test MCP
 
 File: test_mcp.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
 import pytest
 from fastmcp.client import Client
 from fastmcp.client.transports import FastMCPTransport
+
 from neuroml_mcp.server.main import create_server
 
 

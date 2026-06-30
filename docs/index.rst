@@ -1,0 +1,120 @@
+Welcome to Klea
+===============
+
+Knowledge vaLidated Expert AI Assistant for Neuroscience.
+
+Klea is a suite of AI tools for Neuroscience.  It provides a generic
+RAG pipeline, an AI-assisted coding workflow system, and MCP servers
+for modelling and analysis.
+
+Architecture
+------------
+
+The project is organised as a monorepo with four installable packages:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Directory
+     - Package
+     - CLI
+     - Purpose
+   * - ``utils_pkg``
+     - ``klea_utils``
+     - ``klea-vs-create``
+     - Shared utilities, vector store management, base graph classes
+   * - ``rag_pkg``
+     - ``klea_rag``
+     - ``klea-rag``, ``klea-rag-serve``
+     - Generic RAG pipeline with multi-domain support
+   * - ``code_pkg``
+     - ``klea_code``
+     - ``klea-code``
+     - AI-assisted coding and workflow system
+   * - ``mcp_pkg``
+     - ``neuroml_mcp``
+     - ``nml-mcp``
+     - MCP server for NeuroML tooling
+
+Each package is built on a shared foundation in ``klea_utils``, which
+provides LLM setup, vector store abstraction, and the
+:class:`~klea_utils.graph.base.BaseLangGraph` orchestrator framework.
+
+Quick start
+-----------
+
+1. Clone the repository and check out the ``development`` branch::
+
+      git clone https://github.com/NeuroML/neuroklea.git
+      cd neuroklea
+      git checkout development
+
+   .. note::
+
+      PyPI releases coming soon.  Once published, ``pip install klea-rag``
+      (and friends) will work directly and the clone step will not
+      be needed.
+
+2. Install the packages::
+
+      pip install -r requirements.txt
+
+3. Set up a configuration file (see :doc:`install` for details).
+
+4. Run a CLI::
+
+      klea-rag --help
+
+Quick links
+-----------
+
+* :doc:`install`
+* :doc:`concepts/rag`
+* :doc:`glossary`
+* :doc:`tutorials/create-and-use-rag`
+* :doc:`contributing`
+* :doc:`code-of-conduct`
+* `GitHub <https://github.com/NeuroML/neuroklea>`_
+
+
+.. toctree::
+   :caption: Getting started
+   :hidden:
+
+   install
+
+.. toctree::
+   :caption: Concepts
+   :hidden:
+
+   concepts/rag
+   glossary
+
+.. toctree::
+   :caption: Tutorials
+   :hidden:
+
+   tutorials/create-and-use-rag
+
+.. toctree::
+   :caption: CLI reference
+   :hidden:
+
+   cli/klea-vs-create
+   cli/klea-rag-serve
+   cli/klea-rag
+   cli/nml-mcp
+   cli/klea-code
+
+.. toctree::
+   :caption: API reference
+   :hidden:
+
+   api/klea_utils
+
+.. toctree::
+   :caption: Project
+   :hidden:
+
+   contributing
+   code-of-conduct

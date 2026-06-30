@@ -7,12 +7,26 @@ on:
       - development
       - experimental
       - 'test*'
+      - 'feat*'
+      - 'fix*'
+    paths-ignore:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches:
       - main
       - development
       - experimental
       - 'test*'
+      - 'feat*'
+      - 'fix*'
+    paths-ignore:
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - '.github/workflows/docs.yml'
 
 jobs:
   build:
@@ -56,9 +70,13 @@ jobs:
         uv pip list
         env
 
-    - name: Run simple test
+    - name: Test commands
       run: |
-        nml-ai --help
+        klea-rag --help
+        klea-rag-serve --help
+        klea-code  --help
+        klea-vs-create  --help
+        nml-mcp --help
 
     - name: Setup Ollama
       uses: ai-action/setup-ollama@v2
@@ -68,11 +86,13 @@ jobs:
         ollama pull qwen3:0.6b
         ollama pull bge-m3
 
+    - name: Create cache dir
+      run: |
+        mkdir -p ~/.cache/nml_mcp/
+
     - name: Run unit tests
       run: |
-        pushd rag_pkg && pytest -v && popd
-      env:
-        GEN_RAG_VS_CONFIG: "vector-stores-tests.json"
+        bash ./scripts/run_tests.sh
 
     - name: Lint with ruff
       run: |

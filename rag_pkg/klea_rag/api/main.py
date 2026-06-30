@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+"""
+Main API script
+
+File: rag_pkg/klea_rag/api/main.py
+
+Copyright 2026 Ankur Sinha
+Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
+"""
+
+from contextlib import asynccontextmanager
+
+from cachetools import TTLCache
+from fastapi import FastAPI
+
+from klea_rag.api.chat import chat_router
+from klea_rag.api.health import health_router
+from klea_rag.rag import RAG
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.is_ready = False
+    app.state.sessions = TTLCache(maxsize=1000, ttl=7200)
+
+    rag = RAG(memory=True)
+    await rag.setup()
+
+    app.state.rag = rag
+    app.state.is_ready = True
+
+    yield
+
+    app.state.is_ready = False
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(chat_router)
+app.include_router(health_router)

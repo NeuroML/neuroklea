@@ -4,7 +4,7 @@ Generate a single page markdown from Jupyter book sources
 
 File: data/scripts/jupyterbook2singlemd.py
 
-Copyright 2025 Ankur Sinha
+Copyright 2026 Ankur Sinha
 Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com>
 """
 
@@ -24,7 +24,7 @@ def runner(source: str):
     toc = f"{source}/_toc.yml"
     filelist = []
     url_base = "https://docs.neuroml.org"
-    url_map = {"DEFAULT_URL": url_base}
+    url_map = {"DEFAULT": {"url": url_base}}
     with open(toc, "r") as toc_f:
         for line in toc_f.readlines():
             if "file:" in line:
@@ -99,9 +99,9 @@ def runner(source: str):
 
                 if not in_block and line.startswith("#"):
                     header = line.replace("#", "", count=-1)
-                    url_map[header.strip()] = (
-                        f"{url_base}/{srcfile.replace('.md', '.html')}"
-                    )
+                    url_map[header.strip()] = {
+                        "url": f"{url_base}/{srcfile.replace('.md', '.html')}"
+                    }
 
                 # section heading
                 if line.startswith("(") and line.strip().endswith(")="):

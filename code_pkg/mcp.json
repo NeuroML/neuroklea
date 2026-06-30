@@ -1,0 +1,7 @@
+{
+    "mcpServers": {
+        "NeuroML": {
+            "url": "http://127.0.0.1:8542/mcp"
+        }
+    }
+}

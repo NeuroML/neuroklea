@@ -141,15 +141,25 @@ Example env file::
    KLEA_RAG_EMBEDDING_MODEL=ollama:bge-m3
    KLEA_RAG_APP_CONFIG_FILE=/path/to/klea_rag.json
 
+Choosing models
+~~~~~~~~~~~~~~~
+
+Each model provider requires its corresponding LangChain integration
+package to be installed.  For example, for Ollama::
+
+   pip install langchain-ollama
+
+See the `LangChain provider docs
+<https://docs.langchain.com/oss/python/integrations/providers/overview>`_
+for other providers and their package names.  ``langchain-huggingface``
+is included automatically via ``klea_utils``.
+
 Model names are prefixed according to their provider:
 
 * ``ollama:<model_name>:<tag>`` for Ollama models
-* ``huggingface:<model_id>`` for HuggingFace inference providers
-* Others (e.g. OpenAI, Anthropic) use their standard model names as
-  supported by LangChain; consult `LangChain provider docs
-  <https://docs.langchain.com/oss/python/integrations/providers/overview>`_
-  for the correct identifier and required environment variables.
-
+* ``huggingface:<model_id>`` for HuggingFace inference providers.
   HuggingFace models additionally require the ``HF_TOKEN`` environment
   variable to be set (see `HuggingFace tokens
   <https://huggingface.co/docs/hub/security-tokens>`_).
+* Others (e.g. OpenAI, Anthropic) use their standard model names and
+  environment variables as supported by LangChain.

@@ -24,16 +24,16 @@ Prerequisites
 * Packages installed (see :doc:`install guide <../install>`) with Chroma and ingestion
   extras:
 
-  .. code-block:: bash
+   .. code-block:: bash
 
-     pip install klea_rag[chroma] klea_utils[ingest]
+      pip install klea_rag[chroma] klea_utils[ingest]
 
-  .. note::
+   .. note::
 
-     ``klea_utils[ingest]`` pulls in `Docling <https://docling-project.github.io/docling/>`_
-     and its PyTorch dependency.  The download is several hundred MB.
-     On systems with a CUDA-capable GPU, PyTorch will use the GPU
-     automatically for faster document processing.
+      ``klea_utils[ingest]`` pulls in `Docling <https://docling-project.github.io/docling/>`_
+      and its PyTorch dependency.  The download is several hundred MB.
+      On systems with a CUDA-capable GPU, PyTorch will use the GPU
+      automatically for faster document processing.
 
 * A running `Ollama <https://ollama.com/>`_ instance with the required
   models:

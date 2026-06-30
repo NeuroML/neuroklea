@@ -425,17 +425,26 @@ needed.</p>
 <span class="n">KLEA_RAG_APP_CONFIG_FILE</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">klea_rag</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
+<section id="choosing-models">
+<h3>Choosing models<a class="headerlink" href="#choosing-models" title="Link to this heading">¶</a></h3>
+<p>Each model provider requires its corresponding LangChain integration
+package to be installed.  For example, for Ollama:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">langchain</span><span class="o">-</span><span class="n">ollama</span>
+</pre></div>
+</div>
+<p>See the <a class="reference external" href="https://docs.langchain.com/oss/python/integrations/providers/overview">LangChain provider docs</a>
+for other providers and their package names.  <code class="docutils literal notranslate"><span class="pre">langchain-huggingface</span></code>
+is included automatically via <code class="docutils literal notranslate"><span class="pre">klea_utils</span></code>.</p>
 <p>Model names are prefixed according to their provider:</p>
-<ul>
+<ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ollama:&lt;model_name&gt;:&lt;tag&gt;</span></code> for Ollama models</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">huggingface:&lt;model_id&gt;</span></code> for HuggingFace inference providers</p></li>
-<li><p>Others (e.g. OpenAI, Anthropic) use their standard model names as
-supported by LangChain; consult <a class="reference external" href="https://docs.langchain.com/oss/python/integrations/providers/overview">LangChain provider docs</a>
-for the correct identifier and required environment variables.</p>
-<p>HuggingFace models additionally require the <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code> environment
-variable to be set (see <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">HuggingFace tokens</a>).</p>
-</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">huggingface:&lt;model_id&gt;</span></code> for HuggingFace inference providers.
+HuggingFace models additionally require the <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code> environment
+variable to be set (see <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">HuggingFace tokens</a>).</p></li>
+<li><p>Others (e.g. OpenAI, Anthropic) use their standard model names and
+environment variables as supported by LangChain.</p></li>
 </ul>
+</section>
 </section>
 </section>
 
@@ -504,7 +513,10 @@ variable to be set (see <a class="reference external" href="https://huggingface.
 </ul>
 </li>
 <li><a class="reference internal" href="#dev-install">Dev install</a></li>
-<li><a class="reference internal" href="#configuration">Configuration</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li><a class="reference internal" href="#choosing-models">Choosing models</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

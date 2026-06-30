@@ -188,31 +188,43 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Concepts</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="concepts/rag.html">RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="glossary.html">Glossary</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/create-and-use-rag.html">Create and use a RAG system</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">CLI reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli/klea-vs-create.html">klea-vs-create</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/klea-rag-serve.html">klea-rag-serve</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/klea-rag.html">klea-rag</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/nml-mcp.html">nml-mcp</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli/klea-code.html">klea-code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/klea_utils.html">klea_utils</a><input aria-label="Toggle navigation of klea_utils" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/graph.html">Orchestrator framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/stores.html">Vector stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/llm.html">LLM utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/api.html">Networking</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/plogging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/errors.html">Error types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/utils/tools.html">Tool formatting</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Project</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="cli/index.html">CLI Reference</a><input aria-label="Toggle navigation of CLI Reference" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="cli/klea-vs-create.html">klea-vs-create</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cli/klea-rag-serve.html">klea-rag-serve</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cli/klea-rag.html">klea-rag</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cli/nml-mcp.html">nml-mcp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cli/klea-code.html">klea-code</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="api/index.html">API Reference</a><input aria-label="Toggle navigation of API Reference" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="api/klea_utils.html">klea_utils</a><input aria-label="Toggle navigation of klea_utils" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/graph.html">Orchestrator framework</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/stores.html">Vector stores</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/llm.html">LLM utilities</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/api.html">Networking</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/plogging.html">Logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/errors.html">Error types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api/utils/tools.html">Tool formatting</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code-of-conduct.html">Code of Conduct</a></li>
 </ul>
 
@@ -279,15 +291,21 @@
   <h2>C</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="glossary.html#term-Chat-model"><strong>Chat model</strong></a>
+</li>
         <li><a href="api/utils/api.html#klea_utils.api.check_api_is_ready">check_api_is_ready() (in module klea_utils.api)</a>
 </li>
         <li><a href="api/utils/llm.html#klea_utils.llm.check_model_works">check_model_works() (in module klea_utils.llm)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/utils/llm.html#klea_utils.llm.check_ollama_model">check_ollama_model() (in module klea_utils.llm)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="glossary.html#term-Chunk"><strong>Chunk</strong></a>
+</li>
         <li><a href="api/utils/stores.html#klea_utils.stores.ingestion.VSBuilder.chunk_all">chunk_all() (klea_utils.stores.ingestion.VSBuilder method)</a>
+</li>
+        <li><a href="glossary.html#term-Collection"><strong>Collection</strong></a>
 </li>
         <li><a href="api/utils/graph.html#klea_utils.graph.base.BaseLangGraph.config_class">config_class (klea_utils.graph.base.BaseLangGraph attribute)</a>
 </li>
@@ -299,6 +317,10 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="glossary.html#term-Domain"><strong>Domain</strong></a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/utils/stores.html#klea_utils.stores.retrieval.VSRetriever.domains">domains (klea_utils.stores.retrieval.VSRetriever property)</a>
 </li>
     </ul></td>
@@ -309,6 +331,8 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="glossary.html#term-Embedding"><strong>Embedding</strong></a>
+</li>
         <li><a href="api/utils/graph.html#klea_utils.graph.base.BaseLangGraph.env_class">env_class (klea_utils.graph.base.BaseLangGraph attribute)</a>
 </li>
     </ul></td>
@@ -316,6 +340,8 @@
         <li><a href="api/utils/graph.html#klea_utils.graph.base.BaseLangGraph.env_file_default">env_file_default (klea_utils.graph.base.BaseLangGraph attribute)</a>
 </li>
         <li><a href="api/utils/graph.html#klea_utils.graph.base.BaseLangGraph.env_var">env_var (klea_utils.graph.base.BaseLangGraph attribute)</a>
+</li>
+        <li><a href="glossary.html#term-Evaluator"><strong>Evaluator</strong></a>
 </li>
     </ul></td>
   </tr></table>
@@ -344,6 +370,8 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/utils/graph.html#klea_utils.graph.base.BaseLangGraph.graph_stream">graph_stream() (klea_utils.graph.base.BaseLangGraph method)</a>
+</li>
+        <li><a href="glossary.html#term-Guard-model"><strong>Guard model</strong></a>
 </li>
     </ul></td>
   </tr></table>
@@ -450,6 +478,8 @@
   <h2>M</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="glossary.html#term-MCP-server"><strong>MCP server</strong></a>
+</li>
         <li><a href="api/utils/stores.html#klea_utils.stores.config.PerDomainConfig.model_config">model_config (klea_utils.stores.config.PerDomainConfig attribute)</a>
 
         <ul>
@@ -568,6 +598,8 @@
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/utils/api.html#klea_utils.api.validate_url">validate_url() (in module klea_utils.api)</a>
+</li>
+        <li><a href="glossary.html#term-Vector-store"><strong>Vector store</strong></a>
 </li>
         <li><a href="api/utils/stores.html#klea_utils.stores.config.VectorStoreInfo">VectorStoreInfo (class in klea_utils.stores.config)</a>
 </li>

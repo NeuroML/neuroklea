@@ -18,7 +18,7 @@ Prerequisites
 -------------
 
 * Python 3.12 or later
-* :doc:`Packages installed <../install>` with Chroma and ingestion
+* Packages installed (see :doc:`install guide <../install>`) with Chroma and ingestion
   extras:
 
   .. code-block:: bash
@@ -98,6 +98,9 @@ the source directory and re-running adds only the new content
 The source directory will contain a ``.klea-cache/`` folder after the
 first run.  This caches converted chunks so subsequent runs skip the
 expensive Docling conversion.
+
+The vector store directory (the path you passed to ``--store``) will
+also have been created with the ``chroma.sqlite3`` database inside it.
 
 Step 3: Configure the RAG system
 ---------------------------------

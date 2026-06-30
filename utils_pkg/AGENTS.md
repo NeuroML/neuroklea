@@ -1,6 +1,6 @@
 # AGENTS.md - Utils Package
 
-Shared utilities for NeuroML AI packages.
+Shared utilities for Klea packages.
 
 ## Package Overview
 

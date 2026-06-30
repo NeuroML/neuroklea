@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Tool-related utilities for NeuroML AI
+Tool-related utilities for Klea
 
 File: klea_utils/tools.py
 

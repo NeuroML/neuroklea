@@ -1,22 +1,14 @@
 # Klea Code
 
-AI assisted coding/workflow system.
+Klea is a suite of AI tools for Neuroscience.
 
-## Features
+This package provides an AI-assisted coding and workflow system.  It
+uses a LangGraph agent with access to MCP tools to help with code
+generation, review, and workflow automation.
 
-- Integration with MCP for tool access
 - CLI and API interfaces
+- MCP tool integration
 - LangGraph-based agent orchestration
+- FastAPI server and Streamlit web UI
 
-## Installation
-
-```bash
-pip install -e .
-pip install -e .[dev]  # with development dependencies
-```
-
-## Usage
-
-```bash
-klea-code
-```
+Documentation: https://neuroklea.org

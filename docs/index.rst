@@ -69,18 +69,52 @@ Quick links
 -----------
 
 * :doc:`install`
-* :doc:`tutorials/index`
+* :doc:`concepts/rag`
+* :doc:`glossary`
+* :doc:`tutorials/create-and-use-rag`
 * :doc:`contributing`
 * :doc:`code-of-conduct`
 * `GitHub <https://github.com/NeuroML/neuroklea>`_
 
 
 .. toctree::
+   :caption: Getting started
    :hidden:
 
    install
+
+.. toctree::
+   :caption: Concepts
+   :hidden:
+
+   concepts/rag
+   glossary
+
+.. toctree::
+   :caption: Tutorials
+   :hidden:
+
+   tutorials/create-and-use-rag
+
+.. toctree::
+   :caption: CLI reference
+   :hidden:
+
+   cli/klea-vs-create
+   cli/klea-rag-serve
+   cli/klea-rag
+   cli/nml-mcp
+   cli/klea-code
+
+.. toctree::
+   :caption: API reference
+   :hidden:
+
+   api/klea_utils
+
+.. toctree::
+   :caption: Project
+   :hidden:
+
    contributing
-   cli/index
-   api/index
-   tutorials/index
    code-of-conduct

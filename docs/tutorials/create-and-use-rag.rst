@@ -14,6 +14,9 @@ By the end you will have:
 * A running Klea RAG server backed by that store
 * Hands-on experience querying the system via the CLI and web UI
 
+New to RAG?  Read :doc:`../concepts/rag` for an overview of how
+retrieval-augmented generation works and why you might use it.
+
 Prerequisites
 -------------
 

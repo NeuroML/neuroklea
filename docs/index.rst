@@ -59,43 +59,25 @@ London <https://openneuroai.org/>`_.
    :align: center
 
 .. toctree::
-   :caption: Getting started
+   :caption: Usage
    :hidden:
 
    install
-
-.. toctree::
-   :caption: Concepts
-   :hidden:
-
-   concepts/rag
+   concepts/index
    glossary
+   tutorials/index
+   cli/index
 
 .. toctree::
-   :caption: Tutorials
+   :caption: Develop
    :hidden:
 
-   tutorials/create-and-use-rag
-
-.. toctree::
-   :caption: CLI reference
-   :hidden:
-
-   cli/klea-vs-create
-   cli/klea-rag-serve
-   cli/klea-rag
-   cli/nml-mcp
-   cli/klea-code
-
-.. toctree::
-   :caption: API reference
-   :hidden:
-
-   api/klea_utils
+   contributing
+   api/index
 
 .. toctree::
    :caption: Project
    :hidden:
 
-   contributing
+   getting-help
    code-of-conduct

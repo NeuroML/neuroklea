@@ -69,6 +69,7 @@ Quick links
 -----------
 
 * :doc:`install`
+* :doc:`tutorials/index`
 * :doc:`contributing`
 * :doc:`code-of-conduct`
 * `GitHub <https://github.com/NeuroML/neuroklea>`_

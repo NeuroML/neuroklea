@@ -21,11 +21,34 @@ from fastmcp import Client
 from fastmcp.mcp_config import MCPConfig
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph.state import CompiledStateGraph
+from langgraph.stream import StreamTransformer
+from langgraph.types import RunnableConfig
 from mcp.types import Tool
 from pydantic import BaseModel, create_model
 
 from klea_utils.stores.config import VectorStoresConfig
 from klea_utils.stores.retrieval import VSRetriever
+
+
+class _CustomChannelEnabler(StreamTransformer):
+    """Enables the ``custom`` channel in LangGraph v3 event streams.
+
+    Non-LLM nodes use ``get_stream_writer()`` to emit progress events on the
+    custom channel.  LangGraph requires a ``StreamTransformer`` declaring
+    ``required_stream_modes = ("custom",)`` for that channel to be enabled.
+    This no-op transformer satisfies that requirement.
+    """
+
+    required_stream_modes = ("custom",)
+
+    def __init__(self, scope=()):
+        super().__init__(scope)
+
+    def init(self):
+        return {}
+
+    def process(self, event):
+        return True
 
 
 class BaseLangGraph(ABC):
@@ -341,7 +364,7 @@ class BaseLangGraph(ABC):
         :param thread_id: Session/thread identifier for checkpointing
         :returns: Final graph state
         """
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
         if "query" not in state:
             self.logger.error(f"Provided state should include the key 'query': {state}")
@@ -362,7 +385,7 @@ class BaseLangGraph(ABC):
         :param thread_id: Session/thread identifier for checkpointing
         :returns: The ``message_for_user`` field from the final state
         """
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
         final_state = await self.graph.ainvoke({"query": query}, config=config)
 
@@ -379,7 +402,7 @@ class BaseLangGraph(ABC):
         :param thread_id: Session/thread identifier for checkpointing
         :yields: ``message_for_user`` strings from each node
         """
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
         for chunk in self.graph.astream({"query": query}, config=config):
             for node, state in chunk.items():
@@ -397,7 +420,88 @@ class BaseLangGraph(ABC):
         :param thread_id: Session/thread identifier for checkpointing
         :returns: Raw async generator from ``graph.astream()``
         """
-        config = {"configurable": {"thread_id": thread_id}}
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
 
         res = await self.graph.astream({"query": query}, config=config)
         return res
+
+    async def run_graph_astream_events(
+        self, query: str, thread_id: str = "default_thread"
+    ):
+        """Run the graph and yield structured streaming events.
+
+        Yields dicts with:
+        - ``{"type": "progress", "node": "<label>"}`` -- when the graph enters
+          a new node (LLM or custom-event non-LLM)
+        - ``{"type": "token", "content": "<chunk>", "node": "<label>"}`` -- LLM
+          token chunk from the current node
+        - ``{"type": "complete", "message_for_user": "<answer>"}`` -- final
+          answer from the completed graph
+
+        Uses LangGraph's ``astream_events`` v3 protocol.  LLM output is read
+        from the ``messages`` channel; non-LLM nodes emit ``custom`` events
+        via ``get_stream_writer()``.  A ``StreamTransformer`` enables the
+        custom channel so those events flow through.
+
+        Reference: https://docs.langchain.com/oss/python/langgraph/event-streaming
+
+        :param query: User query string
+        :param thread_id: Session/thread identifier for checkpointing
+        :yields: Structured event dicts
+        """
+        config: RunnableConfig = {"configurable": {"thread_id": thread_id}}
+
+        assert self.graph, "Graph not compiled. Call setup() first."
+
+        stream = await self.graph.astream_events(
+            {"query": query},
+            config=config,
+            version="v3",
+            transformers=[_CustomChannelEnabler],
+        )
+
+        current_node = ""
+        last_values: dict = {}
+
+        async for event in stream:
+            method = event["method"]
+
+            if method == "custom":
+                data = event["params"]["data"]
+                if (
+                    isinstance(data, dict)
+                    and data.get("type") == "progress"
+                    and data.get("node")
+                ):
+                    node = data["node"]
+                    if node != current_node:
+                        current_node = node
+                        self.logger.debug(f"Progress: {current_node}")
+                        yield {"type": "progress", "node": current_node}
+
+            elif method == "messages":
+                data = event["params"]["data"]
+                for item in data:
+                    if not isinstance(item, dict):
+                        continue
+
+                    node = item.get("langgraph_node", "")
+                    if node and node != current_node:
+                        current_node = node
+                        self.logger.debug(f"Progress: {current_node}")
+                        yield {"type": "progress", "node": current_node}
+
+                    if item.get("event") == "content-block-delta":
+                        delta = item.get("delta", {})
+                        if "text" in delta:
+                            yield {
+                                "type": "token",
+                                "content": delta["text"],
+                                "node": current_node,
+                            }
+
+            elif method == "values":
+                last_values = event["params"]["data"]
+
+        message = (last_values or {}).get("message_for_user", "")
+        yield {"type": "complete", "message_for_user": message}

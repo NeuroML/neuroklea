@@ -40,6 +40,18 @@ Each package is built on a shared foundation in ``klea_utils``, which
 provides LLM setup, vector store abstraction, and the
 :class:`~klea_utils.graph.base.BaseLangGraph` orchestrator framework.
 
+Prototype Deployments
+---------------------
+
+These prototype Klea RAG deployments are available on HuggingFace that use the web interface.
+
+- `NeuroML RAG <https://huggingface.co/spaces/NeuroML/NeuroKLEA>`__
+- `OpenWorm RAG <https://huggingface.co/spaces/sanjayankur31/OpenWormLLM>`__
+
+Please note that there are limited resources/credits available for these
+prototypes, and so they may fall over if there is too much activity.
+They are not production deployments.
+
 Funding
 -------
 

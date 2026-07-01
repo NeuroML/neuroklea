@@ -20,15 +20,19 @@ from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 class Evaluator(BaseLLMNode[EvaluateAnswerSchema]):
     """Node that evaluates a RAG-generated answer against retrieved context."""
 
-    def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.0):
+    def __init__(
+        self, logger: logging.Logger, label: str, model: Any, temperature: float = 0.0
+    ):
         """Initialise the evaluator node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=EvaluateAnswerSchema,

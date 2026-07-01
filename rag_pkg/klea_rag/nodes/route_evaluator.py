@@ -22,6 +22,7 @@ class RouteEvaluator(AbstractRouterNode):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         stores: VSRetriever | None,
         max_retrieval_attempts: int = 2,
         max_rewrite_attempts: int = 1,
@@ -30,14 +31,13 @@ class RouteEvaluator(AbstractRouterNode):
         """Initialise the evaluator node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param stores: Vector Stores
         :param max_retrieval_attempts: Max retrieval query modifications
         :param max_rewrite_attempts: Max answer rewrites
         :param fallback_to_training_data: Whether to fall back to LLM training data
         """
-        super().__init__(
-            logger=logger,
-        )
+        super().__init__(logger, label)
         self.stores = stores
         self.max_retrieval_attempts = max_retrieval_attempts
         self.max_rewrite_attempts = max_rewrite_attempts

@@ -29,16 +29,18 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         stores: VSRetriever | None,
         num_refs_max: int = 10,
     ):
         """Initialise the retrieval node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param stores: VSRetriever instance for retrieval (None skips retrieval)
         :param num_refs_max: Maximum number of references to keep per domain
         """
-        super().__init__(logger)
+        super().__init__(logger, label)
         self.stores = stores
         self.num_refs_max = num_refs_max
 
@@ -48,6 +50,11 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         if self.stores is None:
             self.logger.debug("No vector stores configured, skipping retrieval")
             return {}
+
+        from langgraph.config import get_stream_writer
+
+        writer = get_stream_writer()
+        writer({"type": "progress", "node": self.label})
 
         reference_material = state.reference_material
         cleaned_query = state.retrieval_query

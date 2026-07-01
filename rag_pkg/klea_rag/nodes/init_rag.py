@@ -19,9 +19,9 @@ from klea_rag.schemas import EvaluateAnswerSchema, RAGState
 class InitRAGState(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Initialise/reset RAG state before each iteration."""
 
-    def __init__(self, logger: logging.Logger):
-        """Initialise with a logger."""
-        super().__init__(logger)
+    def __init__(self, logger: logging.Logger, label: str):
+        """Initialise with a logger and human-readable label."""
+        super().__init__(logger, label)
 
     async def execute(self, state: RAGState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""

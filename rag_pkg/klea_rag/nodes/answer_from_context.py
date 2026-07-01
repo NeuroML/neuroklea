@@ -30,6 +30,7 @@ class AnswerFromContext(BaseLLMNode[AnswerSchema]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float = 0.3,
         memory: bool = False,
@@ -37,12 +38,14 @@ class AnswerFromContext(BaseLLMNode[AnswerSchema]):
         """Initialise the node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature
         :param memory: Whether to include conversation memory in the prompt
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=AnswerSchema,

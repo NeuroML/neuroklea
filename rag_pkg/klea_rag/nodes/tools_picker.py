@@ -22,6 +22,7 @@ class ToolsPicker(BaseLLMNode[RAGState]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float = 0.01,
         domain_tools_description: dict[str, str] | None = None,
@@ -29,12 +30,14 @@ class ToolsPicker(BaseLLMNode[RAGState]):
         """Initialise the tools picker node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature
         :param domain_tools_description: Per-domain tool descriptions
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=ToolCallsSchema,

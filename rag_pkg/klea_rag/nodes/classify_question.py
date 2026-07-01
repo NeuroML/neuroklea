@@ -31,6 +31,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         domains: Dict[str, str],
         output_schema: Type[TSchema],
@@ -41,6 +42,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         """Initialise the classifier node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param domains: Domain name to description mapping
         :param output_schema: Pydantic schema for classification output
@@ -50,6 +52,7 @@ class ClassifyQuestion[TSchema: BaseModel](BaseLLMNode[TSchema]):
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=output_schema,

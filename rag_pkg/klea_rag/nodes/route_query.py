@@ -21,17 +21,16 @@ class RouteQuery(AbstractRouterNode):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         non_domain_chat: bool = False,
     ):
         """Initialise the node.
 
         :param logger: Logger instance
-        :param stores: Vector Stores
+        :param label: Human-readable label for UI progress display
         :param non_domain_chat: boolean if non domain chat is enabled
         """
-        super().__init__(
-            logger=logger,
-        )
+        super().__init__(logger, label)
         self.non_domain_chat = non_domain_chat
 
     def execute(self, state: RAGState):

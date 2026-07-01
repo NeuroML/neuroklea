@@ -22,17 +22,23 @@ from klea_rag.schemas import RAGState
 class ToolsCaller(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
     """Node that calls MCP tools based on tool_calls in state."""
 
-    def __init__(self, logger: logging.Logger, mcp_client: Client | None):
+    def __init__(self, logger: logging.Logger, label: str, mcp_client: Client | None):
         """Initialise the tools caller node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param mcp_client: MCP client instance (None skips tool calls)
         """
-        super().__init__(logger=logger)
+        super().__init__(logger=logger, label=label)
         self._mcp_client = mcp_client
 
     @override
     async def execute(self, state: RAGState) -> Dict[str, Any]:
+        from langgraph.config import get_stream_writer
+
+        writer = get_stream_writer()
+        writer({"type": "progress", "node": self.label})
+
         self.logger.debug(f"{state =}")
 
         # no _pre_exec here

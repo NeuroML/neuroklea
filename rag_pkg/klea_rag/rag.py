@@ -134,27 +134,36 @@ class RAG(BaseLangGraph):
         # Guard nodes
         self._guard_node = GuardNode(
             logger=self.logger,
+            label="Checking safety",
             model=self.g_model,
             temperature=0.3,
             memory=self.memory,
         )
-        self.workflow.add_node("guard", self._guard_node.execute)
+        self.workflow.add_node(self._guard_node.label, self._guard_node.execute)
 
-        self._guard_router_node = GuardRouterNode(logger=self.logger)
+        self._guard_router_node = GuardRouterNode(
+            logger=self.logger, label="Routing safety"
+        )
 
         self._decline_to_answer_node = FixedAnswer(
             logger=self.logger,
+            label="Declining query",
             state_attr="message_for_user",
             message="I cannot respond to this query. Please try another.",
         )
         self.workflow.add_node(
-            "decline_to_answer", self._decline_to_answer_node.execute
+            self._decline_to_answer_node.label, self._decline_to_answer_node.execute
         )
 
-        self._init_rag_state_node = InitRAGState(logger=self.logger)
-        self.workflow.add_node("init_rag_state", self._init_rag_state_node.execute)
+        self._init_rag_state_node = InitRAGState(
+            logger=self.logger, label="Initializing"
+        )
+        self.workflow.add_node(
+            self._init_rag_state_node.label, self._init_rag_state_node.execute
+        )
         self._classify_question_node = ClassifyQuestion(
             logger=self.logger,
+            label="Classifying question",
             model=self.c_model,
             output_schema=self.QueryDomainSchema,
             temperature=0.3,
@@ -165,36 +174,48 @@ class RAG(BaseLangGraph):
             pre_prompt=self.app_config.general.pre_prompt,
         )
         self.workflow.add_node(
-            "classify_question_domain", self._classify_question_node.execute
+            self._classify_question_node.label, self._classify_question_node.execute
         )
 
         self._route_query_domain_node = RouteQuery(
             logger=self.logger,
+            label="Routing question",
             non_domain_chat=self.app_config.general.non_domain_chat,
         )
 
         self._generate_retrieval_query_node = GenerateRetrievalQuery(
-            logger=self.logger, model=self.c_model, temperature=0.3
+            logger=self.logger,
+            label="Generating search",
+            model=self.c_model,
+            temperature=0.3,
         )
         self.workflow.add_node(
-            "generate_retrieval_query", self._generate_retrieval_query_node.execute
+            self._generate_retrieval_query_node.label,
+            self._generate_retrieval_query_node.execute,
         )
         self._tools_picker_node = ToolsPicker(
             logger=self.logger,
+            label="Selecting tools",
             model=self.c_model,
             temperature=0.01,
             domain_tools_description=self.tools_description,
         )
-        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
+        self.workflow.add_node(
+            self._tools_picker_node.label, self._tools_picker_node.execute
+        )
 
         self._tools_caller_node = ToolsCaller(
             logger=self.logger,
+            label="Running tools",
             mcp_client=self.mcp_client,
         )
-        self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
+        self.workflow.add_node(
+            self._tools_caller_node.label, self._tools_caller_node.execute
+        )
 
         self._answer_general_node = AnswerGeneral(
             logger=self.logger,
+            label="Answering generally",
             model=self.c_model,
             temperature=0.3,
             memory=self.memory,
@@ -204,125 +225,171 @@ class RAG(BaseLangGraph):
             ),
         )
         self.workflow.add_node(
-            "answer_general_question", self._answer_general_node.execute
+            self._answer_general_node.label, self._answer_general_node.execute
         )
 
         self._refuse_answer_node = FixedAnswer(
             logger=self.logger,
+            label="Refusing query",
             state_attr="message_for_user",
             message=self.refusal_message,
         )
-        self.workflow.add_node("refuse_to_answer", self._refuse_answer_node.execute)
+        self.workflow.add_node(
+            self._refuse_answer_node.label, self._refuse_answer_node.execute
+        )
 
         self._retrieve_info_node = RetrieveInfoNode(
             logger=self.logger,
+            label="Retrieving information",
             stores=self.stores,
             num_refs_max=self.num_refs_max,
         )
-        self.workflow.add_node("retrieve_info", self._retrieve_info_node.execute)
+        self.workflow.add_node(
+            self._retrieve_info_node.label, self._retrieve_info_node.execute
+        )
         self._generate_answer_from_context_node = AnswerFromContext(
             logger=self.logger,
+            label="Generating answer",
             model=self.c_model,
             temperature=0.3,
             memory=False,
         )
         self.workflow.add_node(
-            "generate_answer_from_context",
+            self._generate_answer_from_context_node.label,
             self._generate_answer_from_context_node.execute,
         )
         self._evaluate_answer_node = Evaluator(
-            logger=self.logger, model=self.c_model, temperature=0.0
+            logger=self.logger,
+            label="Evaluating answer",
+            model=self.c_model,
+            temperature=0.0,
         )
-        self.workflow.add_node("evaluate_answer", self._evaluate_answer_node.execute)
+        self.workflow.add_node(
+            self._evaluate_answer_node.label, self._evaluate_answer_node.execute
+        )
 
         self._route_evaluator_node = RouteEvaluator(
             logger=self.logger,
+            label="Routing evaluation",
             stores=self.stores,
             max_retrieval_attempts=self.app_config.general.max_retrieval_attempts,
             max_rewrite_attempts=self.app_config.general.max_rewrite_attempts,
             fallback_to_training_data=self.app_config.general.fallback_to_training_data,
         )
 
-        self._answer_user_node = AnswerUser(logger=self.logger)
+        self._answer_user_node = AnswerUser(
+            logger=self.logger, label="Preparing response"
+        )
         self.workflow.add_node(
-            "give_domain_answer_to_user", self._answer_user_node.execute
+            self._answer_user_node.label, self._answer_user_node.execute
         )
 
         self._ask_user_for_clarification_node = FixedAnswer(
             logger=self.logger,
+            label="Requesting clarification",
             state_attr="message_for_user",
             message=self.clarification_message,
         )
         self.workflow.add_node(
-            "ask_user_for_clarification", self._ask_user_for_clarification_node.execute
+            self._ask_user_for_clarification_node.label,
+            self._ask_user_for_clarification_node.execute,
         )
 
         if self.memory:
             self._summarise_history_node = SummariseMemoryNode(
                 logger=self.logger,
+                label="Summarizing history",
                 model=self.c_model,
                 temperature=0.3,
                 summarisation_threshold=10,
             )
             self.workflow.add_node(
-                "summarise_history", self._summarise_history_node.execute
+                self._summarise_history_node.label,
+                self._summarise_history_node.execute,
             )
 
-        self.workflow.add_edge(START, "init_rag_state")
-        self.workflow.add_edge("init_rag_state", "guard")
+        self._splitter_label = "Splitting"
+
+        self.workflow.add_edge(START, self._init_rag_state_node.label)
+        self.workflow.add_edge(self._init_rag_state_node.label, self._guard_node.label)
         self.workflow.add_conditional_edges(
-            "guard",
+            self._guard_node.label,
             self._guard_router_node.execute,
             {
-                "safe": "classify_question_domain",
-                "unsafe": "decline_to_answer",
+                "safe": self._classify_question_node.label,
+                "unsafe": self._decline_to_answer_node.label,
             },
         )
 
-        self.workflow.add_node("splitter", self._splitter_node)
+        self.workflow.add_node(self._splitter_label, self._splitter_node)
 
         self.workflow.add_conditional_edges(
-            "classify_question_domain",
+            self._classify_question_node.label,
             self._route_query_domain_node.execute,
             {
-                "domain_query": "splitter",
-                "non_domain_query": "answer_general_question",
-                "non_domain_refuse": "refuse_to_answer",
+                "domain_query": self._splitter_label,
+                "non_domain_query": self._answer_general_node.label,
+                "non_domain_refuse": self._refuse_answer_node.label,
             },
         )
-        self.workflow.add_edge("splitter", "generate_retrieval_query")
-        self.workflow.add_edge("splitter", "tools_picker")
-        self.workflow.add_edge("tools_picker", "tools_caller")
-        self.workflow.add_edge("generate_retrieval_query", "retrieve_info")
-        self.workflow.add_edge("retrieve_info", "generate_answer_from_context")
-        self.workflow.add_edge("tools_caller", "generate_answer_from_context")
-        self.workflow.add_edge("generate_answer_from_context", "evaluate_answer")
+        self.workflow.add_edge(
+            self._splitter_label, self._generate_retrieval_query_node.label
+        )
+        self.workflow.add_edge(self._splitter_label, self._tools_picker_node.label)
+        self.workflow.add_edge(
+            self._tools_picker_node.label, self._tools_caller_node.label
+        )
+        self.workflow.add_edge(
+            self._generate_retrieval_query_node.label,
+            self._retrieve_info_node.label,
+        )
+        self.workflow.add_edge(
+            self._retrieve_info_node.label,
+            self._generate_answer_from_context_node.label,
+        )
+        self.workflow.add_edge(
+            self._tools_caller_node.label,
+            self._generate_answer_from_context_node.label,
+        )
+        self.workflow.add_edge(
+            self._generate_answer_from_context_node.label,
+            self._evaluate_answer_node.label,
+        )
 
         self.workflow.add_conditional_edges(
-            "evaluate_answer",
+            self._evaluate_answer_node.label,
             self._route_evaluator_node.execute,
             {
-                "continue": "give_domain_answer_to_user",
-                "retrieve_more_info": "retrieve_info",  # more info
-                "rewrite_answer": "generate_answer_from_context",
-                "modify_query": "generate_retrieval_query",  # new query
-                "fallback": "answer_general_question",
-                "undefined": "ask_user_for_clarification",
+                "continue": self._answer_user_node.label,
+                "retrieve_more_info": self._retrieve_info_node.label,
+                "rewrite_answer": self._generate_answer_from_context_node.label,
+                "modify_query": self._generate_retrieval_query_node.label,
+                "fallback": self._answer_general_node.label,
+                "undefined": self._ask_user_for_clarification_node.label,
             },
         )
 
         if self.memory:
-            self.workflow.add_edge("give_domain_answer_to_user", "summarise_history")
-            self.workflow.add_edge("ask_user_for_clarification", "summarise_history")
-            self.workflow.add_edge("answer_general_question", "summarise_history")
-            self.workflow.add_edge("summarise_history", END)
+            self.workflow.add_edge(
+                self._answer_user_node.label,
+                self._summarise_history_node.label,
+            )
+            self.workflow.add_edge(
+                self._ask_user_for_clarification_node.label,
+                self._summarise_history_node.label,
+            )
+            self.workflow.add_edge(
+                self._answer_general_node.label,
+                self._summarise_history_node.label,
+            )
+            self.workflow.add_edge(self._summarise_history_node.label, END)
         else:
-            self.workflow.add_edge("give_domain_answer_to_user", END)
-            self.workflow.add_edge("ask_user_for_clarification", END)
-            self.workflow.add_edge("answer_general_question", END)
+            self.workflow.add_edge(self._answer_user_node.label, END)
+            self.workflow.add_edge(self._ask_user_for_clarification_node.label, END)
+            self.workflow.add_edge(self._answer_general_node.label, END)
 
-        self.workflow.add_edge("decline_to_answer", END)
-        self.workflow.add_edge("refuse_to_answer", END)
+        self.workflow.add_edge(self._decline_to_answer_node.label, END)
+        self.workflow.add_edge(self._refuse_answer_node.label, END)
 
         if self.checkpointer:
             self.graph = self.workflow.compile(checkpointer=self.checkpointer)

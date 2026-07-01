@@ -19,9 +19,9 @@ from klea_code.schemas import GoalSchema, KleaCodeState, PlanSchema
 class InitGraphState(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
     """Initialise/reset graph state before each iteration."""
 
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, label: str):
         """Initialise with a logger."""
-        super().__init__(logger)
+        super().__init__(logger, label)
 
     @override
     async def execute(self, state: KleaCodeState) -> Dict[str, Any]:

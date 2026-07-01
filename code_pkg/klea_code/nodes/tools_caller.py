@@ -22,15 +22,14 @@ from klea_code.schemas import KleaCodeState
 class ToolsCaller(AbstractLangGraphNode[KleaCodeState, CallToolResult]):
     """Node that calls the selected tools."""
 
-    def __init__(self, logger: logging.Logger, mcp_client: Client | None):
+    def __init__(self, logger: logging.Logger, label: str, mcp_client: Client | None):
         """Initialise the tools caller node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param mpc_client: MCP client instance
         """
-        super().__init__(
-            logger=logger,
-        )
+        super().__init__(logger, label)
         self._mcp_client = mcp_client
 
     @override

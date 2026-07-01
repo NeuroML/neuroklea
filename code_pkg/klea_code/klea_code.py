@@ -99,85 +99,117 @@ class KleaCode(BaseLangGraph):
         """Create the LangGraph"""
         self.workflow = StateGraph(KleaCodeState)
 
-        self._init_graph_state_node = InitGraphState(logger=self.logger)
-        self.workflow.add_node("init_graph_state", self._init_graph_state_node.execute)
+        self._init_graph_state_node = InitGraphState(
+            logger=self.logger, label="Initializing"
+        )
+        self.workflow.add_node(
+            self._init_graph_state_node.label, self._init_graph_state_node.execute
+        )
 
         # Guard nodes
         self._guard_node = GuardNode(
             logger=self.logger,
+            label="Checking safety",
             model=self.g_model,
             temperature=0.3,
             memory=self.memory,
         )
-        self.workflow.add_node("guard", self._guard_node.execute)
+        self.workflow.add_node(self._guard_node.label, self._guard_node.execute)
 
-        self._guard_router_node = GuardRouterNode(logger=self.logger)
+        self._guard_router_node = GuardRouterNode(
+            logger=self.logger, label="Routing safety"
+        )
 
         self._decline_to_answer_node = FixedAnswer(
             logger=self.logger,
+            label="Declining query",
             state_attr="message_for_user",
             message="I cannot respond to this query. Please try another.",
         )
         self.workflow.add_node(
-            "decline_to_answer", self._decline_to_answer_node.execute
+            self._decline_to_answer_node.label, self._decline_to_answer_node.execute
         )
 
         self._goal_setter_node = GoalSetter(
             logger=self.logger,
+            label="Setting goal",
             model=self.r_model,
             temperature=0.01,
             output_schema=GoalSchema,
             memory=False,
         )
-        self.workflow.add_node("goal_setter", self._goal_setter_node.execute)
+        self.workflow.add_node(
+            self._goal_setter_node.label, self._goal_setter_node.execute
+        )
 
         self._explore_planner_node = ExplorePlanner(
-            logger=self.logger, model=self.r_model, temperature=0.01
+            logger=self.logger, label="Exploring", model=self.r_model, temperature=0.01
         )
-        self.workflow.add_node("explore_planner", self._explore_planner_node.execute)
+        self.workflow.add_node(
+            self._explore_planner_node.label, self._explore_planner_node.execute
+        )
 
         self._planner_node = Planner(
-            logger=self.logger, model=self.r_model, temperature=0.01
+            logger=self.logger, label="Planning", model=self.r_model, temperature=0.01
         )
         self._planner_node.set_tools_description(self.tools_description)
         self._tools_picker_node = ToolsPicker(
-            logger=self.logger, model=self.r_model, temperature=0.01
+            logger=self.logger,
+            label="Selecting tools",
+            model=self.r_model,
+            temperature=0.01,
         )
         self._tools_picker_node.set_tools_description(self.tools_description)
         self._tools_caller_node = ToolsCaller(
-            logger=self.logger, mcp_client=self.mcp_client
+            logger=self.logger, label="Running tools", mcp_client=self.mcp_client
         )
-        self._tools_router_node = ToolsRouter(logger=self.logger)
-        self._evaluator_node = Evaluator(logger=self.logger)
-        self._answer_user_node = AnswerUser(logger=self.logger)
-        self.workflow.add_node("planner", self._planner_node.execute)
+        self._tools_router_node = ToolsRouter(logger=self.logger, label="Routing tools")
+        self._evaluator_node = Evaluator(logger=self.logger, label="Evaluating")
+        self._answer_user_node = AnswerUser(
+            logger=self.logger, label="Preparing response"
+        )
+        self.workflow.add_node(self._planner_node.label, self._planner_node.execute)
         # TODO: modify to use a ToolOrchestrator that can call multiple tools
         # in parallel asynchronously
         # Note that this depends on how the agent is setup---if it's setup to
         # run one call at a time, this isn't required, but ideally, it should
         # be able to call multiple tools---but the prompts/state schema will
         # need to updated for that
-        self.workflow.add_node("tools_caller", self._tools_caller_node.execute)
-        self.workflow.add_node("tools_picker", self._tools_picker_node.execute)
+        self.workflow.add_node(
+            self._tools_caller_node.label, self._tools_caller_node.execute
+        )
+        self.workflow.add_node(
+            self._tools_picker_node.label, self._tools_picker_node.execute
+        )
         # Evaluator: needs to handle failed tool calls and ask the planner to
         # update the plan if required
-        self.workflow.add_node("evaluator", self._evaluator_node.execute)
-        self.workflow.add_node("give_answer_to_user", self._answer_user_node.execute)
+        self.workflow.add_node(self._evaluator_node.label, self._evaluator_node.execute)
+        self.workflow.add_node(
+            self._answer_user_node.label, self._answer_user_node.execute
+        )
 
-        self.workflow.add_edge(START, "init_graph_state")
-        self.workflow.add_edge("init_graph_state", "guard")
+        self.workflow.add_edge(START, self._init_graph_state_node.label)
+        self.workflow.add_edge(
+            self._init_graph_state_node.label, self._guard_node.label
+        )
         self.workflow.add_conditional_edges(
-            "guard",
+            self._guard_node.label,
             self._guard_router_node.execute,
             {
-                "safe": "goal_setter",
-                "unsafe": "decline_to_answer",
+                "safe": self._goal_setter_node.label,
+                "unsafe": self._decline_to_answer_node.label,
             },
         )
-        self.workflow.add_edge("goal_setter", "explore_planner")
-        self.workflow.add_edge("explore_planner", "tools_picker")
-        self.workflow.add_edge("planner", "tools_picker")
-        self.workflow.add_edge("tools_picker", "tools_caller")
+        self.workflow.add_edge(
+            self._goal_setter_node.label, self._explore_planner_node.label
+        )
+        self.workflow.add_edge(
+            self._explore_planner_node.label, self._tools_picker_node.label
+        )
+        self.workflow.add_edge(self._planner_node.label, self._tools_picker_node.label)
+        self.workflow.add_edge(
+            self._tools_picker_node.label, self._tools_caller_node.label
+        )
         # TODO: we probably need a node here that takes tools output from
         # picker and puts them in the right state field for exploration
         # TODO: we also need some flag that decides whether the next step here
@@ -185,31 +217,31 @@ class KleaCode(BaseLangGraph):
         # needs to go to planning. If it's in the plan, it needs to go to
         # evaluation
         self.workflow.add_conditional_edges(
-            "tools_caller",
+            self._tools_caller_node.label,
             self._tools_router_node.execute,
             {
-                "failed": "tools_picker",
-                "explored": "planner",
-                "continue": "evaluator",
+                "failed": self._tools_picker_node.label,
+                "explored": self._planner_node.label,
+                "continue": self._evaluator_node.label,
             },
         )
 
         self.workflow.add_conditional_edges(
-            "evaluator",
+            self._evaluator_node.label,
             self._step_router_node,
             {
                 # should never be here
-                "not_started": "planner",
+                "not_started": self._planner_node.label,
                 # next step
-                "in_progress": "tools_picker",
+                "in_progress": self._tools_picker_node.label,
                 # plan isn't working
-                "failed": "planner",
-                "aborted": "give_answer_to_user",
-                "completed": "give_answer_to_user",
+                "failed": self._planner_node.label,
+                "aborted": self._answer_user_node.label,
+                "completed": self._answer_user_node.label,
             },
         )
-        self.workflow.add_edge("give_answer_to_user", END)
-        self.workflow.add_edge("decline_to_answer", END)
+        self.workflow.add_edge(self._answer_user_node.label, END)
+        self.workflow.add_edge(self._decline_to_answer_node.label, END)
 
         if self.checkpointer:
             self.graph = self.workflow.compile(checkpointer=self.checkpointer)

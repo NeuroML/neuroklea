@@ -23,6 +23,7 @@ class GoalSetter(BaseLLMNode[GoalSchema]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float,
         output_schema: type[GoalSchema],
@@ -31,6 +32,7 @@ class GoalSetter(BaseLLMNode[GoalSchema]):
         """Initialise the goal setter node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature
         :param output_schema: Pydantic schema for structured output
@@ -38,6 +40,7 @@ class GoalSetter(BaseLLMNode[GoalSchema]):
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=output_schema,

@@ -21,12 +21,13 @@ from klea_code.schemas import KleaCodeState
 class Evaluator(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
     """Node that evaluates whether all plan steps are completed."""
 
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, label: str):
         """Initialise with a logger.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         """
-        super().__init__(logger)
+        super().__init__(logger, label)
 
     @override
     async def execute(self, state: KleaCodeState) -> Dict[str, Any]:

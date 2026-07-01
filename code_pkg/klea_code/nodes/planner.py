@@ -20,15 +20,19 @@ from klea_code.schemas import KleaCodeState, PlanSchema
 class Planner(BaseLLMNode[PlanSchema]):
     """Node that creates or updates an execution plan."""
 
-    def __init__(self, logger: logging.Logger, model: Any, temperature: float = 0.01):
+    def __init__(
+        self, logger: logging.Logger, label: str, model: Any, temperature: float = 0.01
+    ):
         """Initialise the planner node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance (reasoning model)
         :param temperature: Sampling temperature
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=PlanSchema,

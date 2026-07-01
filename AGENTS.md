@@ -124,6 +124,8 @@ Git log has the step-by-step edits. Omit routine work.
 ## File conventions
 
 - Use ASCII-only text. No unicode dashes, arrows, ellipsis, or emoticons.
+- Preserve existing comments (TODOs, FIXMEs, notes, etc.) -- never remove or
+  edit comments that are unrelated to the immediate change being made.
 
 ## CLI conventions
 

@@ -35,6 +35,7 @@ class SummariseMemoryNode(BaseLLMNode):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float = 0.3,
         summarisation_threshold: int = 10,
@@ -43,6 +44,7 @@ class SummariseMemoryNode(BaseLLMNode):
         """Initialise the summarisation node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param summarisation_threshold: Minimum number of messages before summarising
@@ -50,6 +52,7 @@ class SummariseMemoryNode(BaseLLMNode):
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=None,

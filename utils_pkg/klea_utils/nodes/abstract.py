@@ -29,18 +29,21 @@ class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
     execute(state) method.
     """
 
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, label: str):
         """Initialise
 
         Creates a new hierarchical logger.
 
         :param logger: Parent logger instance (used to derive child logger name)
+        :param label: Human-readable label for this node, used as the
+            LangGraph node name for UI progress display
         """
         # Child logger -- inherits the parent's dual-stream handlers
         # (set up by BaseLangGraph via plogging.setup_logger) through
         # propagation, so this class does NOT configure its own
         # handlers.
         self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
+        self.label = label
 
     @abstractmethod
     async def execute(self, state: TSchema) -> TReturn:
@@ -68,6 +71,7 @@ class AbstractLLMNode[TSchema: BaseModel](
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model_inst: Any,
         temperature: float,
         output_schema: Type[TSchema] | None = None,
@@ -75,11 +79,12 @@ class AbstractLLMNode[TSchema: BaseModel](
         """Initialize with logger and model.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model_inst: LLM model instance
         :param temperature: Sampling temperature
         :param output_schema: Pydantic schema for structured output
         """
-        super().__init__(logger)
+        super().__init__(logger, label)
         self.model_inst = model_inst
         self.temperature = temperature
         self._output_schema = output_schema

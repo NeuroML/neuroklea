@@ -24,12 +24,13 @@ class GuardRouterNode(AbstractRouterNode):
     - "unsafe" -> decline to respond node
     """
 
-    def __init__(self, logger: logging.Logger):
+    def __init__(self, logger: logging.Logger, label: str):
         """Initialise the guard router.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         """
-        super().__init__(logger)
+        super().__init__(logger, label)
 
     @override
     async def execute(self, state: BaseModel) -> str:

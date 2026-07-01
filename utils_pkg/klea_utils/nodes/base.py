@@ -46,6 +46,7 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float,
         output_schema: Type[TSchema] | None,
@@ -55,12 +56,14 @@ class BaseLLMNode[TSchema: BaseModel](AbstractLLMNode[TSchema]):
         """Initialize with file-based prompt loading and memory support.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param output_schema: Pydantic schema for structured output
         :param memory: Whether to append memory content to the system prompt
+        :param num_history_messages: Number of recent messages to include
         """
-        super().__init__(logger, model, temperature, output_schema=output_schema)
+        super().__init__(logger, label, model, temperature, output_schema=output_schema)
 
         self._prompt_prefix: str | None = None
         self._prompt_registry_location: Path | None = None

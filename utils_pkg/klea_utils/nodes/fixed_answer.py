@@ -20,13 +20,16 @@ from klea_utils.nodes.abstract import AbstractLangGraphNode
 class FixedAnswer(AbstractLangGraphNode[BaseModel, Dict[str, Any]]):
     """Provide a fixed answer"""
 
-    def __init__(self, logger: logging.Logger, state_attr: str, message: str):
+    def __init__(
+        self, logger: logging.Logger, label: str, state_attr: str, message: str
+    ):
         """Initialise with logger and message to return.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param message: str message to return
         """
-        super().__init__(logger)
+        super().__init__(logger, label)
         self.message = message
         self.state_attr = state_attr
 

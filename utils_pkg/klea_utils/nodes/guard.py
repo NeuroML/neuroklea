@@ -29,6 +29,7 @@ class GuardNode(BaseLLMNode):
     def __init__(
         self,
         logger: logging.Logger,
+        label: str,
         model: Any,
         temperature: float = 0.3,
         memory: bool = False,
@@ -36,12 +37,14 @@ class GuardNode(BaseLLMNode):
         """Initialise the guard node.
 
         :param logger: Logger instance
+        :param label: Human-readable label for UI progress display
         :param model: LLM model instance
         :param temperature: Sampling temperature for LLM calls
         :param memory: Whether to include conversation history in the prompt
         """
         super().__init__(
             logger=logger,
+            label=label,
             model=model,
             temperature=temperature,
             output_schema=None,

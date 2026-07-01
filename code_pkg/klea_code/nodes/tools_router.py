@@ -34,4 +34,5 @@ class ToolsRouter(AbstractRouterNode[KleaCodeState]):
         :param state: The current state
         :return: The routing label
         """
+        self.write_custom_stream({"type": "progress", "node": self.label})
         return ""

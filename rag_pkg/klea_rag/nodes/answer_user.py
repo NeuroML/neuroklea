@@ -34,6 +34,7 @@ class AnswerUser(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
         :param state: Current graph state
         :returns: State update with message_for_user
         """
+        self.write_custom_stream({"type": "progress", "node": self.label})
         self.logger.debug(f"{state =}")
 
         messages = state.messages

@@ -36,6 +36,7 @@ class Evaluator(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
         :param state: Current graph state
         :returns: State update with plan status
         """
+        self.write_custom_stream({"type": "progress", "node": self.label})
         self.logger.debug(f"{state =}")
         plan = state.plan
         result: Dict[str, Any] = {}

@@ -34,6 +34,7 @@ class ToolsCaller(AbstractLangGraphNode[KleaCodeState, CallToolResult]):
 
     @override
     async def execute(self, state: KleaCodeState) -> dict[str, Any]:
+        self.write_custom_stream({"type": "progress", "node": self.label})
         self.logger.debug(f"{state =}")
         result: dict[str, Any] = {}
 

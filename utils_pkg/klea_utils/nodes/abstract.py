@@ -45,6 +45,23 @@ class AbstractLangGraphNode[TSchema: BaseModel, TReturn](ABC):
         self.logger = logging.getLogger(f"{logger.name}.{self.__class__.__name__}")
         self.label = label
 
+    def write_custom_stream(self, event: dict) -> None:
+        """Emit a custom event to the LangGraph v3 stream.
+
+        Writes to the ``custom`` channel via ``get_stream_writer()``.
+        Requires a ``StreamTransformer`` with ``required_stream_modes =
+        ("custom",)`` registered so the channel is enabled (done by
+        ``BaseLangGraph.run_graph_astream_events()``).
+
+        Call this at the top of ``execute()`` to emit progress, or
+        anywhere to emit debug or intermediate data for UI consumers.
+
+        :param event: Dict to emit as a custom protocol event
+        """
+        from langgraph.config import get_stream_writer
+
+        get_stream_writer()(event)
+
     @abstractmethod
     async def execute(self, state: TSchema) -> TReturn:
         """Execute this node and return the result.

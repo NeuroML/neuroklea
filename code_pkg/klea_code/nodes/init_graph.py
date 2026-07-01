@@ -26,6 +26,7 @@ class InitGraphState(AbstractLangGraphNode[KleaCodeState, Dict[str, Any]]):
     @override
     async def execute(self, state: KleaCodeState) -> Dict[str, Any]:
         """Reset state fields to their initial values."""
+        self.write_custom_stream({"type": "progress", "node": self.label})
         return {
             "message_for_user": "",
             "plan": PlanSchema(),

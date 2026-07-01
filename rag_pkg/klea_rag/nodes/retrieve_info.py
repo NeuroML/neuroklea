@@ -51,10 +51,7 @@ class RetrieveInfoNode(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
             self.logger.debug("No vector stores configured, skipping retrieval")
             return {}
 
-        from langgraph.config import get_stream_writer
-
-        writer = get_stream_writer()
-        writer({"type": "progress", "node": self.label})
+        self.write_custom_stream({"type": "progress", "node": self.label})
 
         reference_material = state.reference_material
         cleaned_query = state.retrieval_query

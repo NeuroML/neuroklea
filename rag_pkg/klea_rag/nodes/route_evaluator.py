@@ -45,6 +45,7 @@ class RouteEvaluator(AbstractRouterNode):
 
     def execute(self, state: RAGState):
         """Route based on state, set by evaluator node."""
+        self.write_custom_stream({"type": "progress", "node": self.label})
         self.logger.debug(f"{state =}")
         resp = state.text_response_eval
         next_step = resp.next_step

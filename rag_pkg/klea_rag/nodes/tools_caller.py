@@ -34,10 +34,7 @@ class ToolsCaller(AbstractLangGraphNode[RAGState, Dict[str, Any]]):
 
     @override
     async def execute(self, state: RAGState) -> Dict[str, Any]:
-        from langgraph.config import get_stream_writer
-
-        writer = get_stream_writer()
-        writer({"type": "progress", "node": self.label})
+        self.write_custom_stream({"type": "progress", "node": self.label})
 
         self.logger.debug(f"{state =}")
 

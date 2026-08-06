@@ -17,13 +17,20 @@ from typing import Annotated, Any
 from fastmcp import FastMCP
 from pydantic import Field
 
+from klea_code.tools.app_lifespan import app_lifespan
+from klea_code.tools.utils import ToolInfo, register_tool, tool_meta
+from klea_code.tools.web_fetch import web_fetch
+
 bundle_server = FastMCP(
     "KleaBundled",
     instructions="Built-in tools for code exploration and file operations.",
+    lifespan=app_lifespan,
 )
 
+register_tool(bundle_server, web_fetch)
 
-@bundle_server.tool
+
+@tool_meta(ToolInfo(tags={"bundled", "files"}))
 async def list_files(
     path: Annotated[
         str,
@@ -116,6 +123,9 @@ async def list_files(
     result = {"files": files, "error": error, "truncated": truncated}
 
     return result
+
+
+register_tool(bundle_server, list_files)
 
 
 if __name__ == "__main__":
